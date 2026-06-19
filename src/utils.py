@@ -1,0 +1,303 @@
+"""
+utils.py — Model loading & shared helpers for rank.py.
+
+All models load from /models/decompressed/ (created by setup.sh).
+No downloads, no network, no quantization at runtime.
+"""
+
+import json
+import logging
+import sqlite3
+from pathlib import Path
+from typing import Any, Dict, List
+
+from . import constants as C
+
+logger = logging.getLogger(__name__)
+
+
+class _Cache:
+    store: Dict[str, Any] = {}
+
+
+def _get(name: str, loader):
+    if name not in _Cache.store:
+        _Cache.store[name] = loader()
+    return _Cache.store[name]
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# SENTENCE-TRANSFORMER (L2 + L4)
+# ──────────────────────────────────────────────────────────────────────────────
+def load_sentence_transformer():
+    """Load the bi-encoder. Prefers ONNX INT8; falls back to PyTorch ST."""
+    def _load():
+        # Try sentence-transformers directly (works whether or not ONNX present)
+        from sentence_transformers import SentenceTransformer
+        model_dir = C.SENTENCE_TRANSFORMER_DIR
+        if model_dir.exists():
+            logger.info(f"Loading sentence-transformer from {model_dir}")
+            return SentenceTransformer(str(model_dir), device="cpu")
+        # Fallback: load by name (only works if cached / online — dev convenience)
+        logger.warning(f"{model_dir} not found; loading {C.ST_MODEL_NAME} by name")
+        return SentenceTransformer(C.ST_MODEL_NAME, device="cpu")
+    return _get("st", _load)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# FAISS INDEX (L4)
+# ──────────────────────────────────────────────────────────────────────────────
+def load_faiss_index():
+    def _load():
+        import faiss
+        idx_path = C.FAISS_INDEX_DIR / "index.bin"
+        if idx_path.exists():
+            logger.info(f"Loading FAISS index from {idx_path}")
+            return faiss.read_index(str(idx_path))
+        logger.warning("FAISS index not found; L4 will build ad-hoc index in memory")
+        return None
+    return _get("faiss", _load)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# FLASHRANK (L7 polish)
+# ──────────────────────────────────────────────────────────────────────────────
+def load_flashrank():
+    def _load():
+        try:
+            from flashrank import Ranker
+        except ImportError:
+            raise ImportError("flashrank required: pip install flashrank")
+        cache_dir = C.FLASHRANK_DIR
+        logger.info(f"Loading FlashRank ({C.FLASHRANK_MODEL_NAME})")
+        # FlashRank downloads to cache_dir if not present; for offline,
+        # build_kb.py pre-populates this directory.
+        return Ranker(model_name=C.FLASHRANK_MODEL_NAME, cache_dir=str(cache_dir.parent))
+    return _get("flashrank", _load)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# SPACY (L5 helper)
+# ──────────────────────────────────────────────────────────────────────────────
+def load_spacy():
+    def _load():
+        import spacy
+        if C.SPACY_DIR.exists():
+            logger.info(f"Loading spaCy from {C.SPACY_DIR}")
+            return spacy.load(str(C.SPACY_DIR))
+        logger.warning("spaCy model dir not found; loading en_core_web_sm by name")
+        return spacy.load("en_core_web_sm")
+    return _get("spacy", _load)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# FRAUD KB (L1)
+# ──────────────────────────────────────────────────────────────────────────────
+def load_fraud_kb():
+    def _load():
+        if not C.FRAUD_KB_PATH.exists():
+            logger.warning(f"Fraud KB not found at {C.FRAUD_KB_PATH}; L1 uses in-code blacklist only")
+            return None
+        logger.info(f"Loading fraud KB from {C.FRAUD_KB_PATH}")
+        conn = sqlite3.connect(str(C.FRAUD_KB_PATH), check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
+    return _get("fraud_kb", _load)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# JD JSON
+# ──────────────────────────────────────────────────────────────────────────────
+def load_jd_json(path: Path = None) -> dict:
+    path = path or C.JD_JSON_PATH
+    if not path.exists():
+        raise FileNotFoundError(
+            f"jd.json not found at {path}.\n"
+            f"Run the pre-step first:\n"
+            f"  python -m src.jd_parser --jd ./data/job_description.pdf --out ./data/jd.json"
+        )
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# CANDIDATE LOADING
+# ──────────────────────────────────────────────────────────────────────────────
+def read_json(path: Path) -> List[dict]:
+    """
+    Read a .json file into a list of candidate dicts.
+
+    Handles three formats:
+      - Bare array:    [{...}, {...}]
+      - Wrapped obj:   {"candidates": [...], "meta": {...}}
+                       (also "data", "results", "items", "records")
+      - Single object: {...}  → treated as a one-element list
+    """
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    if isinstance(data, list):
+        return [item for item in data if isinstance(item, dict)]
+    if isinstance(data, dict):
+        # Unwrap common envelope keys before falling back to single-object
+        for key in ("candidates", "data", "results", "items", "records"):
+            val = data.get(key)
+            if isinstance(val, list):
+                return [item for item in val if isinstance(item, dict)]
+        # Genuine single-candidate object
+        return [data]
+    return []
+
+
+def read_jsonl(path: Path) -> List[dict]:
+    """Read a .jsonl file into a list of dicts."""
+    out = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                try:
+                    out.append(json.loads(line))
+                except json.JSONDecodeError:
+                    logger.warning(f"Skipping malformed line in {path}")
+    return out
+
+
+def cleanup():
+    """Close any open resources (e.g. SQLite)."""
+    fk = _Cache.store.get("fraud_kb")
+    if fk is not None:
+        try:
+            fk.close()
+        except Exception:
+            pass
+    _Cache.store.clear()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# PROFILE TEXT HELPERS
+# ──────────────────────────────────────────────────────────────────────────────
+def _iter_work_history(candidate: dict):
+    """
+    Yield work-history entries from career_history (new schema) or
+    work_experience (old schema), preferring career_history when both present.
+    """
+    for key in ("career_history", "work_experience"):
+        entries = candidate.get(key) or []
+        if isinstance(entries, list) and entries:
+            yield from entries
+            return  # use whichever key is populated first
+
+
+def get_skills_text(candidate: dict) -> str:
+    """Extract skills section as a flat string."""
+    skills = candidate.get("skills", [])
+    if isinstance(skills, list):
+        parts = []
+        for s in skills:
+            if isinstance(s, dict):
+                parts.append(str(s.get("name", "")))
+            else:
+                parts.append(str(s))
+        return " ".join(parts)
+    return str(skills)
+
+
+def get_work_profile_text(candidate: dict) -> str:
+    """
+    Full skills + profile summary + work descriptions — used for L2.
+
+    Works with both schemas:
+      Old: work_experience[].description
+      New: profile.summary + profile.headline + career_history[].description
+    """
+    parts = [get_skills_text(candidate)]
+
+    # Profile-level summary / headline (new schema)
+    profile = candidate.get("profile") or {}
+    if isinstance(profile, dict):
+        for field in ("summary", "headline"):
+            val = profile.get(field, "")
+            if val:
+                parts.append(str(val))
+
+    # Work-history descriptions (both schemas)
+    for exp in _iter_work_history(candidate):
+        if isinstance(exp, dict):
+            d = exp.get("description", "")
+            if d:
+                parts.append(str(d))
+
+    # Projects (old schema; new schema has no projects field)
+    for proj in (candidate.get("projects") or []):
+        if isinstance(proj, dict):
+            d = proj.get("description", "")
+            if d:
+                parts.append(str(d))
+
+    return " ".join(p for p in parts if p).strip()
+
+
+def get_work_descriptions_only(candidate: dict) -> str:
+    """
+    L4 input: ONLY work / project descriptions.
+    NO titles, company names, or skill lists.
+    """
+    parts = []
+    for exp in _iter_work_history(candidate):
+        if isinstance(exp, dict):
+            d = exp.get("description", "")
+            if d:
+                parts.append(str(d))
+    for proj in (candidate.get("projects") or []):
+        if isinstance(proj, dict):
+            d = proj.get("description", "")
+            if d:
+                parts.append(str(d))
+    return " ".join(parts).strip()
+
+
+def get_total_experience_years(candidate: dict) -> float:
+    """
+    Best-effort total years of experience.
+
+    Priority:
+      1. Explicit top-level field: total_experience_years
+      2. profile.years_of_experience (new schema)
+      3. Sum duration_years / duration_months from work history
+    """
+    # 1. Top-level explicit field
+    for key in ("total_experience_years", "years_of_experience"):
+        val = candidate.get(key)
+        if val is not None:
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                pass
+
+    # 2. Nested under profile (new schema)
+    profile = candidate.get("profile") or {}
+    if isinstance(profile, dict):
+        val = profile.get("years_of_experience")
+        if val is not None:
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                pass
+
+    # 3. Sum from work history entries
+    total = 0.0
+    for exp in _iter_work_history(candidate):
+        if not isinstance(exp, dict):
+            continue
+        # duration_years (old) or duration_months / 12 (new)
+        if "duration_years" in exp:
+            try:
+                total += float(exp["duration_years"])
+            except (ValueError, TypeError):
+                pass
+        elif "duration_months" in exp:
+            try:
+                total += float(exp["duration_months"]) / 12.0
+            except (ValueError, TypeError):
+                pass
+    return total

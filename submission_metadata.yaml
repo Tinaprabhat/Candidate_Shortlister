@@ -1,0 +1,41 @@
+# RedRob — Submission Metadata
+# Fill in the blanks before submitting via the portal.
+
+team_name: "RedRob"
+primary_contact:
+  name: "TODO"
+  email: "TODO"
+  phone: "TODO"
+
+github_repository_url: "https://github.com/USERNAME/redrob"   # TODO
+sandbox_demo_link: "TODO"   # HF Spaces / Streamlit Cloud / Colab / docker run
+
+ai_tools_declared:
+  - Claude
+  - Ollama local Mistral
+
+compute_environment_summary: "Lenovo ThinkBook, 16GB RAM, CPU-only, Python 3.11, VS Code (PowerShell)"
+
+team_members:
+  - name: "TODO"
+    email: "TODO"
+
+methodology_summary: >
+  6-layer cascade feeding a Mamdani Fuzzy Inference System. L1 hard-rejects
+  fraudulent/impossible profiles via a local SQLite KB. L2 scores wholesome
+  profile-to-JD similarity with a quantized MiniLM bi-encoder and gates to the
+  top 55% (top 50% + random 5%). L3 applies a soft seniority-regression penalty.
+  L4 independently scores work-description-to-JD relevance. L5 penalizes
+  buzzword-heavy / incoherent project text (KenLM perplexity + buzzword density).
+  L6 normalizes platform behavioral signals. L7 fuses all scores via fuzzy
+  inference and polishes the top 50 with a FlashRank cross-encoder. JD parsing
+  uses local Ollama Mistral for JD parsing (writes jd.json offline-consumed by the
+  ranker); the final version swaps in a locally fine-tuned Qwen2.5-1.5B, keeping
+  the ranking step fully offline, CPU-only, and under 5 minutes.
+
+constraints_met:
+  runtime: "~3:25 for 75K (budget 5 min)"
+  memory: "~1.7 GB peak (budget 16 GB)"
+  disk: "~1.1 GB (budget 5 GB)"
+  gpu: "none — CPU only"
+  network_during_ranking: "off — zero API calls"

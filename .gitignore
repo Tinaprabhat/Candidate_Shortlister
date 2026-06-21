@@ -37,3 +37,7 @@ submission*.csv
 # OS
 .DS_Store
 Thumbs.db
+
+
+# Large files
+data_Clean/candidates.jsonl

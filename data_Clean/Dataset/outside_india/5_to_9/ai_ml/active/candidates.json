@@ -1,0 +1,2927 @@
+[
+  {
+    "candidate_id": "CAND_0002120",
+    "profile": {
+      "anonymized_name": "Dhruv Khanna",
+      "headline": "ML Engineer | 6.5 yrs in analytics & ML",
+      "summary": "Data scientist / ML engineer with 6.5 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've been working on recommendation-style features but lighter on the deep-learning side — mostly classical methods like collaborative filtering and gradient-boosted models. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I'm looking to grow into a deeper AI/ML system-building role — closer to retrieval, LLMs, and modern ranking systems.",
+      "location": "Berlin",
+      "country": "Germany",
+      "years_of_experience": 6.5,
+      "current_title": "ML Engineer",
+      "current_company": "HCL",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "HCL",
+        "title": "ML Engineer",
+        "start_date": "2023-11-09",
+        "end_date": null,
+        "duration_months": 31,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Built NLP pipelines for sentiment analysis and document classification — primarily for an internal feedback-analytics dashboard. Started with sklearn-based bag-of-words models, then moved to transformer-based classifiers (DistilBERT) for the harder classes. Comfortable with PyTorch and Hugging Face but most of my training experience has been on small datasets and pre-trained model fine-tuning, not from-scratch model design."
+      },
+      {
+        "company": "BYJU'S",
+        "title": "AI Specialist",
+        "start_date": "2019-12-30",
+        "end_date": "2023-10-10",
+        "duration_months": 46,
+        "is_current": false,
+        "industry": "EdTech",
+        "company_size": "10001+",
+        "description": "Built recommendation-style features at a mid-stage startup — lighter weight than ranking systems at FAANG, but production. Used a combination of collaborative filtering (matrix factorization in implicit-feedback library) and gradient-boosted re-ranking over engagement signals. Pure ML side of the work; production deployment was handled by the platform team."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Stanford University",
+        "degree": "B.Tech",
+        "field_of_study": "Machine Learning",
+        "start_year": 2017,
+        "end_year": 2022,
+        "grade": "6.61 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Chandigarh University",
+        "degree": "Ph.D",
+        "field_of_study": "Computer Science",
+        "start_year": 2009,
+        "end_year": 2013,
+        "grade": "69%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "RAG",
+        "proficiency": "advanced",
+        "endorsements": 30,
+        "duration_months": 57
+      },
+      {
+        "name": "ETL",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 36
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 36
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "advanced",
+        "endorsements": 42,
+        "duration_months": 28
+      },
+      {
+        "name": "Six Sigma",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 30
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "advanced",
+        "endorsements": 54,
+        "duration_months": 45
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 28
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 25
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 21
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 34,
+        "duration_months": 59
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 6
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 10
+      },
+      {
+        "name": "Webpack",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 8
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 12
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 58.8,
+      "signup_date": "2025-05-10",
+      "last_active_date": "2026-05-20",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 139,
+      "applications_submitted_30d": 1,
+      "recruiter_response_rate": 0.72,
+      "avg_response_time_hours": 12.7,
+      "skill_assessment_scores": {
+        "RAG": 75.0,
+        "Information Retrieval": 49.8,
+        "Pinecone": 57.0
+      },
+      "connection_count": 869,
+      "endorsements_received": 12,
+      "notice_period_days": 45,
+      "expected_salary_range_inr_lpa": {
+        "min": 21.9,
+        "max": 42.2,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": false,
+      "github_activity_score": 50.4,
+      "search_appearance_30d": 691,
+      "saved_by_recruiters_30d": 29,
+      "interview_completion_rate": 0.69,
+      "offer_acceptance_rate": 0.49,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": true,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": -3.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 697,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0003756",
+    "profile": {
+      "anonymized_name": "Tanya Reddy",
+      "headline": "Senior Software Engineer (ML) | 6.5 yrs in analytics & ML",
+      "summary": "Data scientist / ML engineer with 6.5 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. Most of my recent work has been on predictive modeling for customer-facing problems — churn, conversion, lifetime value. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. Looking for a role where I can step up to more end-to-end ownership of ML systems, not just modeling.",
+      "location": "Seattle",
+      "country": "USA",
+      "years_of_experience": 6.5,
+      "current_title": "Senior Software Engineer (ML)",
+      "current_company": "Nykaa",
+      "current_company_size": "1001-5000",
+      "current_industry": "E-commerce"
+    },
+    "career_history": [
+      {
+        "company": "Nykaa",
+        "title": "Senior Software Engineer (ML)",
+        "start_date": "2024-12-03",
+        "end_date": null,
+        "duration_months": 18,
+        "is_current": true,
+        "industry": "E-commerce",
+        "company_size": "1001-5000",
+        "description": "Built computer vision models for our product's image moderation feature using PyTorch — fine-tuned ResNet variants on a labeled dataset of ~200K images. Set up the training pipeline (data loading, augmentation, evaluation) and the inference service. Most of my project work has been in CV; I'm now interested in transitioning toward NLP/LLM work but my professional experience there is limited."
+      },
+      {
+        "company": "PolicyBazaar",
+        "title": "Junior ML Engineer",
+        "start_date": "2023-10-10",
+        "end_date": "2024-12-03",
+        "duration_months": 14,
+        "is_current": false,
+        "industry": "Insurance Tech",
+        "company_size": "5001-10000",
+        "description": "Built recommendation-style features at a mid-stage startup — lighter weight than ranking systems at FAANG, but production. Used a combination of collaborative filtering (matrix factorization in implicit-feedback library) and gradient-boosted re-ranking over engagement signals. Pure ML side of the work; production deployment was handled by the platform team."
+      },
+      {
+        "company": "CRED",
+        "title": "ML Engineer",
+        "start_date": "2021-10-20",
+        "end_date": "2023-10-10",
+        "duration_months": 24,
+        "is_current": false,
+        "industry": "Fintech",
+        "company_size": "1001-5000",
+        "description": "Built NLP pipelines for sentiment analysis and document classification — primarily for an internal feedback-analytics dashboard. Started with sklearn-based bag-of-words models, then moved to transformer-based classifiers (DistilBERT) for the harder classes. Comfortable with PyTorch and Hugging Face but most of my training experience has been on small datasets and pre-trained model fine-tuning, not from-scratch model design."
+      },
+      {
+        "company": "Zomato",
+        "title": "Computer Vision Engineer",
+        "start_date": "2020-01-15",
+        "end_date": "2021-10-06",
+        "duration_months": 21,
+        "is_current": false,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Amity University",
+        "degree": "B.Sc",
+        "field_of_study": "Data Science",
+        "start_year": 2014,
+        "end_year": 2019,
+        "grade": "8.88 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "TensorFlow",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 30
+      },
+      {
+        "name": "ASR",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 17
+      },
+      {
+        "name": "TTS",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 34
+      },
+      {
+        "name": "Webpack",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 3
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "advanced",
+        "endorsements": 55,
+        "duration_months": 20
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 19
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 15
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 10,
+        "duration_months": 23
+      },
+      {
+        "name": "BentoML",
+        "proficiency": "advanced",
+        "endorsements": 42,
+        "duration_months": 20
+      },
+      {
+        "name": "GANs",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 10
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 10
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 14
+      },
+      {
+        "name": "CNN",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 12
+      },
+      {
+        "name": "QLoRA",
+        "proficiency": "advanced",
+        "endorsements": 54,
+        "duration_months": 18
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "advanced",
+        "endorsements": 9,
+        "duration_months": 34
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 57.2,
+      "signup_date": "2026-02-20",
+      "last_active_date": "2026-05-25",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 13,
+      "applications_submitted_30d": 3,
+      "recruiter_response_rate": 0.38,
+      "avg_response_time_hours": 71.8,
+      "skill_assessment_scores": {},
+      "connection_count": 243,
+      "endorsements_received": 32,
+      "notice_period_days": 90,
+      "expected_salary_range_inr_lpa": {
+        "min": 32.0,
+        "max": 51.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": false,
+      "github_activity_score": 66.0,
+      "search_appearance_30d": 736,
+      "saved_by_recruiters_30d": 13,
+      "interview_completion_rate": 0.78,
+      "offer_acceptance_rate": 0.57,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 1.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 0,
+    "fabrication_bandwidth": 1426,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0022463",
+    "profile": {
+      "anonymized_name": "Kavya Arora",
+      "headline": "Junior ML Engineer | 6.5 yrs in analytics & ML",
+      "summary": "Data scientist / ML engineer with 6.5 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. My current role is split between dashboarding/analytics and shipping production ML models. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I want to grow into senior AI engineering — get serious about LLMs and retrieval beyond the surface level.",
+      "location": "Toronto",
+      "country": "Canada",
+      "years_of_experience": 6.5,
+      "current_title": "Junior ML Engineer",
+      "current_company": "Zomato",
+      "current_company_size": "5001-10000",
+      "current_industry": "Food Delivery"
+    },
+    "career_history": [
+      {
+        "company": "Zomato",
+        "title": "Junior ML Engineer",
+        "start_date": "2022-04-18",
+        "end_date": null,
+        "duration_months": 50,
+        "is_current": true,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      },
+      {
+        "company": "Vedantu",
+        "title": "Data Scientist",
+        "start_date": "2020-01-15",
+        "end_date": "2022-04-04",
+        "duration_months": 27,
+        "is_current": false,
+        "industry": "EdTech",
+        "company_size": "1001-5000",
+        "description": "Built computer vision models for our product's image moderation feature using PyTorch — fine-tuned ResNet variants on a labeled dataset of ~200K images. Set up the training pipeline (data loading, augmentation, evaluation) and the inference service. Most of my project work has been in CV; I'm now interested in transitioning toward NLP/LLM work but my professional experience there is limited."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Jadavpur University",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Science",
+        "start_year": 2000,
+        "end_year": 2005,
+        "grade": "8.03 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Marketing",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 26
+      },
+      {
+        "name": "Learning to Rank",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 13
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 20
+      },
+      {
+        "name": "AWS",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 17
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "advanced",
+        "endorsements": 20,
+        "duration_months": 44
+      },
+      {
+        "name": "GCP",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 32
+      },
+      {
+        "name": "Speech Recognition",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 17
+      },
+      {
+        "name": "CNN",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 9
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "advanced",
+        "endorsements": 22,
+        "duration_months": 22
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "advanced",
+        "endorsements": 58,
+        "duration_months": 48
+      },
+      {
+        "name": "REST APIs",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 8
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "advanced",
+        "endorsements": 42,
+        "duration_months": 47
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 25
+      },
+      {
+        "name": "TTS",
+        "proficiency": "advanced",
+        "endorsements": 17,
+        "duration_months": 46
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 25
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 83.3,
+      "signup_date": "2025-01-23",
+      "last_active_date": "2026-05-24",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 137,
+      "applications_submitted_30d": 17,
+      "recruiter_response_rate": 0.73,
+      "avg_response_time_hours": 105.2,
+      "skill_assessment_scores": {
+        "Sentence Transformers": 86.7,
+        "LoRA": 79.6,
+        "Embeddings": 51.3,
+        "Time Series": 63.4,
+        "TTS": 65.7
+      },
+      "connection_count": 388,
+      "endorsements_received": 20,
+      "notice_period_days": 120,
+      "expected_salary_range_inr_lpa": {
+        "min": 21.2,
+        "max": 50.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 44.1,
+      "search_appearance_30d": 180,
+      "saved_by_recruiters_30d": 30,
+      "interview_completion_rate": 0.59,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 15.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 729,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0022720",
+    "profile": {
+      "anonymized_name": "Arjun Patel",
+      "headline": "AI Research Engineer | 6.5 yrs in analytics & ML",
+      "summary": "Data scientist / ML engineer with 6.5 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've spent the last couple of years building NLP-based classification and information extraction pipelines. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I'm looking to grow into a deeper AI/ML system-building role — closer to retrieval, LLMs, and modern ranking systems.",
+      "location": "Sydney",
+      "country": "Australia",
+      "years_of_experience": 6.5,
+      "current_title": "AI Research Engineer",
+      "current_company": "Sarvam AI",
+      "current_company_size": "51-200",
+      "current_industry": "AI/ML"
+    },
+    "career_history": [
+      {
+        "company": "Sarvam AI",
+        "title": "AI Research Engineer",
+        "start_date": "2025-03-03",
+        "end_date": null,
+        "duration_months": 15,
+        "is_current": true,
+        "industry": "AI/ML",
+        "company_size": "51-200",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      },
+      {
+        "company": "Sarvam AI",
+        "title": "Computer Vision Engineer",
+        "start_date": "2023-03-14",
+        "end_date": "2025-03-03",
+        "duration_months": 24,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "51-200",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      },
+      {
+        "company": "Razorpay",
+        "title": "Computer Vision Engineer",
+        "start_date": "2020-01-29",
+        "end_date": "2023-03-14",
+        "duration_months": 38,
+        "is_current": false,
+        "industry": "Fintech",
+        "company_size": "1001-5000",
+        "description": "Built recommendation-style features at a mid-stage startup — lighter weight than ranking systems at FAANG, but production. Used a combination of collaborative filtering (matrix factorization in implicit-feedback library) and gradient-boosted re-ranking over engagement signals. Pure ML side of the work; production deployment was handled by the platform team."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Manipal Institute of Technology",
+        "degree": "B.Tech",
+        "field_of_study": "Machine Learning",
+        "start_year": 2016,
+        "end_year": 2019,
+        "grade": "9.35 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Elasticsearch",
+        "proficiency": "advanced",
+        "endorsements": 6,
+        "duration_months": 34
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "advanced",
+        "endorsements": 43,
+        "duration_months": 34
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "advanced",
+        "endorsements": 6,
+        "duration_months": 53
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "advanced",
+        "endorsements": 7,
+        "duration_months": 55
+      },
+      {
+        "name": "CSS",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 28
+      },
+      {
+        "name": "TensorFlow",
+        "proficiency": "advanced",
+        "endorsements": 34,
+        "duration_months": 33
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 17,
+        "duration_months": 41
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 34
+      },
+      {
+        "name": "Accounting",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 7
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "advanced",
+        "endorsements": 56,
+        "duration_months": 33
+      },
+      {
+        "name": "CNN",
+        "proficiency": "advanced",
+        "endorsements": 6,
+        "duration_months": 45
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 31,
+        "duration_months": 45
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 21
+      },
+      {
+        "name": "BM25",
+        "proficiency": "advanced",
+        "endorsements": 38,
+        "duration_months": 33
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 29
+      },
+      {
+        "name": "Agile",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 33
+      },
+      {
+        "name": "Azure",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 24
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Deep Learning Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2019
+      },
+      {
+        "name": "LangChain for LLM Application Development",
+        "issuer": "DeepLearning.AI",
+        "year": 2019
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 46.3,
+      "signup_date": "2024-05-27",
+      "last_active_date": "2026-05-20",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 123,
+      "applications_submitted_30d": 5,
+      "recruiter_response_rate": 0.52,
+      "avg_response_time_hours": 73.4,
+      "skill_assessment_scores": {},
+      "connection_count": 894,
+      "endorsements_received": 79,
+      "notice_period_days": 120,
+      "expected_salary_range_inr_lpa": {
+        "min": 28.6,
+        "max": 32.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": false,
+      "github_activity_score": 65.2,
+      "search_appearance_30d": 473,
+      "saved_by_recruiters_30d": 42,
+      "interview_completion_rate": 0.71,
+      "offer_acceptance_rate": 0.85,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 1.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 1095,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0024466",
+    "profile": {
+      "anonymized_name": "Om Mukherjee",
+      "headline": "Search Engineer | Applied ML | Building intelligent products",
+      "summary": "Machine learning engineer with 5.2 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I care a lot about evaluation rigor — too many teams ship models without offline benchmarks they trust. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Toronto",
+      "country": "Canada",
+      "years_of_experience": 5.2,
+      "current_title": "Search Engineer",
+      "current_company": "PharmEasy",
+      "current_company_size": "5001-10000",
+      "current_industry": "HealthTech"
+    },
+    "career_history": [
+      {
+        "company": "PharmEasy",
+        "title": "Search Engineer",
+        "start_date": "2022-11-14",
+        "end_date": null,
+        "duration_months": 43,
+        "is_current": true,
+        "industry": "HealthTech",
+        "company_size": "5001-10000",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Mad Street Den",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2021-04-16",
+        "end_date": "2022-11-07",
+        "duration_months": 19,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Built a content recommendation system serving 10M+ users that combined collaborative filtering with content-based ranking. The system uses item-item similarity (via sentence-transformer embeddings) for cold starts and a gradient-boosted model trained on engagement signals for warm users. Most of my time went into the feature pipeline (~200 features) and the A/B testing infrastructure. The launch improved 7-day retention by 6% and time spent per session by 14%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IISc Bangalore",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2012,
+        "end_year": 2016,
+        "grade": "6.57 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Anna University",
+        "degree": "Ph.D",
+        "field_of_study": "Information Technology",
+        "start_year": 2016,
+        "end_year": 2020,
+        "grade": "7.58 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 50
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "advanced",
+        "endorsements": 10,
+        "duration_months": 53
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 17
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 49
+      },
+      {
+        "name": "BM25",
+        "proficiency": "expert",
+        "endorsements": 6,
+        "duration_months": 41
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 32
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "advanced",
+        "endorsements": 26,
+        "duration_months": 48
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "advanced",
+        "endorsements": 12,
+        "duration_months": 23
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "advanced",
+        "endorsements": 32,
+        "duration_months": 35
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "advanced",
+        "endorsements": 14,
+        "duration_months": 54
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "expert",
+        "endorsements": 28,
+        "duration_months": 92
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 53,
+        "duration_months": 26
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 29,
+        "duration_months": 48
+      },
+      {
+        "name": "CI/CD",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 7
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "expert",
+        "endorsements": 58,
+        "duration_months": 60
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "expert",
+        "endorsements": 35,
+        "duration_months": 52
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "advanced",
+        "endorsements": 20,
+        "duration_months": 59
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 35,
+        "duration_months": 21
+      }
+    ],
+    "certifications": [
+      {
+        "name": "LangChain for LLM Application Development",
+        "issuer": "DeepLearning.AI",
+        "year": 2021
+      },
+      {
+        "name": "NLP Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2020
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 72.8,
+      "signup_date": "2025-08-05",
+      "last_active_date": "2026-05-22",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 29,
+      "applications_submitted_30d": 18,
+      "recruiter_response_rate": 0.47,
+      "avg_response_time_hours": 13.4,
+      "skill_assessment_scores": {
+        "Recommendation Systems": 75.0,
+        "pgvector": 79.2,
+        "Reinforcement Learning": 89.4,
+        "BM25": 74.7,
+        "Computer Vision": 65.9
+      },
+      "connection_count": 121,
+      "endorsements_received": 31,
+      "notice_period_days": 120,
+      "expected_salary_range_inr_lpa": {
+        "min": 27.1,
+        "max": 38.8,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 78,
+      "saved_by_recruiters_30d": 5,
+      "interview_completion_rate": 0.56,
+      "offer_acceptance_rate": 0.61,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 1.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 0,
+    "fabrication_bandwidth": 136,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0028527",
+    "profile": {
+      "anonymized_name": "Ela Gupta",
+      "headline": "AI Specialist | 5.4 yrs in analytics & ML",
+      "summary": "Data scientist / ML engineer with 5.4 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've been working on recommendation-style features but lighter on the deep-learning side — mostly classical methods like collaborative filtering and gradient-boosted models. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I'm looking to grow into a deeper AI/ML system-building role — closer to retrieval, LLMs, and modern ranking systems.",
+      "location": "Austin",
+      "country": "USA",
+      "years_of_experience": 5.4,
+      "current_title": "AI Specialist",
+      "current_company": "Tech Mahindra",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Tech Mahindra",
+        "title": "AI Specialist",
+        "start_date": "2022-11-14",
+        "end_date": null,
+        "duration_months": 43,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Contributed to ML feature engineering and model deployment for a fraud-detection product. My main role was engineering: building the Flask-based prediction API, integrating with the feature store, and writing the model-serving observability layer. I worked closely with senior data scientists but my own modeling work was secondary — I was the production-side engineer."
+      },
+      {
+        "company": "BYJU'S",
+        "title": "Computer Vision Engineer",
+        "start_date": "2021-02-22",
+        "end_date": "2022-11-14",
+        "duration_months": 21,
+        "is_current": false,
+        "industry": "EdTech",
+        "company_size": "10001+",
+        "description": "Built recommendation-style features at a mid-stage startup — lighter weight than ranking systems at FAANG, but production. Used a combination of collaborative filtering (matrix factorization in implicit-feedback library) and gradient-boosted re-ranking over engagement signals. Pure ML side of the work; production deployment was handled by the platform team."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Local Engineering College",
+        "degree": "M.E.",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2005,
+        "end_year": 2008,
+        "grade": "7.49 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "LangChain",
+        "proficiency": "advanced",
+        "endorsements": 12,
+        "duration_months": 56
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 22
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 13
+      },
+      {
+        "name": "YOLO",
+        "proficiency": "advanced",
+        "endorsements": 1,
+        "duration_months": 56
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 18
+      },
+      {
+        "name": "Django",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 24
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 14
+      },
+      {
+        "name": "Angular",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 6
+      },
+      {
+        "name": "QLoRA",
+        "proficiency": "advanced",
+        "endorsements": 36,
+        "duration_months": 37
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 51
+      },
+      {
+        "name": "GANs",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 34
+      },
+      {
+        "name": "Spring Boot",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 27
+      },
+      {
+        "name": "Vector Search",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 51
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 28,
+        "duration_months": 46
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 6,
+        "duration_months": 52
+      },
+      {
+        "name": "scikit-learn",
+        "proficiency": "advanced",
+        "endorsements": 37,
+        "duration_months": 45
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 31
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 90.4,
+      "signup_date": "2025-11-29",
+      "last_active_date": "2026-05-25",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 55,
+      "applications_submitted_30d": 1,
+      "recruiter_response_rate": 0.9,
+      "avg_response_time_hours": 9.4,
+      "skill_assessment_scores": {
+        "LangChain": 56.0
+      },
+      "connection_count": 1136,
+      "endorsements_received": 124,
+      "notice_period_days": 90,
+      "expected_salary_range_inr_lpa": {
+        "min": 32.0,
+        "max": 45.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 13.4,
+      "search_appearance_30d": 555,
+      "saved_by_recruiters_30d": 34,
+      "interview_completion_rate": 0.61,
+      "offer_acceptance_rate": 0.78,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 13.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 758,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0029671",
+    "profile": {
+      "anonymized_name": "Tanya Chatterjee",
+      "headline": "Data Scientist | Data Science & ML enthusiast",
+      "summary": "Data scientist / ML engineer with 5.7 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've spent the last couple of years building NLP-based classification and information extraction pipelines. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I'm looking to grow into a deeper AI/ML system-building role — closer to retrieval, LLMs, and modern ranking systems.",
+      "location": "Toronto",
+      "country": "Canada",
+      "years_of_experience": 5.7,
+      "current_title": "Data Scientist",
+      "current_company": "BYJU'S",
+      "current_company_size": "10001+",
+      "current_industry": "EdTech"
+    },
+    "career_history": [
+      {
+        "company": "BYJU'S",
+        "title": "Data Scientist",
+        "start_date": "2022-12-14",
+        "end_date": null,
+        "duration_months": 42,
+        "is_current": true,
+        "industry": "EdTech",
+        "company_size": "10001+",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      },
+      {
+        "company": "Ola",
+        "title": "Junior ML Engineer",
+        "start_date": "2021-10-20",
+        "end_date": "2022-12-14",
+        "duration_months": 14,
+        "is_current": false,
+        "industry": "Transportation",
+        "company_size": "5001-10000",
+        "description": "Built computer vision models for our product's image moderation feature using PyTorch — fine-tuned ResNet variants on a labeled dataset of ~200K images. Set up the training pipeline (data loading, augmentation, evaluation) and the inference service. Most of my project work has been in CV; I'm now interested in transitioning toward NLP/LLM work but my professional experience there is limited."
+      },
+      {
+        "company": "Observe.AI",
+        "title": "Senior Software Engineer (ML)",
+        "start_date": "2020-10-25",
+        "end_date": "2021-10-20",
+        "duration_months": 12,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Built NLP pipelines for sentiment analysis and document classification — primarily for an internal feedback-analytics dashboard. Started with sklearn-based bag-of-words models, then moved to transformer-based classifiers (DistilBERT) for the harder classes. Comfortable with PyTorch and Hugging Face but most of my training experience has been on small datasets and pre-trained model fine-tuning, not from-scratch model design."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Thapar University",
+        "degree": "B.Tech",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2009,
+        "end_year": 2012,
+        "grade": "8.43 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 27,
+        "duration_months": 39
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 8
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 56,
+        "duration_months": 20
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "advanced",
+        "endorsements": 35,
+        "duration_months": 54
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "advanced",
+        "endorsements": 25,
+        "duration_months": 31
+      },
+      {
+        "name": "Six Sigma",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 13
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "advanced",
+        "endorsements": 27,
+        "duration_months": 47
+      },
+      {
+        "name": "Kafka",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 28
+      },
+      {
+        "name": "LlamaIndex",
+        "proficiency": "advanced",
+        "endorsements": 11,
+        "duration_months": 38
+      },
+      {
+        "name": "Agile",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 9
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 46,
+        "duration_months": 46
+      },
+      {
+        "name": "MLflow",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 8
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 24
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "advanced",
+        "endorsements": 29,
+        "duration_months": 35
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "advanced",
+        "endorsements": 35,
+        "duration_months": 19
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 27
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 22
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 56.3,
+      "signup_date": "2026-01-23",
+      "last_active_date": "2026-05-27",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 210,
+      "applications_submitted_30d": 2,
+      "recruiter_response_rate": 0.5,
+      "avg_response_time_hours": 11.3,
+      "skill_assessment_scores": {
+        "Statistical Modeling": 54.7,
+        "MLOps": 62.0,
+        "Prompt Engineering": 63.8,
+        "Embeddings": 59.4,
+        "Qdrant": 86.6
+      },
+      "connection_count": 369,
+      "endorsements_received": 25,
+      "notice_period_days": 90,
+      "expected_salary_range_inr_lpa": {
+        "min": 19.0,
+        "max": 35.6,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 683,
+      "saved_by_recruiters_30d": 42,
+      "interview_completion_rate": 0.83,
+      "offer_acceptance_rate": 0.63,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 8.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 1057,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0032887",
+    "profile": {
+      "anonymized_name": "Ved Bose",
+      "headline": "ML Engineer | Building ML-powered solutions",
+      "summary": "Data scientist / ML engineer with 6.1 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've been working on recommendation-style features but lighter on the deep-learning side — mostly classical methods like collaborative filtering and gradient-boosted models. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. Looking for a role where I can step up to more end-to-end ownership of ML systems, not just modeling.",
+      "location": "Singapore",
+      "country": "Singapore",
+      "years_of_experience": 6.1,
+      "current_title": "ML Engineer",
+      "current_company": "Niramai",
+      "current_company_size": "51-200",
+      "current_industry": "HealthTech AI"
+    },
+    "career_history": [
+      {
+        "company": "Niramai",
+        "title": "ML Engineer",
+        "start_date": "2022-05-18",
+        "end_date": null,
+        "duration_months": 49,
+        "is_current": true,
+        "industry": "HealthTech AI",
+        "company_size": "51-200",
+        "description": "Worked on customer-facing predictive modeling for an e-commerce platform — churn prediction, conversion likelihood, lifetime value estimation. Used scikit-learn and XGBoost; main models were gradient-boosted trees with ~80 hand-engineered features. The work was split roughly 60/40 between modeling and data prep / SQL. The churn model is now used by the retention team, though my role was more on the modeling side than the productionization."
+      },
+      {
+        "company": "Wysa",
+        "title": "ML Engineer",
+        "start_date": "2020-05-28",
+        "end_date": "2022-05-18",
+        "duration_months": 24,
+        "is_current": false,
+        "industry": "HealthTech AI",
+        "company_size": "51-200",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      }
+    ],
+    "education": [
+      {
+        "institution": "RV College of Engineering",
+        "degree": "B.Sc",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2005,
+        "end_year": 2009,
+        "grade": "9.10 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "LlamaIndex",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 13
+      },
+      {
+        "name": "Kubernetes",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 8
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 22
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 16
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 55
+      },
+      {
+        "name": "Microservices",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 4
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "advanced",
+        "endorsements": 47,
+        "duration_months": 37
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 25,
+        "duration_months": 24
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 22
+      },
+      {
+        "name": "TTS",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 23
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "advanced",
+        "endorsements": 51,
+        "duration_months": 30
+      },
+      {
+        "name": "Rust",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 11
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 24
+      }
+    ],
+    "certifications": [
+      {
+        "name": "NLP Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2024
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 91.3,
+      "signup_date": "2024-04-20",
+      "last_active_date": "2026-05-25",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 25,
+      "applications_submitted_30d": 6,
+      "recruiter_response_rate": 0.81,
+      "avg_response_time_hours": 8.6,
+      "skill_assessment_scores": {
+        "Reinforcement Learning": 63.5,
+        "Forecasting": 85.1
+      },
+      "connection_count": 210,
+      "endorsements_received": 50,
+      "notice_period_days": 45,
+      "expected_salary_range_inr_lpa": {
+        "min": 18.7,
+        "max": 38.0,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": false,
+      "github_activity_score": 51.8,
+      "search_appearance_30d": 208,
+      "saved_by_recruiters_30d": 32,
+      "interview_completion_rate": 0.92,
+      "offer_acceptance_rate": 0.45,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 11.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 722,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0070808",
+    "profile": {
+      "anonymized_name": "Vihaan Shah",
+      "headline": "Junior ML Engineer | 6.8 yrs in analytics & ML",
+      "summary": "Data scientist / ML engineer with 6.8 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've been working on recommendation-style features but lighter on the deep-learning side — mostly classical methods like collaborative filtering and gradient-boosted models. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I want to grow into senior AI engineering — get serious about LLMs and retrieval beyond the surface level.",
+      "location": "Sydney",
+      "country": "Australia",
+      "years_of_experience": 6.8,
+      "current_title": "Junior ML Engineer",
+      "current_company": "HCL",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "HCL",
+        "title": "Junior ML Engineer",
+        "start_date": "2023-06-12",
+        "end_date": null,
+        "duration_months": 36,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Worked on customer-facing predictive modeling for an e-commerce platform — churn prediction, conversion likelihood, lifetime value estimation. Used scikit-learn and XGBoost; main models were gradient-boosted trees with ~80 hand-engineered features. The work was split roughly 60/40 between modeling and data prep / SQL. The churn model is now used by the retention team, though my role was more on the modeling side than the productionization."
+      },
+      {
+        "company": "Krutrim",
+        "title": "Junior ML Engineer",
+        "start_date": "2020-03-29",
+        "end_date": "2023-06-12",
+        "duration_months": 39,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Built NLP pipelines for sentiment analysis and document classification — primarily for an internal feedback-analytics dashboard. Started with sklearn-based bag-of-words models, then moved to transformer-based classifiers (DistilBERT) for the harder classes. Comfortable with PyTorch and Hugging Face but most of my training experience has been on small datasets and pre-trained model fine-tuning, not from-scratch model design."
+      },
+      {
+        "company": "Rephrase.ai",
+        "title": "Senior Software Engineer (ML)",
+        "start_date": "2019-09-24",
+        "end_date": "2020-03-22",
+        "duration_months": 6,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "11-50",
+        "description": "Worked on customer-facing predictive modeling for an e-commerce platform — churn prediction, conversion likelihood, lifetime value estimation. Used scikit-learn and XGBoost; main models were gradient-boosted trees with ~80 hand-engineered features. The work was split roughly 60/40 between modeling and data prep / SQL. The churn model is now used by the retention team, though my role was more on the modeling side than the productionization."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Christ University",
+        "degree": "M.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2006,
+        "end_year": 2010,
+        "grade": "75%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 13
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "advanced",
+        "endorsements": 40,
+        "duration_months": 40
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 28
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 11
+      },
+      {
+        "name": "Photoshop",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 32
+      },
+      {
+        "name": "Speech Recognition",
+        "proficiency": "advanced",
+        "endorsements": 31,
+        "duration_months": 51
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 16
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "advanced",
+        "endorsements": 40,
+        "duration_months": 53
+      },
+      {
+        "name": "Deep Learning",
+        "proficiency": "advanced",
+        "endorsements": 49,
+        "duration_months": 45
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 8
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "advanced",
+        "endorsements": 56,
+        "duration_months": 39
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 21
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 7,
+        "duration_months": 26
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 16
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 9
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 79.5,
+      "signup_date": "2024-12-01",
+      "last_active_date": "2026-05-18",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 102,
+      "applications_submitted_30d": 9,
+      "recruiter_response_rate": 0.31,
+      "avg_response_time_hours": 102.8,
+      "skill_assessment_scores": {},
+      "connection_count": 595,
+      "endorsements_received": 13,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 22.9,
+        "max": 34.6,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": false,
+      "github_activity_score": 46.1,
+      "search_appearance_30d": 439,
+      "saved_by_recruiters_30d": 15,
+      "interview_completion_rate": 0.74,
+      "offer_acceptance_rate": 0.38,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        0,
+        2
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 1046,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0072660",
+    "profile": {
+      "anonymized_name": "Aarohi Sen",
+      "headline": "Machine Learning Engineer | ML, NLP, Recommendation Systems",
+      "summary": "Machine learning engineer with 7.1 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I built our semantic search infrastructure from scratch — sentence-transformers, FAISS, the works. I've spent enough time debugging production ranking issues to know which signals matter and which are noise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Berlin",
+      "country": "Germany",
+      "years_of_experience": 7.1,
+      "current_title": "Machine Learning Engineer",
+      "current_company": "Unacademy",
+      "current_company_size": "5001-10000",
+      "current_industry": "EdTech"
+    },
+    "career_history": [
+      {
+        "company": "Unacademy",
+        "title": "Machine Learning Engineer",
+        "start_date": "2024-12-03",
+        "end_date": null,
+        "duration_months": 18,
+        "is_current": true,
+        "industry": "EdTech",
+        "company_size": "5001-10000",
+        "description": "Built and operated production ML pipelines using MLflow for experiment tracking, Kubeflow for orchestration, and our internal feature store. My main project was a churn prediction model that's now used by the customer success team to prioritize outreach. Designed the model monitoring stack: data drift detection, prediction distribution checks, and alerting. Mentored a junior engineer through their first end-to-end ML project last year."
+      },
+      {
+        "company": "Adobe",
+        "title": "NLP Engineer",
+        "start_date": "2020-10-25",
+        "end_date": "2024-12-03",
+        "duration_months": 50,
+        "is_current": false,
+        "industry": "Software",
+        "company_size": "10001+",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Glance",
+        "title": "Machine Learning Engineer",
+        "start_date": "2019-05-04",
+        "end_date": "2020-08-26",
+        "duration_months": 16,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "501-1000",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "SRM University",
+        "degree": "M.Tech",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2001,
+        "end_year": 2005,
+        "grade": "8.11 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Massachusetts Institute of Technology",
+        "degree": "B.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2003,
+        "end_year": 2006,
+        "grade": "6.77 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 51,
+        "duration_months": 22
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "expert",
+        "endorsements": 36,
+        "duration_months": 90
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "expert",
+        "endorsements": 11,
+        "duration_months": 51
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "expert",
+        "endorsements": 34,
+        "duration_months": 46
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 44
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 26
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "expert",
+        "endorsements": 52,
+        "duration_months": 79
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "expert",
+        "endorsements": 8,
+        "duration_months": 64
+      },
+      {
+        "name": "REST APIs",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 25
+      },
+      {
+        "name": "QLoRA",
+        "proficiency": "expert",
+        "endorsements": 32,
+        "duration_months": 50
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "expert",
+        "endorsements": 24,
+        "duration_months": 48
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "expert",
+        "endorsements": 5,
+        "duration_months": 36
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 28
+      },
+      {
+        "name": "Python",
+        "proficiency": "expert",
+        "endorsements": 19,
+        "duration_months": 67
+      },
+      {
+        "name": "Agile",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 24
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 9,
+        "duration_months": 54
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 18
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 17
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 76.5,
+      "signup_date": "2025-11-19",
+      "last_active_date": "2026-05-24",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 51,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.53,
+      "avg_response_time_hours": 49.3,
+      "skill_assessment_scores": {},
+      "connection_count": 981,
+      "endorsements_received": 26,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 33.3,
+        "max": 40.2,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": false,
+      "github_activity_score": null,
+      "search_appearance_30d": 1003,
+      "saved_by_recruiters_30d": 31,
+      "interview_completion_rate": 0.88,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 13.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        1,
+        2
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 213,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0090300",
+    "profile": {
+      "anonymized_name": "Advik Sen",
+      "headline": "AI Research Engineer | Data Science & ML enthusiast",
+      "summary": "Data scientist / ML engineer with 5.3 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. My current role is split between dashboarding/analytics and shipping production ML models. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I'm looking to grow into a deeper AI/ML system-building role — closer to retrieval, LLMs, and modern ranking systems.",
+      "location": "San Francisco",
+      "country": "USA",
+      "years_of_experience": 5.3,
+      "current_title": "AI Research Engineer",
+      "current_company": "Dream11",
+      "current_company_size": "1001-5000",
+      "current_industry": "Gaming"
+    },
+    "career_history": [
+      {
+        "company": "Dream11",
+        "title": "AI Research Engineer",
+        "start_date": "2023-10-10",
+        "end_date": null,
+        "duration_months": 32,
+        "is_current": true,
+        "industry": "Gaming",
+        "company_size": "1001-5000",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      },
+      {
+        "company": "HCL",
+        "title": "Computer Vision Engineer",
+        "start_date": "2022-08-16",
+        "end_date": "2023-10-10",
+        "duration_months": 14,
+        "is_current": false,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Built recommendation-style features at a mid-stage startup — lighter weight than ranking systems at FAANG, but production. Used a combination of collaborative filtering (matrix factorization in implicit-feedback library) and gradient-boosted re-ranking over engagement signals. Pure ML side of the work; production deployment was handled by the platform team."
+      },
+      {
+        "company": "Freshworks",
+        "title": "AI Specialist",
+        "start_date": "2021-02-22",
+        "end_date": "2022-06-17",
+        "duration_months": 16,
+        "is_current": false,
+        "industry": "SaaS",
+        "company_size": "5001-10000",
+        "description": "Built NLP pipelines for sentiment analysis and document classification — primarily for an internal feedback-analytics dashboard. Started with sklearn-based bag-of-words models, then moved to transformer-based classifiers (DistilBERT) for the harder classes. Comfortable with PyTorch and Hugging Face but most of my training experience has been on small datasets and pre-trained model fine-tuning, not from-scratch model design."
+      }
+    ],
+    "education": [
+      {
+        "institution": "VIT Vellore",
+        "degree": "M.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2001,
+        "end_year": 2006,
+        "grade": "84%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Delhi College of Engineering",
+        "degree": "M.S.",
+        "field_of_study": "Information Technology",
+        "start_year": 2008,
+        "end_year": 2012,
+        "grade": "8.34 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Data Science",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 10
+      },
+      {
+        "name": "MLflow",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 15
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 19
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "advanced",
+        "endorsements": 55,
+        "duration_months": 30
+      },
+      {
+        "name": "BentoML",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 35
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 16
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 34
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 19
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 23
+      },
+      {
+        "name": "CI/CD",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 35
+      },
+      {
+        "name": "Hadoop",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 10
+      },
+      {
+        "name": "ASR",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 34
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 34
+      },
+      {
+        "name": "Milvus",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 26
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 99.1,
+      "signup_date": "2024-07-24",
+      "last_active_date": "2026-05-24",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 23,
+      "applications_submitted_30d": 9,
+      "recruiter_response_rate": 0.94,
+      "avg_response_time_hours": 3.9,
+      "skill_assessment_scores": {
+        "Fine-tuning LLMs": 70.1,
+        "Feature Engineering": 56.1
+      },
+      "connection_count": 1266,
+      "endorsements_received": 129,
+      "notice_period_days": 120,
+      "expected_salary_range_inr_lpa": {
+        "min": 35.8,
+        "max": 40.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 322,
+      "saved_by_recruiters_30d": 26,
+      "interview_completion_rate": 0.72,
+      "offer_acceptance_rate": null,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 1060,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0092989",
+    "profile": {
+      "anonymized_name": "Naina Sharma",
+      "headline": "Data Scientist | Building ML-powered solutions",
+      "summary": "Data scientist / ML engineer with 6.1 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. I've spent the last couple of years building NLP-based classification and information extraction pipelines. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. Looking for a role where I can step up to more end-to-end ownership of ML systems, not just modeling.",
+      "location": "Dubai",
+      "country": "UAE",
+      "years_of_experience": 6.1,
+      "current_title": "Data Scientist",
+      "current_company": "PharmEasy",
+      "current_company_size": "5001-10000",
+      "current_industry": "HealthTech"
+    },
+    "career_history": [
+      {
+        "company": "PharmEasy",
+        "title": "Data Scientist",
+        "start_date": "2023-10-10",
+        "end_date": null,
+        "duration_months": 32,
+        "is_current": true,
+        "industry": "HealthTech",
+        "company_size": "5001-10000",
+        "description": "Built recommendation-style features at a mid-stage startup — lighter weight than ranking systems at FAANG, but production. Used a combination of collaborative filtering (matrix factorization in implicit-feedback library) and gradient-boosted re-ranking over engagement signals. Pure ML side of the work; production deployment was handled by the platform team."
+      },
+      {
+        "company": "Infosys",
+        "title": "Junior ML Engineer",
+        "start_date": "2020-06-27",
+        "end_date": "2023-10-10",
+        "duration_months": 40,
+        "is_current": false,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Worked on customer-facing predictive modeling for an e-commerce platform — churn prediction, conversion likelihood, lifetime value estimation. Used scikit-learn and XGBoost; main models were gradient-boosted trees with ~80 hand-engineered features. The work was split roughly 60/40 between modeling and data prep / SQL. The churn model is now used by the retention team, though my role was more on the modeling side than the productionization."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Manipal Institute of Technology",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Science",
+        "start_year": 2004,
+        "end_year": 2008,
+        "grade": "9.17 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "SRM Chennai",
+        "degree": "M.Tech",
+        "field_of_study": "Machine Learning",
+        "start_year": 2000,
+        "end_year": 2005,
+        "grade": "69%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Qdrant",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 20
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 42,
+        "duration_months": 47
+      },
+      {
+        "name": "TensorFlow",
+        "proficiency": "advanced",
+        "endorsements": 22,
+        "duration_months": 46
+      },
+      {
+        "name": "BM25",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 20
+      },
+      {
+        "name": "Photoshop",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 17
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 26
+      },
+      {
+        "name": "Flask",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 22
+      },
+      {
+        "name": "MongoDB",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 17
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "advanced",
+        "endorsements": 54,
+        "duration_months": 35
+      },
+      {
+        "name": "GANs",
+        "proficiency": "advanced",
+        "endorsements": 55,
+        "duration_months": 54
+      },
+      {
+        "name": "RAG",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 32
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 25
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 29
+      },
+      {
+        "name": "ASR",
+        "proficiency": "advanced",
+        "endorsements": 12,
+        "duration_months": 55
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 92.8,
+      "signup_date": "2024-06-07",
+      "last_active_date": "2026-05-25",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 89,
+      "applications_submitted_30d": 14,
+      "recruiter_response_rate": 0.69,
+      "avg_response_time_hours": 113.1,
+      "skill_assessment_scores": {
+        "Statistical Modeling": 52.1,
+        "TensorFlow": 52.4,
+        "Object Detection": 44.6,
+        "GANs": 49.6,
+        "Data Science": 41.3
+      },
+      "connection_count": 391,
+      "endorsements_received": 75,
+      "notice_period_days": 90,
+      "expected_salary_range_inr_lpa": {
+        "min": 31.7,
+        "max": 53.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": false,
+      "github_activity_score": null,
+      "search_appearance_30d": 610,
+      "saved_by_recruiters_30d": 29,
+      "interview_completion_rate": 0.99,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 728,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0094482",
+    "profile": {
+      "anonymized_name": "Avni Mittal",
+      "headline": "Junior ML Engineer | Data Science & ML enthusiast",
+      "summary": "Data scientist / ML engineer with 6.4 years of experience in applied machine learning. Worked across predictive modeling, NLP, analytics, and lightweight deployment workflows. Most of my recent work has been on predictive modeling for customer-facing problems — churn, conversion, lifetime value. I'm strongest at the modeling and analysis side; comfortable with Python, scikit-learn, pandas, and standard MLOps tooling, but I'm still building depth on the engineering and infra side of production ML. I want to grow into senior AI engineering — get serious about LLMs and retrieval beyond the surface level.",
+      "location": "Singapore",
+      "country": "Singapore",
+      "years_of_experience": 6.4,
+      "current_title": "Junior ML Engineer",
+      "current_company": "TCS",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "TCS",
+        "title": "Junior ML Engineer",
+        "start_date": "2024-06-06",
+        "end_date": null,
+        "duration_months": 24,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Built NLP pipelines for sentiment analysis and document classification — primarily for an internal feedback-analytics dashboard. Started with sklearn-based bag-of-words models, then moved to transformer-based classifiers (DistilBERT) for the harder classes. Comfortable with PyTorch and Hugging Face but most of my training experience has been on small datasets and pre-trained model fine-tuning, not from-scratch model design."
+      },
+      {
+        "company": "Zomato",
+        "title": "Senior Software Engineer (ML)",
+        "start_date": "2020-02-28",
+        "end_date": "2024-06-06",
+        "duration_months": 52,
+        "is_current": false,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Worked on time-series forecasting models for supply-chain demand prediction at a logistics company. Built models in Prophet, LightGBM, and (for one project) a small LSTM — the LightGBM model ended up shipping. Also ran some reinforcement learning experiments for dynamic pricing but those didn't make it to production. The work was a mix of modeling, analysis, and stakeholder communication with the operations team."
+      }
+    ],
+    "education": [
+      {
+        "institution": "COEP Pune",
+        "degree": "B.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2005,
+        "end_year": 2010,
+        "grade": "77%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "IIT Delhi",
+        "degree": "Ph.D",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2015,
+        "end_year": 2019,
+        "grade": "76%",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Rust",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 17
+      },
+      {
+        "name": "BentoML",
+        "proficiency": "advanced",
+        "endorsements": 57,
+        "duration_months": 29
+      },
+      {
+        "name": "Figma",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 8
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 22
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 35
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "advanced",
+        "endorsements": 23,
+        "duration_months": 34
+      },
+      {
+        "name": "Next.js",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 18
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 10
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 41,
+        "duration_months": 39
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 4,
+        "duration_months": 44
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 13
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 97.9,
+      "signup_date": "2026-04-06",
+      "last_active_date": "2026-05-25",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 151,
+      "applications_submitted_30d": 3,
+      "recruiter_response_rate": 0.85,
+      "avg_response_time_hours": 5.2,
+      "skill_assessment_scores": {
+        "BentoML": 72.6,
+        "Data Science": 58.6
+      },
+      "connection_count": 465,
+      "endorsements_received": 13,
+      "notice_period_days": 90,
+      "expected_salary_range_inr_lpa": {
+        "min": 19.1,
+        "max": 47.2,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 438,
+      "saved_by_recruiters_30d": 49,
+      "interview_completion_rate": 0.81,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 1.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 0,
+    "fabrication_bandwidth": 691,
+    "possible_fabrication": true
+  }
+]

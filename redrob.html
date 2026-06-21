@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RedRob — Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@1,9..144,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        /* Light mode tokens */
+        "primary":           "#005243",
+        "primary-container": "#1a6b5a",
+        "primary-fixed":     "#a6f1db",
+        "primary-fixed-dim": "#8ad5c0",
+        "inverse-primary":   "#8ad5c0",
+        "on-primary":        "#ffffff",
+        "on-primary-container": "#9de9d3",
+        "on-primary-fixed":  "#002019",
+        "surface":           "#f7faf7",
+        "surface-bright":    "#f7faf7",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low":    "#f1f4f1",
+        "surface-container":        "#ecefec",
+        "surface-container-high":   "#e6e9e6",
+        "surface-container-highest":"#e0e3e0",
+        "surface-variant":   "#e0e3e0",
+        "background":        "#f7faf7",
+        "on-surface":        "#0a0c0b",
+        "on-surface-variant":"#3f4945",
+        "on-background":     "#0a0c0b",
+        "outline":           "#6f7975",
+        "outline-variant":   "#bec9c4",
+        "inverse-surface":   "#2d3130",
+        "inverse-on-surface":"#eef1ee",
+        "secondary":         "#5846c8",
+        "secondary-container":"#7161e2",
+        "secondary-fixed":   "#e4dfff",
+        "secondary-fixed-dim":"#c7bfff",
+        "on-secondary":      "#ffffff",
+        "on-secondary-container":"#fffbff",
+        "on-secondary-fixed":"#170065",
+        "tertiary":          "#6a3d00",
+        "tertiary-container":"#8b5200",
+        "tertiary-fixed":    "#ffdcbd",
+        "tertiary-fixed-dim":"#ffb86d",
+        "on-tertiary":       "#ffffff",
+        "on-tertiary-container":"#ffd2a7",
+        "on-tertiary-fixed": "#2c1600",
+        "error":             "#ba1a1a",
+        "error-container":   "#ffdad6",
+        "on-error":          "#ffffff",
+        "on-error-container":"#93000a",
+        "surface-tint":      "#196a59",
+      },
+      fontFamily: {
+        "display":   ["Clash Display", "sans-serif"],
+        "body":      ["DM Sans", "sans-serif"],
+        "mono":      ["JetBrains Mono", "monospace"],
+        "editorial": ["Fraunces", "serif"],
+      },
+      spacing: {
+        "gutter":   "24px",
+        "desktop":  "48px",
+      },
+      borderRadius: {
+        "DEFAULT": "0.125rem",
+        "lg":      "0.25rem",
+        "xl":      "0.5rem",
+        "2xl":     "0.75rem",
+      }
+    }
+  }
+}
+</script>
+<style>
+  /* ─── Base ────────────────────────────────────── */
+  *,*::before,*::after{box-sizing:border-box}
+  html{font-family:'DM Sans',sans-serif}
+  body{margin:0;background:#f7faf7;color:#0a0c0b;transition:background .3s,color .3s}
+  html.dark body{background:#0d100f;color:#eef1ee}
+
+  /* ─── Glass panel ─────────────────────────────── */
+  .glass{
+    background:rgba(255,255,255,0.65);
+    backdrop-filter:blur(16px);
+    border:1px solid rgba(0,82,67,0.13);
+    transition:border-color .2s,background .2s,transform .25s cubic-bezier(.16,1,.3,1);
+  }
+  html.dark .glass{
+    background:rgba(18,22,20,0.5);
+    border:1px solid rgba(138,213,192,0.12);
+  }
+  .glass:hover{border-color:rgba(0,82,67,0.35)}
+  html.dark .glass:hover{border-color:rgba(138,213,192,0.3);background:rgba(18,22,20,0.7)}
+
+  /* ─── Scrollbar ───────────────────────────────── */
+  .scroll::-webkit-scrollbar{width:4px}
+  .scroll::-webkit-scrollbar-track{background:transparent}
+  .scroll::-webkit-scrollbar-thumb{background:#bec9c4;border-radius:10px}
+  html.dark .scroll::-webkit-scrollbar-thumb{background:#3f4945}
+
+  /* ─── Material Icons ──────────────────────────── */
+  .material-symbols-outlined{
+    font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
+    vertical-align:middle;line-height:1;
+  }
+
+  /* ─── Sidebar nav active ──────────────────────── */
+  .nav-active{
+    color:#005243;
+    background:rgba(166,241,219,0.18);
+    border-right:3px solid #005243;
+  }
+  html.dark .nav-active{
+    color:#8ad5c0;
+    background:rgba(138,213,192,0.08);
+    border-right:3px solid #8ad5c0;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+    color:#3f4945;cursor:pointer;
+    transition:color .15s,background .15s;
+    border-right:3px solid transparent;
+  }
+  .nav-item:hover{color:#005243;background:rgba(0,82,67,0.06)}
+  html.dark .nav-item{color:#89938f}
+  html.dark .nav-item:hover{color:#8ad5c0;background:rgba(255,255,255,0.05)}
+
+  /* ─── Funnel layers ───────────────────────────── */
+  .funnel-row{display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;transition:background .15s}
+
+  /* ─── Status badges ───────────────────────────── */
+  .badge-clean{background:#065f46;color:#ecfdf5;font-weight:700}
+  .badge-flag {background:#92400e;color:#fffbeb;font-weight:700}
+
+  /* ─── Progress bars ───────────────────────────── */
+  .prog-track{height:4px;border-radius:2px;background:rgba(0,82,67,0.1);overflow:hidden}
+  html.dark .prog-track{background:rgba(255,255,255,0.06)}
+  .prog-fill{height:100%;border-radius:2px;background:#005243;transition:width .5s ease}
+  html.dark .prog-fill{background:#8ad5c0}
+
+  /* ─── Toggle switch ───────────────────────────── */
+  .toggle-track{
+    position:relative;width:44px;height:24px;
+    border-radius:12px;background:#bec9c4;
+    cursor:pointer;transition:background .2s;border:none;
+  }
+  .toggle-track.on{background:#005243}
+  html.dark .toggle-track.on{background:#8ad5c0}
+  .toggle-knob{
+    position:absolute;top:3px;left:3px;
+    width:18px;height:18px;border-radius:50%;
+    background:#fff;transition:transform .2s;
+  }
+  .toggle-track.on .toggle-knob{transform:translateX(20px)}
+
+  /* ─── Table rows ──────────────────────────────── */
+  .trow{transition:background .12s;cursor:pointer}
+  .trow:hover{background:rgba(0,82,67,0.04)}
+  html.dark .trow:hover{background:rgba(138,213,192,0.04)}
+  .trow.selected{background:rgba(0,82,67,0.08);border-left:4px solid #005243}
+  html.dark .trow.selected{background:rgba(138,213,192,0.08);border-left:4px solid #8ad5c0}
+
+  /* ─── Glow ────────────────────────────────────── */
+  .teal-glow{filter:drop-shadow(0 0 12px rgba(0,82,67,0.25))}
+  html.dark .teal-glow{filter:drop-shadow(0 0 12px rgba(138,213,192,0.22))}
+
+  /* ─── Terminal ────────────────────────────────── */
+  .terminal{color:#8ad5c0;text-shadow:0 0 4px rgba(138,213,192,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6}
+
+  /* ─── Mini bar chart ──────────────────────────── */
+  .bar-col{display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,82,67,0.1);border-radius:2px 2px 0 0}
+  html.dark .bar-col{background:rgba(138,213,192,0.1)}
+  .bar-fill{background:#005243;border-radius:2px 2px 0 0}
+  html.dark .bar-fill{background:#8ad5c0}
+
+  /* ─── Section display ─────────────────────────── */
+  .page{display:none}
+  .page.active{display:block}
+
+  /* ─── Insight italic ──────────────────────────── */
+  .insight{font-family:'Fraunces',serif;font-style:italic}
+
+  /* ─── Animations ──────────────────────────────── */
+  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+  .pulse-dot{animation:pulse-dot 2s ease-in-out infinite}
+  @keyframes term-blink{0%,100%{opacity:1}50%{opacity:0}}
+  .blink{animation:term-blink 1s step-end infinite}
+
+  /* ─── BG orbs ─────────────────────────────────── */
+  .orb{position:fixed;border-radius:50%;pointer-events:none;z-index:-1;filter:blur(120px)}
+</style>
+</head>
+<body class="overflow-x-hidden">
+
+<!-- BG orbs -->
+<div class="orb" style="width:50vw;height:50vh;top:-15vh;right:-15vw;background:rgba(0,82,67,0.05)"></div>
+<div class="orb" style="width:50vw;height:50vh;bottom:-15vh;left:-15vw;background:rgba(88,70,200,0.04)"></div>
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════ -->
+<aside id="sidebar" style="position:fixed;left:0;top:0;bottom:0;width:256px;z-index:50;display:flex;flex-direction:column;padding:32px 16px;border-right:1px solid rgba(190,201,196,0.35);background:rgba(247,250,247,0.92);backdrop-filter:blur(20px)">
+  <div style="margin-bottom:40px;padding:0 8px">
+    <div style="font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;color:#005243;line-height:1;letter-spacing:-.02em" id="logo-text">RedRob</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#6f7975;margin-top:4px">Command Center</div>
+  </div>
+
+  <nav style="flex:1;display:flex;flex-direction:column;gap:4px">
+    <div class="nav-item nav-active" data-page="overview" onclick="switchPage('overview',this)">
+      <span class="material-symbols-outlined" style="font-size:20px">dashboard</span>Overview
+    </div>
+    <div class="nav-item" data-page="candidates" onclick="switchPage('candidates',this)">
+      <span class="material-symbols-outlined" style="font-size:20px">groups</span>Ranked Candidates
+    </div>
+    <div class="nav-item" data-page="detail" onclick="switchPage('detail',this)">
+      <span class="material-symbols-outlined" style="font-size:20px">person_search</span>Candidate Detail
+    </div>
+    <div class="nav-item" data-page="health" onclick="switchPage('health',this)">
+      <span class="material-symbols-outlined" style="font-size:20px">monitor_heart</span>System Health
+    </div>
+  </nav>
+
+  <button onclick="switchPage('overview',document.querySelector('[data-page=overview]'))" style="margin-top:auto;background:#005243;color:#fff;border:none;padding:14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:opacity .2s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+    Start New Run
+  </button>
+</aside>
+
+<!-- ═══════════════════════════════════════════════
+     TOP BAR
+════════════════════════════════════════════════ -->
+<header style="position:fixed;top:0;right:0;left:256px;height:64px;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid rgba(190,201,196,0.25);background:rgba(247,250,247,0.88);backdrop-filter:blur(12px)">
+  <div style="display:flex;align-items:center;gap:12px;background:rgba(236,239,236,0.9);padding:8px 16px;border-radius:999px;border:1px solid rgba(190,201,196,0.2);width:320px">
+    <span class="material-symbols-outlined" style="font-size:20px;color:#6f7975">search</span>
+    <input placeholder="Search pipelines, candidates…" style="background:transparent;border:none;outline:none;font-size:14px;width:100%;font-family:'DM Sans',sans-serif;color:#0a0c0b" id="search-input"/>
+  </div>
+  <div style="display:flex;align-items:center;gap:20px">
+    <span class="material-symbols-outlined" style="color:#3f4945;cursor:pointer;font-size:22px" title="Notifications">notifications</span>
+    <span class="material-symbols-outlined" style="color:#3f4945;cursor:pointer;font-size:22px" onclick="toggleTheme()" title="Toggle theme" id="theme-icon">contrast</span>
+    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#a6f1db,#005243);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#002019;border:2px solid rgba(0,82,67,0.2)">A</div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN CANVAS
+════════════════════════════════════════════════ -->
+<main style="margin-left:256px;padding-top:64px;min-height:100vh">
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  PAGE 1 — OVERVIEW                          ║
+     ╚══════════════════════════════════════════════╝ -->
+<div id="page-overview" class="page active" style="padding:48px">
+
+  <!-- Hero -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px">
+    <div>
+      <h2 style="font-family:'Clash Display',sans-serif;font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:0 0 8px">Systems Overview</h2>
+      <p class="insight" style="font-size:18px;color:#6f7975;max-width:520px;margin:0;line-height:1.6">"Real-time intelligence dashboard monitoring candidate flow, heuristic survival rates, and risk distribution across the active ingestion pipeline."</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#005243;background:rgba(166,241,219,0.2);padding:4px 12px;border-radius:4px;border:1px solid rgba(0,82,67,0.18)">SYSTEM STATUS: OPTIMAL</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975;text-transform:uppercase">LATENCY: 42ms</span>
+    </div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:40px">
+    <div class="glass" style="padding:24px;border-radius:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6f7975;margin-bottom:16px">Total Processed</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;letter-spacing:-.02em">12,842</span>
+        <span style="font-size:12px;color:#005243;font-weight:700">+12.4%</span>
+      </div>
+    </div>
+    <div class="glass" style="padding:24px;border-radius:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6f7975;margin-bottom:16px">L1 Rejects</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#ba1a1a;letter-spacing:-.02em">4,109</span>
+        <span style="font-size:12px;color:rgba(186,26,26,.55);font-weight:700">32.0%</span>
+      </div>
+    </div>
+    <div class="glass" style="padding:24px;border-radius:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6f7975;margin-bottom:16px">Gate Survivors</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#005243;letter-spacing:-.02em">8,733</span>
+        <span style="font-size:12px;color:#6f7975;font-weight:700">68.0%</span>
+      </div>
+    </div>
+    <div class="glass" style="padding:24px;border-radius:12px;border-color:rgba(0,82,67,0.25);box-shadow:0 0 40px -12px rgba(0,82,67,0.1)">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6f7975;margin-bottom:16px">Final Shortlist</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#005243;letter-spacing:-.02em">214</span>
+        <span style="font-size:12px;color:#005243;font-weight:700">1.6% yield</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funnel + Insights -->
+  <div style="display:grid;grid-template-columns:8fr 4fr;gap:24px;margin-bottom:40px">
+
+    <!-- Funnel -->
+    <div class="glass" style="padding:32px;border-radius:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px">
+        <div>
+          <div style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600;margin-bottom:4px">Pipeline Funnel Visualization</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">Candidate Drop-off at Sequential Evaluation Layers</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:#6f7975;cursor:help">info</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <!-- L1 -->
+        <div class="funnel-row" style="width:100%;background:rgba(0,82,67,0.07);border:1px solid rgba(0,82,67,0.15);border-radius:12px 12px 0 0">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#005243;font-weight:700">L1: Automated Profile Scan</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700">12,842 <span style="font-size:10px;opacity:.5;font-weight:400">UNIT</span></span>
+        </div>
+        <!-- Drop pill -->
+        <div style="display:flex;justify-content:center;z-index:1;margin:-10px 0">
+          <div style="background:#fff;padding:4px 14px;border:1px solid rgba(190,201,196,.5);border-radius:999px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+            <span class="material-symbols-outlined" style="font-size:13px;color:#ba1a1a">arrow_downward</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#ba1a1a;font-weight:700;letter-spacing:.05em">32% ELIMINATED</span>
+          </div>
+        </div>
+        <!-- L2 -->
+        <div class="funnel-row" style="width:85%;background:rgba(0,82,67,0.18);border:1px solid rgba(0,82,67,0.2)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#005243;font-weight:700">L2: Technical Assessment Gate</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700">8,733 <span style="font-size:10px;opacity:.5;font-weight:400">UNIT</span></span>
+        </div>
+        <div style="display:flex;justify-content:center;z-index:1;margin:-10px 0">
+          <div style="background:#fff;padding:4px 14px;border:1px solid rgba(190,201,196,.5);border-radius:999px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+            <span class="material-symbols-outlined" style="font-size:13px;color:#ba1a1a">arrow_downward</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#ba1a1a;font-weight:700;letter-spacing:.05em">78% ELIMINATED</span>
+          </div>
+        </div>
+        <!-- L3 -->
+        <div class="funnel-row" style="width:60%;background:rgba(0,82,67,0.38);border:1px solid rgba(0,82,67,0.3)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#fff;font-weight:700">L3: Strategic Fit Review</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#fff">1,921 <span style="font-size:10px;opacity:.5;font-weight:400">UNIT</span></span>
+        </div>
+        <div style="display:flex;justify-content:center;z-index:1;margin:-10px 0">
+          <div style="background:#fff;padding:4px 14px;border:1px solid rgba(190,201,196,.5);border-radius:999px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+            <span class="material-symbols-outlined" style="font-size:13px;color:#ba1a1a">arrow_downward</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#ba1a1a;font-weight:700;letter-spacing:.05em">89% ELIMINATED</span>
+          </div>
+        </div>
+        <!-- Shortlist -->
+        <div onclick="switchPage('candidates',document.querySelector('[data-page=candidates]'))" style="width:30%;height:64px;background:#005243;display:flex;align-items:center;justify-content:center;border-radius:0 0 12px 12px;cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#fff;font-weight:700">FINAL SHORTLIST: 214</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div class="glass" style="padding:24px;border-radius:16px;flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
+          <span class="material-symbols-outlined" style="color:#5846c8">analytics</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#5846c8;font-weight:700">Neural Insights</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:24px">
+          <div style="border-left:2px solid rgba(88,70,200,0.3);padding:4px 16px">
+            <p class="insight" style="font-size:15px;color:#3f4945;margin:0 0 4px;line-height:1.55">"Significant variance detected in L1 rejection velocity compared to historical mean."</p>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">32% eliminated at L1 layer.</span>
+          </div>
+          <div style="border-left:2px solid rgba(0,82,67,0.3);padding:4px 16px">
+            <p class="insight" style="font-size:15px;color:#3f4945;margin:0 0 4px;line-height:1.55">"Dynamic evaluation scaling applied to L2 gates based on cohort quality distribution."</p>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">Adaptive threshold = μ + 0.5σ</span>
+          </div>
+          <div style="border-left:2px solid rgba(106,61,0,0.3);padding:4px 16px">
+            <p class="insight" style="font-size:15px;color:#3f4945;margin:0 0 4px;line-height:1.55">"Low entropy detected in candidate responses; increasing prompt complexity."</p>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">Entropy Score: 0.24 bits</span>
+          </div>
+        </div>
+      </div>
+      <!-- CTA -->
+      <div style="background:#005243;padding:24px;border-radius:16px;display:flex;flex-direction:column;gap:16px">
+        <p style="font-size:15px;font-weight:700;color:#fff;margin:0">Ready to ingest new data?</p>
+        <button style="width:100%;background:#fff;color:#005243;border:none;padding:12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#a6f1db'" onmouseout="this.style.background='#fff'">
+          Launch Intake Wizard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk + Table -->
+  <div style="display:grid;grid-template-columns:4fr 8fr;gap:24px">
+    <!-- Risk cards -->
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div class="glass" style="padding:24px;border-radius:16px;border-color:rgba(186,26,26,.18)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#ba1a1a;font-weight:700">Fraud Alerts</span>
+          <span style="background:rgba(186,26,26,.1);color:#ba1a1a;font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(186,26,26,.2);font-family:'JetBrains Mono',monospace">HIGH RISK</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between"><span style="font-size:14px;color:#3f4945">Linked Device ID Matches</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px">42</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:14px;color:#3f4945">VPN / Proxy Detected</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px">188</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:14px;color:#3f4945">Synthetic Identity Flags</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px">12</span></div>
+        </div>
+      </div>
+      <div class="glass" style="padding:24px;border-radius:16px;border-color:rgba(106,61,0,.18)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#6a3d00;font-weight:700">Data Sparsity</span>
+          <span style="background:rgba(106,61,0,.1);color:#6a3d00;font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(106,61,0,.2);font-family:'JetBrains Mono',monospace">NULL HEAVY</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between"><span style="font-size:14px;color:#3f4945">Missing Experience History</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px">814</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:14px;color:#3f4945">Unverifiable Contact</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px">2,104</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 table -->
+    <div class="glass" style="border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="padding:20px 24px;border-bottom:1px solid rgba(190,201,196,.2);display:flex;justify-content:space-between;align-items:center;background:rgba(241,244,241,.4)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700">Top 10 Performers Preview</span>
+        <button onclick="switchPage('candidates',document.querySelector('[data-page=candidates]'))" style="background:none;border:none;cursor:pointer;color:#005243;font-family:'JetBrains Mono',monospace;font-size:10px;display:flex;align-items:center;gap:4px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">
+          VIEW FULL REPORT <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+        </button>
+      </div>
+      <div class="scroll" style="overflow-y:auto;flex:1">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:rgba(241,244,241,.6)">
+              <th style="padding:14px 24px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;border-bottom:1px solid rgba(190,201,196,.15);font-weight:700">Candidate ID</th>
+              <th style="padding:14px 24px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;border-bottom:1px solid rgba(190,201,196,.15);font-weight:700">Score (α)</th>
+              <th style="padding:14px 24px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;border-bottom:1px solid rgba(190,201,196,.15);font-weight:700">Match %</th>
+              <th style="padding:14px 24px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;border-bottom:1px solid rgba(190,201,196,.15);font-weight:700">Status</th>
+            </tr>
+          </thead>
+          <tbody id="overview-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  PAGE 2 — RANKED CANDIDATES                 ║
+     ╚══════════════════════════════════════════════╝ -->
+<div id="page-candidates" class="page" style="height:calc(100vh - 64px);display:none;flex-direction:row;overflow:hidden">
+
+  <!-- Filter rail -->
+  <aside style="width:280px;min-height:100%;border-right:1px solid rgba(190,201,196,.3);padding:32px 24px;display:flex;flex-direction:column;gap:32px;overflow-y:auto" class="scroll" id="filter-rail">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#005243;margin-bottom:16px">Score Range</div>
+      <input type="range" min="0" max="100" value="70" style="width:100%;accent-color:#005243" id="score-range" oninput="document.getElementById('score-min').textContent='MIN: '+this.value"/>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700">
+        <span style="background:rgba(236,239,236,.9);padding:4px 8px;border-radius:4px" id="score-min">MIN: 70</span>
+        <span style="background:rgba(236,239,236,.9);padding:4px 8px;border-radius:4px">MAX: 100</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#005243;margin-bottom:16px">Fraud Detection</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.7);border:1px solid rgba(190,201,196,.2);margin-bottom:8px;cursor:pointer">
+        <span style="font-size:14px;font-weight:500">Verified Only</span>
+        <input type="checkbox" checked style="width:16px;height:16px;accent-color:#005243"/>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.7);border:1px solid rgba(190,201,196,.2);cursor:pointer">
+        <span style="font-size:14px;font-weight:500">Risk Flagged</span>
+        <input type="checkbox" style="width:16px;height:16px;accent-color:#005243"/>
+      </label>
+    </div>
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#005243;margin-bottom:16px">Target Domains</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="padding:6px 12px;background:rgba(236,239,236,.9);border:1px solid rgba(190,201,196,.4);border-radius:999px;font-size:11px;font-weight:700">LLM Architecture</span>
+        <span style="padding:6px 12px;background:rgba(0,82,67,.1);border:1px solid #005243;border-radius:999px;font-size:11px;font-weight:700;color:#005243">NLP Eng</span>
+        <span style="padding:6px 12px;background:rgba(236,239,236,.9);border:1px solid rgba(190,201,196,.4);border-radius:999px;font-size:11px;font-weight:700">Cloud Infra</span>
+        <span style="padding:6px 12px;background:rgba(236,239,236,.9);border:1px solid rgba(190,201,196,.4);border-radius:999px;font-size:11px;font-weight:700">PyTorch</span>
+      </div>
+    </div>
+    <div style="margin-top:auto;padding:20px;background:rgba(255,255,255,.7);border:1px solid rgba(190,201,196,.3);border-radius:12px">
+      <p class="insight" style="font-size:14px;color:#3f4945;margin:0;line-height:1.6">"Filtering for high-precision candidates reduces selection time by ~42% for this specific job profile."</p>
+    </div>
+  </aside>
+
+  <!-- Table -->
+  <section style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:32px 40px 20px;display:flex;justify-content:space-between;align-items:flex-end">
+      <div>
+        <h2 style="font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;margin:0 0 8px;letter-spacing:-.02em">Ranked Candidates</h2>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(236,239,236,.9);padding:4px 12px;border-radius:999px;border:1px solid rgba(190,201,196,.3);color:#3f4945;font-weight:700">MATCHED 48 PROFILES • SR AI RESEARCHER</span>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button style="display:flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(190,201,196,.5);border-radius:8px;background:transparent;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;transition:background .15s" onmouseover="this.style.background='rgba(236,239,236,.9)'" onmouseout="this.style.background='transparent'">
+          <span class="material-symbols-outlined" style="font-size:18px">file_download</span>Export
+        </button>
+        <button style="padding:8px;border:1px solid rgba(190,201,196,.5);border-radius:8px;background:transparent;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(236,239,236,.9)'" onmouseout="this.style.background='transparent'">
+          <span class="material-symbols-outlined" style="font-size:18px">sort</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll" style="flex:1;overflow-y:auto;padding:0 40px 40px">
+      <div style="border:1px solid rgba(190,201,196,.4);border-radius:12px;overflow:hidden">
+        <table style="width:100%;border-collapse:collapse;min-width:900px">
+          <thead style="position:sticky;top:0;z-index:5">
+            <tr style="background:rgba(241,244,241,.95)">
+              <th style="padding:18px 28px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#3f4945;border-bottom:1px solid rgba(190,201,196,.4);font-weight:700">Rank</th>
+              <th style="padding:18px 20px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#3f4945;border-bottom:1px solid rgba(190,201,196,.4);font-weight:700">Candidate Profile</th>
+              <th style="padding:18px 20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#3f4945;border-bottom:1px solid rgba(190,201,196,.4);font-weight:700">Score</th>
+              <th style="padding:18px 20px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#3f4945;border-bottom:1px solid rgba(190,201,196,.4);font-weight:700">Logic Matrix</th>
+              <th style="padding:18px 20px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#3f4945;border-bottom:1px solid rgba(190,201,196,.4);font-weight:700">Integrity</th>
+              <th style="padding:18px 20px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#3f4945;border-bottom:1px solid rgba(190,201,196,.4);font-weight:700">Dominant Trait</th>
+            </tr>
+          </thead>
+          <tbody id="candidate-table-body" style="background:#fff"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Evidence Drawer -->
+  <aside id="evidence-drawer" style="width:440px;border-left:1px solid rgba(190,201,196,.3);display:flex;flex-direction:column;background:#fff;overflow:hidden">
+    <div style="padding:28px;border-bottom:1px solid rgba(190,201,196,.2);display:flex;justify-content:space-between;align-items:flex-start;background:rgba(255,255,255,.95);backdrop-filter:blur(8px)">
+      <div>
+        <div style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;margin-bottom:4px">Evidence Drawer</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#005243;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Profile Integrity Check: Alexei Kozlov</div>
+      </div>
+      <span class="material-symbols-outlined" style="color:#6f7975;cursor:pointer;margin-top:2px">close</span>
+    </div>
+    <div class="scroll" style="flex:1;overflow-y:auto;padding:28px;display:flex;flex-direction:column;gap:32px">
+
+      <!-- Logic scores -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#3f4945;font-weight:700;border-bottom:1px solid rgba(190,201,196,.2);padding-bottom:8px;margin-bottom:16px">Logic Breakdown (L2-L7)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="glass" style="padding:16px;border-radius:12px">
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:8px;font-weight:700">L2: Knowledge</div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:#005243;line-height:1">94</span><div style="flex:1;margin-left:12px;margin-bottom:2px"><div class="prog-track"><div class="prog-fill" style="width:94%"></div></div></div></div>
+          </div>
+          <div class="glass" style="padding:16px;border-radius:12px">
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:8px;font-weight:700">L3: Reasoning</div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:#005243;line-height:1">88</span><div style="flex:1;margin-left:12px;margin-bottom:2px"><div class="prog-track"><div class="prog-fill" style="width:88%"></div></div></div></div>
+          </div>
+          <div class="glass" style="padding:16px;border-radius:12px">
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:8px;font-weight:700">L4: Technical</div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:#005243;line-height:1">92</span><div style="flex:1;margin-left:12px;margin-bottom:2px"><div class="prog-track"><div class="prog-fill" style="width:92%"></div></div></div></div>
+          </div>
+          <div class="glass" style="padding:16px;border-radius:12px">
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:8px;font-weight:700">L5: Systems</div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:#005243;line-height:1">96</span><div style="flex:1;margin-left:12px;margin-bottom:2px"><div class="prog-track"><div class="prog-fill" style="width:96%"></div></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confidence -->
+      <div style="background:#005243;padding:24px 28px;border-radius:16px;display:flex;justify-content:space-between;align-items:center" class="teal-glow">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.8);font-weight:700;margin-bottom:4px">Model Confidence</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.65)">High-density data verification complete</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:700;color:#fff;letter-spacing:-.03em;line-height:1">98%</div>
+      </div>
+
+      <!-- Narrative -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#3f4945;font-weight:700;border-bottom:1px solid rgba(190,201,196,.2);padding-bottom:8px;margin-bottom:16px">Synthesis Fit</div>
+        <div style="position:relative;padding:24px 24px 24px 30px;background:rgba(241,244,241,.6);border-radius:16px;border:1px solid rgba(190,201,196,.3)">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#005243;border-radius:4px 0 0 4px"></div>
+          <p class="insight" style="font-size:17px;color:#0a0c0b;line-height:1.65;margin:0">"Alexei demonstrates an exceptional grasp of <strong style='color:#005243'>transformer architectures</strong>, specifically optimised for edge-device deployment. His track record at Stanford shows high publication velocity with significant industry application. Automated fraud engine confirms <strong>100% identity veracity</strong>."</p>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#3f4945;font-weight:700;border-bottom:1px solid rgba(190,201,196,.2);padding-bottom:8px;margin-bottom:16px">Activity Timeline</div>
+        <div style="position:relative;padding-left:28px">
+          <div style="position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:rgba(190,201,196,.4)"></div>
+          <div style="position:relative;margin-bottom:28px">
+            <div style="position:absolute;left:-25px;top:4px;width:16px;height:16px;border-radius:50%;background:#005243;border:3px solid #fff;box-shadow:0 0 0 2px #005243"></div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:4px">Interview Scheduled</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975;font-weight:700">Today • 10:45 AM</div>
+          </div>
+          <div style="position:relative">
+            <div style="position:absolute;left:-25px;top:4px;width:16px;height:16px;border-radius:50%;background:#bec9c4;border:3px solid #fff"></div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:4px">Assessment Completed</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975;font-weight:700">Yesterday • 04:20 PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="padding:20px 28px;border-top:1px solid rgba(190,201,196,.2);display:flex;gap:12px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px)">
+      <button onclick="switchPage('detail',document.querySelector('[data-page=detail]'))" style="flex:1;padding:14px;background:#005243;color:#fff;border:none;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:700;cursor:pointer;transition:filter .15s" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='brightness(1)'">Schedule Interview</button>
+      <button style="padding:14px;border:1px solid rgba(190,201,196,.4);border-radius:8px;background:transparent;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(236,239,236,.9)'" onmouseout="this.style.background='transparent'">
+        <span class="material-symbols-outlined" style="font-size:20px;color:#3f4945">share</span>
+      </button>
+    </div>
+  </aside>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  PAGE 3 — CANDIDATE DETAIL                  ║
+     ╚══════════════════════════════════════════════╝ -->
+<div id="page-detail" class="page" style="padding:48px">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:40px">
+    <span class="material-symbols-outlined" style="color:#6f7975;cursor:pointer" onclick="switchPage('candidates',document.querySelector('[data-page=candidates]'))">arrow_back</span>
+    <div style="height:24px;width:1px;background:rgba(190,201,196,.4)"></div>
+    <h2 style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em">Candidate Dossier: 104-B</h2>
+  </div>
+
+  <div style="display:grid;grid-template-columns:7fr 5fr;gap:32px">
+    <!-- Left column -->
+    <div style="display:flex;flex-direction:column;gap:28px">
+
+      <!-- Profile header -->
+      <div class="glass" style="padding:32px;border-radius:20px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;right:0;padding:16px;display:flex;gap:8px">
+          <span style="background:rgba(0,82,67,.1);color:#005243;border:1px solid rgba(0,82,67,.2);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 12px;border-radius:4px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Top 1% Rank</span>
+          <span style="background:rgba(88,70,200,.1);color:#5846c8;border:1px solid rgba(88,70,200,.2);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 12px;border-radius:4px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Verified</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:28px">
+          <div style="position:relative;flex-shrink:0">
+            <div style="width:120px;height:120px;border-radius:12px;background:linear-gradient(135deg,#a6f1db 0%,#005243 100%);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:40px;font-weight:700;color:#fff;border:1px solid rgba(0,82,67,.2)">AM</div>
+            <div style="position:absolute;bottom:-8px;right:-8px;background:#fff;padding:4px;border-radius:6px;border:1px solid rgba(190,201,196,.4)">
+              <span class="material-symbols-outlined" style="color:#005243;font-size:22px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">verified</span>
+            </div>
+          </div>
+          <div style="flex:1;padding-top:4px">
+            <h3 style="font-family:'Clash Display',sans-serif;font-size:34px;font-weight:700;margin:0 0 6px;letter-spacing:-.02em">Adrian Moretti</h3>
+            <p style="font-size:14px;color:#6f7975;margin:0 0 20px;display:flex;align-items:center;gap:6px">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#005243">location_on</span>
+              Senior Computational Architect • London, UK
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,82,67,.06);color:#005243;border:1px solid rgba(0,82,67,.18);padding:4px 10px;font-weight:700;letter-spacing:.06em">PYTHON_3.12</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,82,67,.06);color:#005243;border:1px solid rgba(0,82,67,.18);padding:4px 10px;font-weight:700;letter-spacing:.06em">PYTORCH_2.0</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,82,67,.06);color:#005243;border:1px solid rgba(0,82,67,.18);padding:4px 10px;font-weight:700;letter-spacing:.06em">KUBERNETES</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vetting Velocity -->
+      <div class="glass" style="padding:32px;border-radius:20px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px">
+          <div>
+            <div style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600;margin-bottom:6px">Vetting Velocity</div>
+            <div style="font-size:13px;color:#6f7975">Quantified funnel progression through proprietary neural filters.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:700;color:#005243;line-height:1;letter-spacing:-.03em">94.2</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase;letter-spacing:.1em;margin-top:4px">Composite Score</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:8px">
+              <span style="color:#3f4945">01. Technical Integrity Probe</span><span style="color:#005243">98% Match</span>
+            </div>
+            <div style="height:14px;background:rgba(236,239,236,.9);border-radius:7px;overflow:hidden"><div style="height:100%;width:98%;background:#005243;border-radius:7px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:8px">
+              <span style="color:#3f4945">02. Behavioral Pattern Analysis</span><span style="color:#005243">92% Consistency</span>
+            </div>
+            <div style="height:14px;background:rgba(236,239,236,.9);border-radius:7px;overflow:hidden"><div style="height:100%;width:92%;background:rgba(0,82,67,.78);border-radius:7px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:8px">
+              <span style="color:#3f4945">03. Cultural Alignment Scale</span><span style="color:#005243">87% Affinity</span>
+            </div>
+            <div style="height:14px;background:rgba(236,239,236,.9);border-radius:7px;overflow:hidden"><div style="height:100%;width:87%;background:rgba(0,82,67,.58);border-radius:7px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:8px">
+              <span style="color:#3f4945">04. Lead Potential Quotient</span><span style="color:#005243">76% Conversion</span>
+            </div>
+            <div style="height:14px;background:rgba(236,239,236,.9);border-radius:7px;overflow:hidden"><div style="height:100%;width:76%;background:rgba(0,82,67,.38);border-radius:7px"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(190,201,196,.2);display:flex;gap:24px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:12px;height:12px;background:#005243;border-radius:2px"></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase">Matching Ratio</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:12px;height:12px;background:rgba(0,82,67,.38);border-radius:2px"></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase">Historical Null</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:12px;height:12px;border:1px solid rgba(111,121,117,.3);border-radius:2px"></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase">Benchmark Zero</span></div>
+        </div>
+      </div>
+
+      <!-- Evidence -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#6f7975;font-weight:700;border-bottom:1px solid rgba(190,201,196,.2);padding-bottom:8px;margin-bottom:16px">Verified Professional Evidence</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="glass" style="padding:24px;border-radius:12px;border-left:4px solid #005243;display:flex;gap:20px">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,82,67,.1);display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined" style="color:#005243;font-size:20px">terminal</span></div>
+              <div style="width:1px;flex:1;background:rgba(190,201,196,.3);margin:8px 0"></div>
+            </div>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <div style="font-weight:700;font-size:15px">NeuralNet Optimizer v2</div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;padding:3px 8px;border-radius:999px;border:1px solid rgba(190,201,196,.3)">Q1 2023 – Q4 2023</span>
+              </div>
+              <p style="font-size:13px;color:#3f4945;line-height:1.6;margin:0 0 10px">Pioneered a quantization-aware training pipeline that reduced LLM inference latency by 45% on edge hardware while maintaining 99.2% accuracy retention.</p>
+              <div style="display:flex;gap:12px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#005243;font-weight:700;text-transform:uppercase">Github_Link</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase">Patent_Ref: 8,429,112</span>
+              </div>
+            </div>
+          </div>
+          <div class="glass" style="padding:24px;border-radius:12px;border-left:4px solid #5846c8;display:flex;gap:20px">
+            <div style="flex-shrink:0"><div style="width:40px;height:40px;border-radius:50%;background:rgba(88,70,200,.1);display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined" style="color:#5846c8;font-size:20px">cloud_sync</span></div></div>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <div style="font-weight:700;font-size:15px">Hydra-Sync Distributed DB</div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;padding:3px 8px;border-radius:999px;border:1px solid rgba(190,201,196,.3)">JAN 2021 – DEC 2022</span>
+              </div>
+              <p style="font-size:13px;color:#3f4945;line-height:1.6;margin:0">Architected a multi-region eventual consistency model for high-frequency trading data, resolving conflict resolution in under 12ms across global clusters.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex;flex-direction:column;gap:24px">
+
+      <!-- Neural Signature -->
+      <div class="glass" style="padding:28px;border-radius:20px;box-shadow:0 0 40px -10px rgba(0,82,67,.12)">
+        <div style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600;margin-bottom:28px">Neural Signature</div>
+        <div style="display:flex;flex-direction:column;gap:24px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4945;font-weight:700">Logical Reasoning Engine</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#005243">98 / 100</span></div>
+            <div style="height:3px;background:rgba(190,201,196,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:98%;background:#005243;box-shadow:0 0 8px rgba(0,82,67,.4)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4945;font-weight:700">Architectural Creative Syntax</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#005243">82 / 100</span></div>
+            <div style="height:3px;background:rgba(190,201,196,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:82%;background:#005243;box-shadow:0 0 8px rgba(0,82,67,.4)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4945;font-weight:700">Inter-Node Collaborative Index</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#005243">91 / 100</span></div>
+            <div style="height:3px;background:rgba(190,201,196,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:91%;background:#005243;box-shadow:0 0 8px rgba(0,82,67,.4)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4945;font-weight:700">Domain Agility Pulse</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#005243">76 / 100</span></div>
+            <div style="height:3px;background:rgba(190,201,196,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:76%;background:#005243;box-shadow:0 0 8px rgba(0,82,67,.4)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Atmospheric Signals -->
+      <div class="glass" style="padding:24px;border-radius:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#6f7975;font-weight:700">Atmospheric Signals</span>
+          <span class="material-symbols-outlined" style="font-size:18px;color:#005243">sensors</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;background:rgba(241,244,241,.7);border:1px solid transparent;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(0,82,67,.2)'" onmouseout="this.style.borderColor='transparent'">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,82,67,.1);display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined" style="color:#005243;font-size:20px">bolt</span></div>
+            <div><div style="font-weight:700;font-size:14px;margin-bottom:3px">Execution Velocity</div><div style="font-size:12px;color:#6f7975">Top 0.5% in commit frequency and merge success rates.</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;background:rgba(241,244,241,.7);border:1px solid transparent;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(106,61,0,.2)'" onmouseout="this.style.borderColor='transparent'">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(106,61,0,.1);display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined" style="color:#6a3d00;font-size:20px">psychology</span></div>
+            <div><div style="font-weight:700;font-size:14px;margin-bottom:3px">Deep Systems Modeler</div><div style="font-size:12px;color:#6f7975">Consistent identification of race conditions in design phases.</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;background:rgba(241,244,241,.7);border:1px solid transparent;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(88,70,200,.2)'" onmouseout="this.style.borderColor='transparent'">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(88,70,200,.1);display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined" style="color:#5846c8;font-size:20px">forum</span></div>
+            <div><div style="font-weight:700;font-size:14px;margin-bottom:3px">Low-Friction Architect</div><div style="font-size:12px;color:#6f7975">High peer-review acceptance with zero interpersonal friction.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Synthesis Narrative -->
+      <div style="position:relative;padding:28px 28px 28px 34px;background:rgba(241,244,241,.7);border-radius:16px;border:1px solid rgba(190,201,196,.3);overflow:hidden;box-shadow:0 0 40px -10px rgba(0,82,67,.12)">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#005243;border-radius:4px 0 0 4px"></div>
+        <span class="material-symbols-outlined" style="color:rgba(0,82,67,.35);display:block;margin-bottom:12px;font-size:28px">format_quote</span>
+        <p class="insight" style="font-size:17px;color:#0a0c0b;line-height:1.65;margin:0 0 20px">"Adrian's evaluation profile reflects a rare convergence of raw algorithmic power and architectural foresight. The 94.2 composite score is rooted in verified telemetry from high-stakes deployments. Recommend immediate shortlisting for Lead Principal roles requiring heavy computational scaling."</p>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase;letter-spacing:.08em">Logic: Rev 4.2.1 • Bayesian Engine</span>
+          <div style="display:flex;gap:6px">
+            <span style="background:rgba(0,82,67,.1);color:#005243;font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;font-weight:700">Verified</span>
+            <span style="background:rgba(190,201,196,.15);color:#6f7975;font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px">Immutable</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <button style="width:100%;padding:16px;background:#005243;color:#fff;border:none;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:box-shadow .2s,filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter='brightness(1)'">
+          <span class="material-symbols-outlined" style="font-size:20px">person_add</span>Shortlist Candidate
+        </button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <button style="padding:12px;border:1px solid #005243;color:#005243;border-radius:10px;background:transparent;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s" onmouseover="this.style.background='rgba(0,82,67,.06)'" onmouseout="this.style.background='transparent'"><span class="material-symbols-outlined" style="font-size:18px">history</span>Audit Trace</button>
+          <button style="padding:12px;border:1px solid rgba(111,121,117,.4);color:#3f4945;border-radius:10px;background:transparent;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s" onmouseover="this.style.background='rgba(236,239,236,.9)'" onmouseout="this.style.background='transparent'"><span class="material-symbols-outlined" style="font-size:18px">data_object</span>Export JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  PAGE 4 — SYSTEM HEALTH                     ║
+     ╚══════════════════════════════════════════════╝ -->
+<div id="page-health" class="page" style="padding:48px">
+
+  <!-- Header -->
+  <div style="margin-bottom:40px">
+    <h2 style="font-family:'Clash Display',sans-serif;font-size:48px;font-weight:700;margin:0 0 20px;letter-spacing:-.02em">System Status</h2>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <div class="glass" style="padding:14px 24px;display:flex;align-items:center;gap:16px;border-radius:12px">
+        <div class="pulse-dot" style="width:12px;height:12px;border-radius:50%;background:#005243;box-shadow:0 0 12px rgba(0,82,67,.4)"></div>
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#6f7975">Global Engine</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#005243">ACTIVE • 99.98% UPTIME</div>
+        </div>
+      </div>
+      <div class="glass" style="padding:14px 24px;display:flex;align-items:center;gap:16px;border-radius:12px;border-color:rgba(106,61,0,.18)">
+        <div style="width:12px;height:12px;border-radius:50%;background:#6a3d00;box-shadow:0 0 12px rgba(106,61,0,.3)"></div>
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#6f7975">Latency Threshold</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#6a3d00">SYNCED • 42ms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div style="display:grid;grid-template-columns:8fr 4fr;gap:24px">
+    <!-- Left -->
+    <div style="display:flex;flex-direction:column;gap:24px">
+
+      <!-- Integrity report -->
+      <div class="glass" style="padding:32px;border-radius:20px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+          <div style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600">Integrity Report</div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6f7975;text-transform:uppercase">Generated 2m ago</span>
+        </div>
+        <p class="insight" style="font-size:17px;color:#3f4945;line-height:1.65;margin:0 0 32px;max-width:680px">"The current architectural equilibrium remains within nominal parameters. We observe a minor deviation in the ranking pipeline throughput, likely due to the recent influx of unstructured resume data from the North American quadrant. No manual intervention is required at this stage."</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
+          <div style="border-left:2px solid rgba(0,82,67,.25);padding-left:20px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:6px">Neural Load</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;margin-bottom:10px;letter-spacing:-.02em">42.8%</div>
+            <div style="height:3px;background:rgba(190,201,196,.3);border-radius:2px;overflow:hidden"><div style="height:100%;width:42.8%;background:#005243"></div></div>
+          </div>
+          <div style="border-left:2px solid rgba(0,82,67,.25);padding-left:20px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:6px">Cache Memory</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;margin-bottom:10px;letter-spacing:-.02em">6.2 <span style="font-size:18px;color:#6f7975">TB</span></div>
+            <div style="height:3px;background:rgba(190,201,196,.3);border-radius:2px;overflow:hidden"><div style="height:100%;width:65%;background:#005243"></div></div>
+          </div>
+          <div style="border-left:2px solid rgba(0,82,67,.25);padding-left:20px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6f7975;margin-bottom:6px">Env. Threads</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;margin-bottom:10px;letter-spacing:-.02em">1,892</div>
+            <div style="height:3px;background:rgba(190,201,196,.3);border-radius:2px;overflow:hidden"><div style="height:100%;width:85%;background:#6a3d00"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="glass" style="padding:24px;border-radius:20px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+            <span class="material-symbols-outlined" style="color:#005243">security</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:700">Core Configuration</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(190,201,196,.15)">
+              <span style="font-size:14px">Enhanced Encryption</span>
+              <button class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(190,201,196,.15)">
+              <span style="font-size:14px">Biometric Auth</span>
+              <button class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0">
+              <span style="font-size:14px">Environment Diagnostics</span>
+              <button style="background:none;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;color:#005243;font-weight:700;text-transform:uppercase;letter-spacing:.1em">CONFIGURE</button>
+            </div>
+          </div>
+        </div>
+        <div class="glass" style="padding:24px;border-radius:20px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+            <span class="material-symbols-outlined" style="color:#005243">dns</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:700">Knowledge Base Status</span>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(190,201,196,.15)"><span style="font-size:14px">Index Syncing</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6f7975">AUTO • 30m</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(190,201,196,.15)"><span style="font-size:14px">KB Total Volume</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700">14.8 PB</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0"><span style="font-size:14px">Regional Integrity</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#005243;font-weight:700;text-transform:uppercase">OPTIMIZED</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div style="display:flex;flex-direction:column;gap:24px">
+
+      <!-- Score card -->
+      <div class="glass" style="padding:32px;border-radius:20px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;box-shadow:0 0 40px -12px rgba(0,82,67,.18)">
+        <div style="position:absolute;top:0;right:0;opacity:.08"><span class="material-symbols-outlined" style="font-size:140px;color:#005243">verified</span></div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:#6f7975;margin-bottom:16px">Core Efficiency Score</span>
+        <div style="font-family:'Clash Display',sans-serif;font-size:84px;font-weight:700;color:#005243;line-height:1;margin-bottom:16px">98</div>
+        <p style="font-size:14px;color:#3f4945;margin:0;line-height:1.6">System performance is exceeding the quarterly baseline by <strong style="color:#005243">12.4%</strong>.</p>
+      </div>
+
+      <!-- Execution log -->
+      <div class="glass" style="padding:24px;border-radius:20px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:700;border-bottom:1px solid rgba(190,201,196,.2);padding-bottom:12px;margin-bottom:20px">Execution Log</div>
+        <div class="scroll" style="overflow-y:auto;max-height:240px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:6px;background:rgba(0,82,67,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-outlined" style="color:#005243;font-size:18px">update</span></div>
+            <div><div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin-bottom:3px">Patch v2.4.1 Deployed</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">14:22 UTC • Admin_04</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:6px;background:rgba(106,61,0,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-outlined" style="color:#6a3d00;font-size:18px">warning</span></div>
+            <div><div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin-bottom:3px">DB Connection Spike</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">11:05 UTC • Auto-fix</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:6px;background:rgba(0,82,67,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-outlined" style="color:#005243;font-size:18px">terminal</span></div>
+            <div><div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin-bottom:3px">Model Status: OK</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">09:12 UTC • Neural Engine</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;opacity:.55">
+            <div style="width:36px;height:36px;border-radius:6px;background:rgba(190,201,196,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-outlined" style="color:#6f7975;font-size:18px">history</span></div>
+            <div><div style="font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:3px">Snapshot Verified</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7975">08:00 UTC • Scheduled</div></div>
+          </div>
+        </div>
+        <button style="width:100%;margin-top:20px;padding:12px;border:1px solid rgba(190,201,196,.4);border-radius:8px;background:transparent;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:700;cursor:pointer;color:#3f4945;transition:background .15s" onmouseover="this.style.background='rgba(236,239,236,.9)'" onmouseout="this.style.background='transparent'">View Detailed Logs</button>
+      </div>
+
+      <!-- Node topology -->
+      <div class="glass" style="height:160px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(0,82,67,.06),transparent)"></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:#6f7975;margin-bottom:14px">Network Topology</div>
+        <div style="display:flex;gap:5px;align-items:flex-end;height:48px">
+          <div style="width:5px;background:rgba(0,82,67,.2);height:30%;border-radius:3px 3px 0 0"></div>
+          <div style="width:5px;background:rgba(0,82,67,.4);height:55%;border-radius:3px 3px 0 0"></div>
+          <div style="width:5px;background:rgba(0,82,67,.6);height:75%;border-radius:3px 3px 0 0"></div>
+          <div style="width:5px;background:#005243;height:100%;border-radius:3px 3px 0 0;box-shadow:0 0 8px rgba(0,82,67,.4)" class="pulse-dot"></div>
+          <div style="width:5px;background:rgba(0,82,67,.65);height:85%;border-radius:3px 3px 0 0"></div>
+          <div style="width:5px;background:rgba(0,82,67,.45);height:65%;border-radius:3px 3px 0 0"></div>
+          <div style="width:5px;background:rgba(0,82,67,.2);height:40%;border-radius:3px 3px 0 0"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#005243;font-weight:700;margin-top:14px">Active Nodes: 142 / 142</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+const overviewRows = [
+  {id:'#RR-2024-901',score:'0.982',match:'98.4%'},
+  {id:'#RR-2024-882',score:'0.975',match:'97.1%'},
+  {id:'#RR-2024-110',score:'0.969',match:'96.8%'},
+  {id:'#RR-2024-541',score:'0.954',match:'94.2%'},
+  {id:'#RR-2024-004',score:'0.948',match:'93.9%'},
+];
+
+const candidates = [
+  {rank:'01',initials:'AK',name:'Alexei Kozlov',sub:'PhD, Stanford • 8y Experience',score:94,bars:[94,88,92,96,90,85],integrity:'CLEAN',trait:'Core_Algorithm',color:'#005243',bgColor:'rgba(0,82,67,.12)'},
+  {rank:'02',initials:'SC',name:'Sarah Chen',sub:'Ex-Google • 6y Experience',score:91,bars:[88,95,82,88,92,90],integrity:'CLEAN',trait:'Systems_Eng',color:'#5846c8',bgColor:'rgba(255,255,255,.9)'},
+  {rank:'03',initials:'JT',name:'Jordan Taylor',sub:'OpenAI Labs • 4y Experience',score:87,bars:[82,80,85,91,88,84],integrity:'L_PROXY',trait:'Pub_Velocity',color:'#6a3d00',bgColor:'rgba(255,255,255,.9)'},
+  {rank:'04',initials:'PM',name:'Priya Menon',sub:'DeepMind • 5y Experience',score:85,bars:[85,82,78,88,82,80],integrity:'CLEAN',trait:'ML_Research',color:'#005243',bgColor:'rgba(255,255,255,.9)'},
+  {rank:'05',initials:'LW',name:'Leon Weber',sub:'Anthropic • 3y Experience',score:83,bars:[80,84,78,86,82,79],integrity:'CLEAN',trait:'Alignment',color:'#005243',bgColor:'rgba(255,255,255,.9)'},
+];
+
+// ═══════════════════════════════════════
+//  RENDER OVERVIEW TABLE
+// ═══════════════════════════════════════
+function renderOverviewTable() {
+  const tbody = document.getElementById('overview-table-body');
+  tbody.innerHTML = overviewRows.map(r => `
+    <tr class="trow" style="border-bottom:1px solid rgba(190,201,196,.1)">
+      <td style="padding:14px 24px;font-family:'JetBrains Mono',monospace;font-size:13px">${r.id}</td>
+      <td style="padding:14px 24px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#005243">${r.score}</td>
+      <td style="padding:14px 24px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#3f4945">${r.match}</td>
+      <td style="padding:14px 24px">
+        <span style="padding:3px 10px;border-radius:999px;background:rgba(0,82,67,.1);color:#005243;font-size:10px;font-weight:700;border:1px solid rgba(0,82,67,.2);font-family:'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase">SHORTLISTED</span>
+      </td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════
+//  RENDER CANDIDATES TABLE
+// ═══════════════════════════════════════
+function renderCandidatesTable() {
+  const tbody = document.getElementById('candidate-table-body');
+  tbody.innerHTML = candidates.map((c,i) => {
+    const barHtml = c.bars.map(h=>`
+      <div class="bar-col" style="width:9px;height:32px">
+        <div class="bar-fill" style="height:${h}%;opacity:${c.rank==='01'?1:(0.4+i*0.05)}"></div>
+      </div>`).join('');
+    const badge = c.integrity==='CLEAN'
+      ? `<span class="badge-clean" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase"><span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">verified</span>CLEAN</span>`
+      : `<span class="badge-flag" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase"><span class="material-symbols-outlined" style="font-size:13px">warning</span>${c.integrity}</span>`;
+    const isFirst = c.rank==='01';
+    return `
+      <tr class="trow${isFirst?' selected':''}" onclick="selectRow(this)" style="border-left:4px solid ${isFirst?'#005243':'transparent'};background:${c.bgColor}">
+        <td style="padding:22px 24px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:${isFirst?'#005243':'#6f7975'}">${c.rank}</td>
+        <td style="padding:22px 18px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:44px;height:44px;border-radius:8px;background:${isFirst?'#a6f1db':'rgba(190,201,196,.3)'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:${isFirst?'#002019':'#3f4945'};border:1px solid ${isFirst?'rgba(0,82,67,.2)':'rgba(190,201,196,.4)'}">${c.initials}</div>
+            <div>
+              <div style="font-weight:700;font-size:15px;margin-bottom:3px">${c.name}</div>
+              <div style="font-size:12px;color:#6f7975;font-weight:500">${c.sub}</div>
+            </div>
+          </div>
+        </td>
+        <td style="padding:22px 18px">
+          <div style="display:flex;justify-content:center">
+            <div style="width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;${isFirst?'background:#005243;color:#fff;box-shadow:0 0 20px rgba(0,82,67,.3)':'background:rgba(236,239,236,.9);color:#0a0c0b;border:1px solid rgba(190,201,196,.4)'}">${c.score}</div>
+          </div>
+        </td>
+        <td style="padding:22px 18px">
+          <div style="display:flex;align-items:flex-end;gap:4px;height:32px">${barHtml}</div>
+        </td>
+        <td style="padding:22px 18px">${badge}</td>
+        <td style="padding:22px 18px">
+          <span style="padding:4px 12px;background:rgba(236,239,236,.9);border:1px solid rgba(190,201,196,.4);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700">${c.trait}</span>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function selectRow(row) {
+  document.querySelectorAll('#candidate-table-body tr').forEach(r=>{
+    r.classList.remove('selected');
+    r.style.borderLeft='4px solid transparent';
+    r.querySelector('td').style.color='#6f7975';
+  });
+  row.classList.add('selected');
+  row.style.borderLeft='4px solid #005243';
+  row.querySelector('td').style.color='#005243';
+}
+
+// ═══════════════════════════════════════
+//  PAGE SWITCHING
+// ═══════════════════════════════════════
+function switchPage(id, navEl) {
+  // Pages
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('active');
+    p.style.display='none';
+  });
+  const target = document.getElementById('page-'+id);
+  if(target) {
+    target.style.display = (id==='candidates') ? 'flex' : 'block';
+    target.classList.add('active');
+  }
+
+  // Nav items
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.remove('nav-active');
+  });
+  if(navEl) navEl.classList.add('nav-active');
+
+  // Dark mode: update colors on sidebar
+  updateSidebarTheme();
+}
+
+// ═══════════════════════════════════════
+//  THEME TOGGLE
+// ═══════════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.classList.toggle('dark');
+  html.classList.toggle('light', !isDark);
+
+  const sidebar = document.getElementById('sidebar');
+  const logo = document.getElementById('logo-text');
+  const header = document.querySelector('header');
+  const searchInput = document.getElementById('search-input');
+
+  if(isDark) {
+    document.body.style.background = '#0d100f';
+    document.body.style.color = '#eef1ee';
+    sidebar.style.background = 'rgba(13,16,15,0.92)';
+    sidebar.style.borderColor = 'rgba(63,73,69,0.4)';
+    logo.style.color = '#8ad5c0';
+    header.style.background = 'rgba(13,16,15,0.88)';
+    header.style.borderColor = 'rgba(63,73,69,0.3)';
+    searchInput.style.color = '#eef1ee';
+    // orbs
+    document.querySelectorAll('.orb')[0].style.background='rgba(138,213,192,0.06)';
+    document.querySelectorAll('.orb')[1].style.background='rgba(88,70,200,0.06)';
+  } else {
+    document.body.style.background = '#f7faf7';
+    document.body.style.color = '#0a0c0b';
+    sidebar.style.background = 'rgba(247,250,247,0.92)';
+    sidebar.style.borderColor = 'rgba(190,201,196,0.35)';
+    logo.style.color = '#005243';
+    header.style.background = 'rgba(247,250,247,0.88)';
+    header.style.borderColor = 'rgba(190,201,196,0.25)';
+    searchInput.style.color = '#0a0c0b';
+    document.querySelectorAll('.orb')[0].style.background='rgba(0,82,67,0.05)';
+    document.querySelectorAll('.orb')[1].style.background='rgba(88,70,200,0.04)';
+  }
+  updateSidebarTheme();
+}
+
+function updateSidebarTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(!n.classList.contains('nav-active')){
+      n.style.color = isDark ? '#89938f' : '#3f4945';
+    } else {
+      n.style.color = isDark ? '#8ad5c0' : '#005243';
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+//  SYSTEM HEALTH — LIVE TERMINAL (dark page)
+// ═══════════════════════════════════════
+// (No terminal on this page — kept clean per light design)
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+renderOverviewTable();
+renderCandidatesTable();
+
+// Fix candidates page display
+const candPage = document.getElementById('page-candidates');
+candPage.style.display = 'none'; // hidden initially
+</script>
+</body>
+</html>

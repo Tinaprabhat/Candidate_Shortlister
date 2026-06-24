@@ -1,20 +1,22 @@
 """
-layers.py — The 5-layer cascade (L1–L4, L6).
+layers.py — The 6-layer cascade (L1, L1b, L1c, L3, L4, L6).
 
-L1: Hard reject (fraud / impossibilities)         → binary
-L2: Bi-encoder similarity (concat skills+work)    → score + 55% gate
-L3: Seniority regression                          → soft penalty
-L4: Semantic work-to-JD relevance (descs only)    → independent score
-L6: Behavioral signals                            → normalized score
+L1:  Hard reject (fraud / impossibilities)         → binary
+L1b: Profile integrity flags (ATS-pre-computed)    → hard reject | soft penalty multiplier
+L1c: Skill match (NLP string + synonym match)      → score [0–1], optional gate
+L3:  Seniority regression                          → soft penalty multiplier
+L4:  Semantic work-to-JD relevance (descs only)    → independent score
+L6:  Behavioral signals                            → normalized score
 """
 
 import math
 import random
 import logging
-from datetime import datetime
-from typing import List, Dict
-
+import re
+import hashlib
 import numpy as np
+from datetime import datetime
+from typing import List, Dict, Optional
 
 from . import constants as C
 from . import utils
@@ -396,161 +398,1249 @@ def l1_hard_reject(candidates: List[dict], fraud_kb) -> List[dict]:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# LAYER 2 — BI-ENCODER SIMILARITY + 55% GATE
+# LAYER 1b — PROFILE INTEGRITY FLAGS
 # ──────────────────────────────────────────────────────────────────────────────
-def _build_jd_text(jd: dict) -> str:
-    parts = []
-    parts.append(jd.get("job_title", ""))
-    parts += jd.get("explicit_required", [])
-    parts += jd.get("inferred_required", [])
-    parts += jd.get("explicit_bonus", [])
-    parts += jd.get("inferred_bonus", [])
-    return " ".join(parts).strip()
+
+_L1B_HARD_REJECT_FLAGS = [
+    "reverse_degree_order",
+    "active_before_signup",
+    "invalid_degree_field_combination",
+]
+
+_L1B_SOFT_PENALTIES: dict = {
+    "skill_career_domain_mismatch": 0.20,
+    "education_overlap":            0.20,
+    "second_undergrad_after_first": 0.30,
+    "education_career_gap_flag":    0.10,
+    "duplicate_job_descriptions":   0.50,
+    "all_descriptions_identical":   0.80,
+}
 
 
-def l2_bi_encoder(candidates: List[dict], jd: dict, st_model) -> List[dict]:
-    """Score each candidate on wholesome profile-JD similarity. Attaches 'l2_score'."""
-    if not candidates:
-        return candidates
+def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
+    """
+    Layer 1b — Profile integrity: reads pre-computed boolean flags from the
+    candidate dict (set by the ATS / jd_parser upstream).
 
-    jd_text = _build_jd_text(jd)
-    jd_emb = st_model.encode([jd_text], convert_to_numpy=True, normalize_embeddings=True)[0]
+    Hard-reject flags (l1b_status='reject', removed from pool):
+      reverse_degree_order, active_before_signup, invalid_degree_field_combination
 
-    texts = [utils.get_work_profile_text(c) or " " for c in candidates]
-    embs = st_model.encode(
-        texts,
-        batch_size=C.L2_BATCH_SIZE,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-        show_progress_bar=False,
+    Soft-penalty flags (l1b_penalty < 1.0, multiplied into fis_score at L7):
+      skill_career_domain_mismatch (-0.20), education_overlap (-0.20),
+      second_undergrad_after_first (-0.30), education_career_gap_flag (-0.10),
+      duplicate_job_descriptions (-0.50), all_descriptions_identical (-0.80)
+
+    All surviving candidates get l1b_penalty, l1b_flags, l1b_status attached.
+    """
+    survivors = []
+    rejected = 0
+
+    for c in candidates:
+        # Hard-reject check — first matching flag wins
+        reject_flag = next(
+            (f for f in _L1B_HARD_REJECT_FLAGS if c.get(f) is True), None
+        )
+        if reject_flag:
+            c["l1b_penalty"] = 0.0
+            c["l1b_flags"] = [reject_flag]
+            c["l1b_status"] = "reject"
+            rejected += 1
+            continue
+
+        # Accumulate soft-penalty deductions
+        fired = [f for f in _L1B_SOFT_PENALTIES if c.get(f) is True]
+        total_deduction = sum(_L1B_SOFT_PENALTIES[f] for f in fired)
+
+        c["l1b_penalty"] = round(max(0.0, 1.0 - total_deduction), 4)
+        c["l1b_flags"] = fired
+        c["l1b_status"] = "pass"
+        survivors.append(c)
+
+    penalized = sum(1 for c in survivors if c.get("l1b_penalty", 1.0) < 1.0)
+    logger.info(
+        f"L1b: {len(candidates)} in → {len(survivors)} pass "
+        f"({penalized} penalized, {rejected} hard-rejected)"
     )
-    # cosine similarity (already normalized) → dot product
-    scores = embs @ jd_emb
-    for c, s in zip(candidates, scores):
-        c["l2_score"] = float(max(0.0, s))  # clamp negatives to 0
+    return survivors
 
-    logger.info(f"L2: scored {len(candidates)} candidates "
-                f"(mean={float(np.mean(scores)):.3f}, max={float(np.max(scores)):.3f})")
+
+# ──────────────────────────────────────────────────────────────────────────────
+# LAYER 1c — SKILL MATCH (NLP STRING + SYNONYM MATCH)
+# ──────────────────────────────────────────────────────────────────────────────
+from .dictionary import expand_skill  # noqa: E402 (import after module-level constants)
+
+
+def _candidate_search_text(c: dict) -> str:
+    """Build a single normalized text blob from skills, work descriptions, and profile."""
+    parts = []
+    # Skills list
+    skills = c.get("skills", [])
+    if isinstance(skills, list):
+        for s in skills:
+            parts.append(str(s.get("name", "")) if isinstance(s, dict) else str(s))
+    elif isinstance(skills, str):
+        parts.append(skills)
+    # Work history titles + descriptions
+    for exp in utils._iter_work_history(c):
+        if not isinstance(exp, dict):
+            continue
+        for field in ("title", "role", "description"):
+            v = exp.get(field, "")
+            if v:
+                parts.append(str(v))
+    # Profile summary / headline
+    profile = c.get("profile") or {}
+    if isinstance(profile, dict):
+        for field in ("summary", "headline", "title", "current_title"):
+            v = profile.get(field, "")
+            if v:
+                parts.append(str(v))
+    # Project descriptions
+    for proj in (c.get("projects") or []):
+        if isinstance(proj, dict):
+            d = proj.get("description", "")
+            if d:
+                parts.append(str(d))
+    return " ".join(p for p in parts if p).lower()
+
+
+def _skill_in_text(skill: str, text: str) -> bool:
+    """Return True if the skill (or any synonym) appears in text as a whole word/phrase."""
+    for form in expand_skill(skill):
+        # Use negative look-behind/ahead for alphanumeric and hyphen to avoid substrings
+        pattern = r"(?<![a-z0-9\-])" + re.escape(form) + r"(?![a-z0-9\-])"
+        if re.search(pattern, text):
+            return True
+    return False
+
+
+def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
+    """
+    Layer 1c — NLP string skill match using the synonym dictionary.
+
+    For each candidate, searches the candidate's skills list + work descriptions
+    + profile summary for every JD-required and JD-bonus skill, expanding each
+    through the synonym dictionary before matching.
+
+    Score:
+        If both required and bonus skills exist:
+            l1c_score = 0.75 * (req_matched / req_total) + 0.25 * (bon_matched / bon_total)
+        If only required:  l1c_score = req_matched / req_total
+        If only bonus:     l1c_score = bon_matched / bon_total
+        If no skills in JD: l1c_score = 1.0
+
+    Attaches: l1c_score, l1c_matched_required, l1c_missing_required, l1c_matched_bonus.
+
+    Optional gate (controlled by C.L1C_MIN_SKILL_MATCH): candidates scoring below
+    the threshold are filtered out. Defaults to 0.0 (no gate — keep all).
+    """
+    required = jd.get("explicit_required", []) + jd.get("inferred_required", [])
+    bonus = jd.get("explicit_bonus", []) + jd.get("inferred_bonus", [])
+    n_req, n_bon = len(required), len(bonus)
+
+    for c in candidates:
+        text = _candidate_search_text(c)
+
+        req_match = {s: _skill_in_text(s, text) for s in required}
+        matched_req = [s for s, m in req_match.items() if m]
+        missing_req = [s for s, m in req_match.items() if not m]
+        matched_bon = [s for s in bonus if _skill_in_text(s, text)]
+
+        req_ratio = len(matched_req) / n_req if n_req else 1.0
+        bon_ratio = len(matched_bon) / n_bon if n_bon else 0.0
+
+        if n_req > 0 and n_bon > 0:
+            score = 0.75 * req_ratio + 0.25 * bon_ratio
+        elif n_req > 0:
+            score = req_ratio
+        elif n_bon > 0:
+            score = bon_ratio
+        else:
+            score = 1.0
+
+        c["l1c_score"] = round(score, 4)
+        c["l1c_matched_required"] = matched_req
+        c["l1c_missing_required"] = missing_req
+        c["l1c_matched_bonus"] = matched_bon
+
+    # Optional gate
+    before = len(candidates)
+    if C.L1C_MIN_SKILL_MATCH > 0:
+        candidates = [c for c in candidates if c.get("l1c_score", 0.0) >= C.L1C_MIN_SKILL_MATCH]
+        if len(candidates) < before:
+            logger.info(
+                f"L1c gate: {before} → {len(candidates)} "
+                f"(dropped {before - len(candidates)} below min_score={C.L1C_MIN_SKILL_MATCH})"
+            )
+
+    avg = sum(c.get("l1c_score", 0.0) for c in candidates) / max(len(candidates), 1)
+    logger.info(
+        f"L1c: {before} in → {len(candidates)} pass "
+        f"(avg_score={avg:.3f}, req_skills={n_req}, bonus_skills={n_bon})"
+    )
     return candidates
 
 
-def l2_gate(candidates: List[dict], seed: int = 42) -> List[dict]:
-    """Top 50% by l2_score + random 5% from bottom half = 55%."""
+# ──────────────────────────────────────────────────────────────────────────────
+# L1c GLOBAL GATE — 65% (top 50% + random 15%)
+# Applied once globally across all folder threads after per-folder L1c scoring.
+# ──────────────────────────────────────────────────────────────────────────────
+def l1c_gate(candidates: List[dict], seed: int = 42) -> List[dict]:
+    """
+    Keep the top 50% by l1c_score plus a random 15% from the remainder = 65%.
+    The random rescue prevents a strong folder monopolising slots and preserves
+    diversity (edge-case candidates with low skill scores but other strengths).
+    Uses math.ceil so a pool of 1 always yields at least 1 candidate.
+    """
     if not candidates:
         return candidates
 
-    ranked = sorted(candidates, key=lambda c: c["l2_score"], reverse=True)
+    ranked = sorted(candidates, key=lambda c: c.get("l1c_score", 0.0), reverse=True)
     n = len(ranked)
-    top_k = int(n * C.GATE_TOP_FRACTION)
+    top_k = math.ceil(n * C.GATE_TOP_FRACTION)
     top = ranked[:top_k]
     bottom = ranked[top_k:]
 
     rng = random.Random(seed)
-    rand_k = int(n * C.GATE_RANDOM_FRACTION)
+    rand_k = math.ceil(n * C.GATE_RANDOM_FRACTION)
     rescued = rng.sample(bottom, min(rand_k, len(bottom))) if bottom else []
 
     gated = top + rescued
-    logger.info(f"L2 gate: {n} → {len(gated)} "
-                f"(top {len(top)} + random {len(rescued)} = {len(gated)/max(n,1)*100:.0f}%)")
+    logger.info(
+        f"L1c gate: {n} → {len(gated)} "
+        f"(top {len(top)} + random {len(rescued)} = {len(gated)/max(n,1)*100:.0f}%)"
+    )
     return gated
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# LAYER 3 — SENIORITY REGRESSION
+# LAYER 2 — TABLE EXTRACT  (29-column row per candidate)
 # ──────────────────────────────────────────────────────────────────────────────
-def l3_seniority(candidates: List[dict], jd: dict) -> List[dict]:
-    """Apply soft penalty flag if candidate is under-qualified for JD seniority."""
-    req_level_name = str(jd.get("required_seniority", "mid")).lower()
-    req_level = C.SENIORITY_KEYWORDS.get(req_level_name, 3)
 
-    penalized = 0
+# ── Keyword vocabularies for cols 11–13 ──────────────────────────────────────
+_PRODUCTION_KW: Dict[str, float] = {
+    "deployed": 0.20, "deploy": 0.15, "deployment": 0.15,
+    "shipped": 0.18, "ship": 0.15, "shipping": 0.15,
+    "production": 0.20,
+    "real users": 0.25, "live users": 0.20, "end users": 0.15,
+    "at scale": 0.15, "large scale": 0.15,
+    "a/b test": 0.15, "ab test": 0.15, "ab testing": 0.15,
+    "rollout": 0.12, "launched": 0.15, "launch": 0.12,
+    "serving": 0.12,
+}
+
+_ARCHITECTURE_KW: Dict[str, float] = {
+    "designed system": 0.20, "system design": 0.18,
+    "architected": 0.20, "architecture": 0.12,
+    "distributed system": 0.15, "distributed": 0.10,
+    "microservices": 0.12, "microservice": 0.12,
+    "scalable": 0.10, "scalability": 0.10,
+    "high availability": 0.12, "fault tolerant": 0.12,
+    "low latency": 0.10, "throughput": 0.10,
+    "system architecture": 0.18, "pipeline design": 0.12,
+}
+
+_TESTING_EVAL_KW: Dict[str, float] = {
+    "ndcg": 0.25, "mrr": 0.25,
+    "mean average precision": 0.20, "map": 0.20,
+    "a/b test": 0.20, "ab test": 0.20, "ab testing": 0.20,
+    "recall@k": 0.20, "recall@": 0.18,
+    "benchmark": 0.15,
+    "precision@": 0.15, "precision": 0.12,
+    "evaluation": 0.10, "metrics": 0.10,
+    "beir": 0.20, "trec": 0.20,
+    "offline evaluation": 0.15, "online evaluation": 0.15,
+    "f1 score": 0.12,
+}
+
+# ── Tools vocabulary for col 18 ───────────────────────────────────────────────
+_TOOLS_SET: frozenset = frozenset({
+    "faiss", "elasticsearch", "opensearch", "solr", "qdrant", "milvus",
+    "weaviate", "pinecone", "chromadb", "chroma", "pgvector", "lancedb", "vespa",
+    "mlflow", "kubeflow", "wandb", "dvc", "ray", "triton", "bentoml",
+    "pandas", "numpy", "scipy", "polars", "dask", "duckdb",
+    "spark", "pyspark", "kafka", "airflow", "dbt",
+    "sagemaker", "bigquery", "databricks", "snowflake", "redshift",
+    "docker", "kubernetes", "terraform", "jenkins", "prometheus", "grafana",
+    "datadog", "opentelemetry",
+    "tensorflow", "pytorch", "keras", "sklearn", "xgboost",
+    "lightgbm", "huggingface", "langchain", "llamaindex",
+    "postgresql", "postgres", "mysql", "mongodb", "redis", "cassandra", "neo4j",
+    "streamlit", "gradio", "fastapi", "flask", "django",
+    "haystack", "colbert", "bm25", "flashrank", "onnx", "tensorrt",
+    "git", "jira",
+})
+
+# ── Consulting firms / industries for col 19 ─────────────────────────────────
+_CONSULTING_FIRMS: frozenset = frozenset({
+    "tcs", "tata consultancy services", "infosys", "wipro", "accenture",
+    "cognizant", "capgemini", "hcl", "hcl technologies", "tech mahindra",
+    "mphasis", "mindtree", "hexaware", "ltimindtree", "lti mindtree",
+    "l&t infotech", "kpmg", "deloitte", "pwc", "ernst & young", "ey",
+    "mckinsey", "boston consulting group", "bcg", "bain",
+    "niit technologies", "zensar", "cyient", "persistent systems",
+})
+
+_CONSULTING_INDUSTRIES: frozenset = frozenset({
+    "it services", "consulting", "professional services", "outsourcing",
+    "it consulting", "management consulting", "technology services",
+    "bpo", "kpo", "ites", "information technology services",
+})
+
+# ── Research publication keywords for col 17 ─────────────────────────────────
+_RESEARCH_KW: frozenset = frozenset({
+    "paper", "published", "arxiv", "proceedings", "neurips", "nips",
+    "icml", "iclr", "cvpr", "acl", "emnlp", "journal", "preprint",
+    "citation", "dissertation", "thesis", "conference paper", "research paper",
+    "peer reviewed", "peer-reviewed",
+})
+
+
+# ── Private helpers ───────────────────────────────────────────────────────────
+
+def _safe_float(val, default=None) -> Optional[float]:
+    if val is None:
+        return default
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return default
+
+
+def _norm(val: Optional[float], cap: float) -> float:
+    """Clamp val/cap to [0, 1]; negative or None → 0.0."""
+    if val is None or val < 0:
+        return 0.0
+    return min(val, cap) / cap
+
+
+def _kw_accumulate(text: str, kw_dict: Dict[str, float]) -> float:
+    """Weighted keyword accumulation over lowercased text, capped at 1.0."""
+    score = 0.0
+    for kw, weight in kw_dict.items():
+        if kw in text:
+            score += weight
+    return min(score, 1.0)
+
+
+def _work_text_lower(c: dict) -> str:
+    """All career_history description strings, concatenated and lowercased."""
+    parts = []
+    for exp in utils._iter_work_history(c):
+        if isinstance(exp, dict):
+            d = exp.get("description", "")
+            if d:
+                parts.append(str(d))
+    return " ".join(parts).lower()
+
+
+def _parse_date_to_dt(val) -> Optional[datetime]:
+    if val is None:
+        return None
+    if isinstance(val, datetime):
+        return val
+    s = str(val).strip()
+    for fmt, ln in (
+        ("%Y-%m-%dT%H:%M:%S", 19),
+        ("%Y-%m-%d", 10),
+        ("%Y/%m/%d", 10),
+        ("%d-%m-%Y", 10),
+        ("%Y-%m", 7),
+        ("%Y", 4),
+    ):
+        try:
+            return datetime.strptime(s[:ln], fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _redrob_cumulative(signals: dict) -> float:
+    """
+    Weighted composite of 16 redrob_signals sub-signals, each → [0,1].
+    Weights sum to 1.0.  github=-1 and offer_rate=-1 → neutral (0.5 each).
+    """
+    def _bool(key: str) -> float:
+        v = signals.get(key)
+        return 1.0 if v is True or str(v).lower() in ("1", "true", "yes") else 0.0
+
+    github_raw = _safe_float(signals.get("github_activity_score"))
+    github_val = 0.5 if github_raw == -1.0 else _norm(github_raw, 100.0)
+
+    offer_raw = _safe_float(signals.get("offer_acceptance_rate"))
+    offer_val = 0.5 if offer_raw == -1.0 else _norm(offer_raw, 1.0)
+
+    # Response speed: lower hours = better; missing → neutral 0.5
+    speed_h = _safe_float(signals.get("average_response_time_hours"))
+    if speed_h is None or speed_h < 0:
+        speed_val = 0.5
+    else:
+        speed_val = max(0.0, 1.0 - _norm(speed_h, 48.0))
+
+    return round(min(max((
+        _norm(_safe_float(signals.get("profile_completeness_score")), 100.0) * 0.08
+        + _norm(_safe_float(signals.get("profile_recency_score")), 1.0)      * 0.12
+        + _bool("open_to_work")                                               * 0.08
+        + _norm(_safe_float(signals.get("applications_submitted_30d")), 30.0) * 0.06
+        + _norm(_safe_float(signals.get("recruiter_response_rate")), 1.0)    * 0.07
+        + speed_val                                                            * 0.05
+        + _norm(_safe_float(signals.get("linkedin_connections")), 500.0)     * 0.04
+        + _norm(_safe_float(signals.get("linkedin_endorsements")), 100.0)    * 0.04
+        + github_val                                                           * 0.10
+        + _norm(_safe_float(signals.get("search_appearances_30d")), 50.0)    * 0.05
+        + _norm(_safe_float(signals.get("saved_by_recruiters")), 20.0)       * 0.05
+        + _norm(_safe_float(signals.get("profile_views_30d")), 100.0)        * 0.04
+        + _norm(_safe_float(signals.get("interview_conversion_rate")), 1.0)  * 0.07
+        + offer_val                                                            * 0.06
+        + _bool("is_verified")                                                * 0.05
+        + _norm(_safe_float(signals.get("linkedin_profile_score")), 100.0)   * 0.04
+    ), 0.0), 1.0), 4)
+
+
+def _build_table_row(
+    c: dict,
+    jd_inferred: List[str],
+    n_req: int,
+    global_desc_hashes: dict,
+) -> dict:
+    profile    = c.get("profile") or {}
+    signals    = c.get("redrob_signals") or {}
+    edu_list   = c.get("education") or []
+    work_hist  = list(utils._iter_work_history(c))
+    skills_raw = c.get("skills") or []
+    certs      = c.get("certifications") or []
+    langs      = c.get("languages") or []
+    summary    = str(profile.get("summary") or "").lower()
+
+    # 01 — candidate_id
+    candidate_id = str(c.get("candidate_id") or c.get("id") or "")
+
+    # 02 — total_exp
+    total_exp = utils.get_total_experience_years(c)
+
+    # 03 — location
+    loc     = str(profile.get("location") or "").strip()
+    country = str(profile.get("country") or "").strip()
+    location = f"{loc}, {country}" if loc and country else loc or country or ""
+
+    # 04 — max_salary + internal salary-inversion flag (feeds col 28)
+    sal_range   = signals.get("expected_salary_range_inr_lpa") or {}
+    max_salary  = _safe_float(sal_range.get("max"))
+    min_salary  = _safe_float(sal_range.get("min"))
+    _sal_inverted = (
+        min_salary is not None and max_salary is not None and min_salary > max_salary
+    )
+
+    # 05 — skill_assessment_score
+    assessment = signals.get("skill_assessment_scores")
+    if isinstance(assessment, dict) and assessment:
+        skill_assessment_score = round(sum(assessment.values()) / len(assessment) / 100.0, 4)
+    else:
+        skill_assessment_score = 0.0
+
+    # 06 — skill_match_score  (carried from L1c)
+    matched_req = c.get("l1c_matched_required") or []
+    skill_match_score = round(len(matched_req) / n_req, 4) if n_req > 0 else 0.0
+
+    # 07 — inferred_skill_match_score  (NLP + synonym match; raw count)
+    cand_text = _candidate_search_text(c)  # lowercased skills + descs + summary
+    inferred_skill_match_score = sum(
+        1 for skill in jd_inferred if _skill_in_text(skill, cand_text)
+    )
+
+    # 08 — redrob_cumulative
+    redrob_cumulative = _redrob_cumulative(signals)
+
+    # 09 — industry
+    industry = str(profile.get("current_industry") or profile.get("industry") or "")
+
+    # 10 — is_phd
+    is_phd = any(
+        any(kw in str(e.get("degree", "")).lower() for kw in ("phd", "doctor", "d.phil"))
+        for e in edu_list if isinstance(e, dict)
+    )
+
+    # 11–13 — keyword scores over all work descriptions
+    wtext = _work_text_lower(c)
+    production_score        = round(_kw_accumulate(wtext, _PRODUCTION_KW), 4)
+    architecture_score      = round(_kw_accumulate(wtext, _ARCHITECTURE_KW), 4)
+    testing_evaluation_score = round(_kw_accumulate(wtext, _TESTING_EVAL_KW), 4)
+
+    # 14 — no_certifications
+    no_certifications = len(certs)
+
+    # 15 — no_languages
+    no_languages = len(langs)
+
+    # 16 — open_source_score
+    github_raw = _safe_float(signals.get("github_activity_score"))
+    open_source_score = (
+        0.0 if (github_raw is None or github_raw == -1.0)
+        else round(github_raw / 100.0, 4)
+    )
+
+    # 17 — research_published  (True | None, never False)
+    research_text = wtext + " " + " ".join(
+        str(cert.get("name") or "").lower() for cert in certs if isinstance(cert, dict)
+    )
+    research_published = True if any(kw in research_text for kw in _RESEARCH_KW) else None
+
+    # 18 — tools_score  (raw count of distinct tool matches)
+    skills_text = " ".join(
+        str(s.get("name") if isinstance(s, dict) else s).lower() for s in skills_raw
+    )
+    full_text = skills_text + " " + wtext
+    tools_score = sum(1 for tool in _TOOLS_SET if tool in full_text)
+
+    # 19 — consulting_only
+    consulting_only = bool(work_hist) and all(
+        (
+            str(exp.get("industry") or "").strip().lower() in _CONSULTING_INDUSTRIES
+            or str(exp.get("company") or "").strip().lower() in _CONSULTING_FIRMS
+        )
+        for exp in work_hist if isinstance(exp, dict)
+    )
+
+    # 20–21 — last_career_tenure / last_career_company
+    current_job = next(
+        (e for e in work_hist if isinstance(e, dict) and e.get("is_current") is True),
+        None,
+    )
+    if current_job is None and work_hist:
+        current_job = max(
+            (e for e in work_hist if isinstance(e, dict)),
+            key=lambda e: str(e.get("start_date") or e.get("start_year") or ""),
+            default=None,
+        )
+    last_career_tenure  = _safe_float((current_job or {}).get("duration_months"))
+    last_career_company = str((current_job or {}).get("company") or "")
+
+    # 22 — no_offer_history
+    offer_raw       = _safe_float(signals.get("offer_acceptance_rate"))
+    no_offer_history = offer_raw == -1.0
+
+    # 23–24 — education timeline vs career start
+    edu_ends = [
+        _parse_year(e.get("end_year") or e.get("year"))
+        for e in edu_list if isinstance(e, dict)
+    ]
+    edu_ends = [y for y in edu_ends if y is not None]
+
+    career_starts = [
+        _parse_year(e.get("start_date") or e.get("start_year"))
+        for e in work_hist if isinstance(e, dict)
+    ]
+    career_starts = [y for y in career_starts if y is not None]
+
+    education_overlap   = False
+    edu_career_gap_flag = False
+    if edu_ends and career_starts:
+        latest_edu_end       = max(edu_ends)
+        first_career_start   = min(career_starts)
+        education_overlap    = latest_edu_end > first_career_start
+        gap                  = first_career_start - latest_edu_end
+        edu_career_gap_flag  = gap > 1.5
+
+    # 25 — active_before_signup
+    active_before_signup = False
+    last_active_dt = _parse_date_to_dt(signals.get("last_active_date"))
+    signup_dt      = _parse_date_to_dt(signals.get("signup_date"))
+    if last_active_dt is not None and signup_dt is not None:
+        active_before_signup = last_active_dt < signup_dt
+
+    # 26 — duplicate_job_descriptions  (cross-candidate md5 check)
+    duplicate_job_descriptions = False
+    this_hashes: List[str] = []
+    for exp in work_hist:
+        if not isinstance(exp, dict):
+            continue
+        desc = str(exp.get("description") or "").strip()
+        if not desc:
+            continue
+        h = hashlib.md5(desc.encode("utf-8")).hexdigest()
+        if h in global_desc_hashes:
+            duplicate_job_descriptions = True
+        this_hashes.append(h)
+    for h in this_hashes:
+        global_desc_hashes.setdefault(h, candidate_id)
+
+    # 27 — low_engagement_flag
+    apps_30d      = _safe_float(signals.get("applications_submitted_30d"))
+    response_rate = _safe_float(signals.get("recruiter_response_rate"))
+    low_engagement_flag = (
+        apps_30d is not None and apps_30d < 1
+        and response_rate is not None and response_rate < 0.2
+    )
+
+    # 28 — fabrication_bandwidth  [0, 1]
+    fab = 0.0
+    if _sal_inverted:
+        fab += 0.30
+    if active_before_signup:
+        fab += 0.40
+    cur_title  = str(profile.get("current_title") or profile.get("title") or "").strip().lower()
+    job_title  = str((current_job or {}).get("title") or "").strip().lower()
+    if cur_title and job_title and cur_title != job_title:
+        fab += 0.20
+    if "marketing manager" in summary:
+        fab += 0.10
+    fabrication_bandwidth = round(min(fab, 1.0), 4)
+
+    # 29 — possible_fabrication
+    possible_fabrication = duplicate_job_descriptions or fabrication_bandwidth > 0.5
+
+    return {
+        "candidate_id":               candidate_id,              # 01
+        "total_exp":                  total_exp,                 # 02
+        "location":                   location,                  # 03
+        "max_salary":                 max_salary,                # 04
+        "skill_assessment_score":     skill_assessment_score,    # 05
+        "skill_match_score":          skill_match_score,         # 06
+        "inferred_skill_match_score": inferred_skill_match_score, # 07
+        "redrob_cumulative":          redrob_cumulative,         # 08
+        "industry":                   industry,                  # 09
+        "is_phd":                     is_phd,                    # 10
+        "production_score":           production_score,          # 11
+        "architecture_score":         architecture_score,        # 12
+        "testing_evaluation_score":   testing_evaluation_score,  # 13
+        "no_certifications":          no_certifications,         # 14
+        "no_languages":               no_languages,              # 15
+        "open_source_score":          open_source_score,         # 16
+        "research_published":         research_published,        # 17
+        "tools_score":                tools_score,               # 18
+        "consulting_only":            consulting_only,           # 19
+        "last_career_tenure":         last_career_tenure,        # 20
+        "last_career_company":        last_career_company,       # 21
+        "no_offer_history":           no_offer_history,          # 22
+        "education_overlap":          education_overlap,         # 23
+        "edu_career_gap_flag":        edu_career_gap_flag,       # 24
+        "active_before_signup":       active_before_signup,      # 25
+        "duplicate_job_descriptions": duplicate_job_descriptions, # 26
+        "low_engagement_flag":        low_engagement_flag,       # 27
+        "fabrication_bandwidth":      fabrication_bandwidth,     # 28
+        "possible_fabrication":       possible_fabrication,      # 29
+    }
+
+
+def l2_table_extract(
+    candidates: List[dict],
+    jd: dict,
+    global_desc_hashes: dict = None,
+) -> List[dict]:
+    """
+    Layer 2 — Table Extract:
+    Builds a 29-column `table_row` dict on every candidate and attaches it as
+    c['table_row'].  No candidates are filtered; the full list passes through.
+
+    global_desc_hashes: mutable {md5: first_candidate_id} shared across all
+    folders/calls so col 26 (duplicate_job_descriptions) catches cross-candidate
+    copy-pasted descriptions.  Pass the same dict for every call in a pipeline run.
+    """
+    if global_desc_hashes is None:
+        global_desc_hashes = {}
+
+    jd_required  = jd.get("explicit_required", []) + jd.get("inferred_required", [])
+    jd_inferred  = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
+    n_req        = len(jd_required)
+
     for c in candidates:
-        years = utils.get_total_experience_years(c)
-        cand_level = C.years_to_seniority(years)
-        if cand_level < req_level:
-            c["l3_penalty"] = C.SENIORITY_PENALTY
-            c["l3_flag"] = f"under-qualified ({years:.0f}y vs {req_level_name} required)"
-            penalized += 1
-        else:
-            c["l3_penalty"] = 1.0
-            c["l3_flag"] = ""
-    logger.info(f"L3: {penalized}/{len(candidates)} candidates received seniority penalty")
+        c["table_row"] = _build_table_row(
+            c, jd_inferred, n_req, global_desc_hashes
+        )
+
+    logger.info(f"L2 table extract: {len(candidates)} rows built (29 cols each)")
     return candidates
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# LAYER 4 — SEMANTIC WORK-TO-JD RELEVANCE (independent)
+# LAYER 3 — SUGENO FUZZY INFERENCE SYSTEM  (reads table_row from L2)
 # ──────────────────────────────────────────────────────────────────────────────
-def l4_semantic_work(candidates: List[dict], jd: dict, st_model) -> List[dict]:
-    """Independent score: candidate work/project descriptions vs JD responsibilities."""
-    if not candidates:
+
+# 32-rule Sugeno table — (a, b, c, d, e, f, g, output_value)
+# Condition levels: H=HIGH  M=MED  L=LOW  P=PARTIAL (g only)  W=WARNING (f only)
+_FUZZY_RULES = [
+    #  a    b    c    d    e    f    g     out
+    ("H", "H", "H", "H", "H", "H", "H",  1.00),  # R01
+    ("H", "H", "H", "L", "H", "H", "H",  0.95),  # R02
+    ("H", "H", "H", "H", "H", "H", "P",  0.91),  # R03
+    ("H", "H", "H", "H", "H", "W", "H",  0.82),  # R04  ★ f=W ceiling
+    ("H", "H", "M", "H", "H", "H", "H",  0.95),  # R05
+    ("H", "M", "H", "H", "H", "H", "H",  0.95),  # R06
+    ("M", "H", "H", "H", "H", "H", "H",  0.97),  # R07
+    ("H", "H", "H", "H", "H", "H", "P",  0.91),  # R08
+    ("H", "H", "H", "H", "M", "H", "H",  0.95),  # R09
+    ("H", "H", "H", "H", "H", "H", "L",  0.55),  # R10  ★ g=L ceiling
+    ("H", "H", "H", "H", "H", "L", "H",  0.75),  # R11  ★ f=L ceiling
+    ("H", "H", "M", "L", "H", "H", "P",  0.78),  # R12
+    ("L", "H", "H", "H", "H", "H", "M",  0.85),  # R13
+    ("H", "M", "M", "H", "H", "H", "M",  0.77),  # R14
+    ("H", "H", "L", "H", "H", "H", "M",  0.77),  # R15
+    ("H", "H", "H", "H", "L", "H", "M",  0.77),  # R16
+    ("H", "M", "M", "H", "H", "H", "L",  0.45),  # R17  ★
+    ("H", "H", "M", "L", "L", "H", "L",  0.42),  # R18  ★
+    ("H", "M", "H", "H", "L", "W", "M",  0.62),  # R19  ★
+    ("L", "M", "M", "L", "H", "H", "M",  0.68),  # R20
+    ("H", "L", "M", "H", "H", "H", "M",  0.72),  # R21
+    ("H", "H", "L", "H", "L", "W", "L",  0.35),  # R22  ★
+    ("H", "L", "L", "H", "L", "H", "M",  0.53),  # R23
+    ("L", "M", "L", "L", "L", "H", "L",  0.27),  # R24  ★
+    ("H", "M", "L", "L", "L", "W", "L",  0.24),  # R25  ★
+    ("H", "L", "L", "H", "H", "W", "L",  0.27),  # R26  ★
+    ("L", "L", "M", "L", "L", "H", "L",  0.22),  # R27  ★
+    ("H", "L", "L", "H", "L", "L", "L",  0.16),  # R28  ★
+    ("H", "M", "L", "L", "L", "L", "L",  0.17),  # R29  ★
+    ("L", "L", "L", "L", "L", "H", "L",  0.20),  # R30  ★
+    ("H", "L", "L", "H", "L", "L", "L",  0.16),  # R31  ★
+    ("L", "L", "L", "L", "L", "L", "L",  0.04),  # R32  ★
+]
+
+# Weights for linear fallback (matches the formula: score=0.4g+0.2f+0.1b+0.1e+0.05a+0.1c+0.05d)
+_FIS_WEIGHTS = {"g": 0.40, "f": 0.20, "b": 0.10, "e": 0.10, "a": 0.05, "c": 0.10, "d": 0.05}
+
+
+# ── MF helpers ────────────────────────────────────────────────────────────────
+
+def _bell_mf(x: float, center: float, width: float, slope: float = 2.0) -> float:
+    """Generalized bell MF: 1 / (1 + |(x − center) / width| ^ (2 × slope))"""
+    if width <= 0:
+        return 1.0 if abs(x - center) < 1e-9 else 0.0
+    return 1.0 / (1.0 + abs((x - center) / width) ** (2.0 * slope))
+
+
+def _pct(sv: list, p: float) -> float:
+    """Linear-interpolated percentile. p in [0,100]. sv must be sorted."""
+    n = len(sv)
+    if n == 0:
+        return 0.0
+    if n == 1:
+        return sv[0]
+    idx = (p / 100.0) * (n - 1)
+    lo = int(idx)
+    hi = min(lo + 1, n - 1)
+    return sv[lo] + (idx - lo) * (sv[hi] - sv[lo])
+
+
+# ── Condition computation (Step 3) ───────────────────────────────────────────
+
+def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[str, float]:
+    """
+    Derive 7 crisp conditions a–g from a L2 table_row. All outputs in [0, 1].
+
+    a — experience in JD sweet spot
+    b — explicit skill signal (skill_match + skill_assessment)
+    c — inferred signal + platform engagement
+    d — industry match with JD
+    e — absence of disqualifying traits (phd-only, consulting, stagnant, pure-researcher)
+    f — profile integrity (deductions for anomaly flags)
+    g — technical breadth (production + arch + testing + tools + open-source/research)
+    """
+    exp = float(row.get("total_exp") or 0.0)
+    a = 1.0 if 5.0 <= exp <= 9.0 else (0.5 if 3.0 <= exp <= 12.0 else 0.0)
+
+    b = (float(row.get("skill_match_score") or 0.0)
+         + float(row.get("skill_assessment_score") or 0.0)) / 2.0
+
+    inf_norm = (
+        min(float(row.get("inferred_skill_match_score") or 0.0) / n_inferred, 1.0)
+        if n_inferred > 0 else 0.0
+    )
+    c = (inf_norm + float(row.get("redrob_cumulative") or 0.0)) / 2.0
+
+    cand_ind = str(row.get("industry") or "").strip().lower()
+    d = 1.0 if (jd_industry and cand_ind and jd_industry in cand_ind) else 0.0
+
+    stagnant_lead = (
+        float(row.get("last_career_tenure") or 0.0) > 60.0
+        and float(row.get("production_score") or 0.0) < 0.25
+    )
+    pure_researcher = (
+        row.get("research_published") is True
+        and float(row.get("production_score") or 0.0) < 0.20
+    )
+    e = (
+        (0.0 if row.get("is_phd") else 1.0)
+        + (0.0 if row.get("consulting_only") else 1.0)
+        + (0.0 if stagnant_lead else 1.0)
+        + (0.0 if pure_researcher else 1.0)
+    ) / 4.0
+
+    f = 1.0
+    if row.get("duplicate_job_descriptions"):  f -= 0.40
+    if row.get("low_engagement_flag"):         f -= 0.20
+    if row.get("active_before_signup"):        f -= 0.20
+    f -= float(row.get("fabrication_bandwidth") or 0.0) * 0.20
+    f = max(0.0, f)
+
+    tools_norm      = min(float(row.get("tools_score") or 0.0) / 10.0, 1.0)
+    open_or_research = max(
+        float(row.get("open_source_score") or 0.0),
+        1.0 if row.get("research_published") is True else 0.0,
+    )
+    g = (
+        float(row.get("production_score") or 0.0)
+        + float(row.get("architecture_score") or 0.0)
+        + float(row.get("testing_evaluation_score") or 0.0)
+        + tools_norm
+        + open_or_research
+    ) / 5.0
+
+    return {"a": a, "b": b, "c": c, "d": d, "e": e, "f": f, "g": g}
+
+
+# ── Self-calibration (Step 4) ─────────────────────────────────────────────────
+
+def _calibrate_mf_params(all_conds: List[Dict[str, float]]) -> Dict[str, dict]:
+    """
+    Compute bell-MF (center, width, slope=2) for each condition level.
+    Centers are derived from run percentiles.
+      g → 4 levels: L, M, P, H
+      f → 3 levels: L, W, H
+      a, b, c, d, e → 3 levels: L, M, H
+    a and d use fixed geometry (discrete/binary values).
+    """
+    MIN_W = 0.05
+    params: Dict[str, dict] = {}
+
+    for var in ("b", "c", "e", "f", "g"):
+        sv = sorted(c[var] for c in all_conds)
+        p10 = _pct(sv, 10); p25 = _pct(sv, 25); p50 = _pct(sv, 50)
+        p65 = _pct(sv, 65); p75 = _pct(sv, 75); p90 = _pct(sv, 90)
+
+        w_lo = max((p25 - p10) / 2.0, MIN_W)
+        w_md = max((p75 - p25) / 2.0, MIN_W)
+        w_hi = max((p90 - p75) / 2.0, MIN_W)
+
+        if var == "g":
+            params[var] = {
+                "L": (p10, w_lo, 2.0),
+                "M": (p50, w_md, 2.0),
+                "P": (p65, max((p90 - p50) / 3.0, MIN_W), 2.0),
+                "H": (p90, w_hi, 2.0),
+            }
+        elif var == "f":
+            params[var] = {
+                "L": (p10, w_lo, 2.0),
+                "W": (p25, max((p65 - p10) / 3.0, MIN_W), 2.0),
+                "H": (p90, w_hi, 2.0),
+            }
+        else:
+            params[var] = {
+                "L": (p10, w_lo, 2.0),
+                "M": (p50, w_md, 2.0),
+                "H": (p90, w_hi, 2.0),
+            }
+
+    # Fixed geometry for discrete variables (a ∈ {0, 0.5, 1}; d ∈ {0, 1})
+    params["a"] = {"L": (0.0, 0.15, 2.0), "M": (0.5, 0.15, 2.0), "H": (1.0, 0.15, 2.0)}
+    params["d"] = {"L": (0.0, 0.15, 2.0), "M": (0.5, 0.20, 2.0), "H": (1.0, 0.15, 2.0)}
+
+    return params
+
+
+# ── Fuzzification ─────────────────────────────────────────────────────────────
+
+def _fuzzify(conds: Dict[str, float], params: Dict[str, dict]) -> Dict[str, dict]:
+    """Map each crisp value to membership degrees at every defined level."""
+    return {
+        var: {
+            lvl: _bell_mf(val, center, width, slope)
+            for lvl, (center, width, slope) in params[var].items()
+        }
+        for var, val in conds.items()
+    }
+
+
+# ── Sugeno inference (Steps 5–6) ─────────────────────────────────────────────
+
+def _sugeno_infer(mf_vals: Dict[str, dict]):
+    """
+    Evaluate all 32 rules with AND = min().
+    Returns (raw_score | None, total_fire_strength).
+    None means degenerate (all rules near-zero → use linear fallback).
+    """
+    ws = 0.0
+    ts = 0.0
+    for a_l, b_l, c_l, d_l, e_l, f_l, g_l, out in _FUZZY_RULES:
+        s = min(
+            mf_vals["a"][a_l], mf_vals["b"][b_l], mf_vals["c"][c_l],
+            mf_vals["d"][d_l], mf_vals["e"][e_l], mf_vals["f"][f_l],
+            mf_vals["g"][g_l],
+        )
+        ws += s * out
+        ts += s
+    return (ws / ts if ts > 1e-9 else None), ts
+
+
+def _linear_fallback(conds: Dict[str, float]) -> float:
+    """Linear weighted score — used when all fire strengths are near zero."""
+    return sum(_FIS_WEIGHTS[k] * v for k, v in conds.items())
+
+
+# ── Ceiling constraints (Step 7) ─────────────────────────────────────────────
+
+def _apply_ceilings(mf_vals: Dict[str, dict], raw_score: float) -> float:
+    """
+    g=L dominant          → cap score at 0.55 (never shipped → not top-50)
+    (f=W or f=L) dominant AND (g=H or g=P) dominant → cap at 0.82 (integrity concern)
+    """
+    gv = mf_vals["g"]
+    fv = mf_vals["f"]
+    g_lo = gv["L"];      g_hi = gv["H"];  g_pa = gv.get("P", 0.0);  g_md = gv.get("M", 0.0)
+    f_hi = fv["H"];      f_wa = fv.get("W", 0.0);  f_lo = fv["L"]
+
+    if g_lo > max(g_hi, g_pa, g_md):
+        raw_score = min(raw_score, 0.55)
+    elif max(f_wa, f_lo) > f_hi and max(g_hi, g_pa) > 0.4:
+        raw_score = min(raw_score, 0.82)
+    return raw_score
+
+
+# ── Post-FIS adjustments (Step 8) ────────────────────────────────────────────
+
+def _post_fis_adjust(raw_score: float, row: dict) -> float:
+    """Boolean multipliers applied in order after FIS score is computed."""
+    if row.get("duplicate_job_descriptions"):  raw_score *= 0.40   # Step 2 deferred penalty
+    if row.get("research_published") is True:  raw_score *= 1.05
+    if 5.0 <= float(row.get("total_exp") or 0) <= 9.0: raw_score *= 1.08
+    if row.get("edu_career_gap_flag"):         raw_score *= 0.90
+    return max(0.0, min(1.0, raw_score))
+
+
+def _fuzzy_class(score: float) -> str:
+    if score >= 0.85:  return "strong_fit"
+    if score >= 0.70:  return "good_fit"
+    if score >= 0.55:  return "moderate_fit"
+    return "weak_fit"
+
+
+def _build_fuzzy_reasoning(row: dict, conds: Dict[str, float], score: float) -> str:
+    flags = []
+    if row.get("possible_fabrication"):          flags.append("fabrication")
+    if row.get("consulting_only"):               flags.append("consulting_only")
+    if row.get("duplicate_job_descriptions"):    flags.append("dup_desc")
+    if row.get("low_engagement_flag"):           flags.append("low_engagement")
+    if row.get("active_before_signup"):          flags.append("active_before_signup")
+    if row.get("edu_career_gap_flag"):           flags.append("edu_gap")
+    if 5.0 <= float(row.get("total_exp") or 0) <= 9.0:  flags.append("ideal_exp")
+    if row.get("research_published"):            flags.append("research")
+    tag = f"[{', '.join(flags)}]" if flags else "clean"
+    a, b, c, d, e, f, g = (conds[k] for k in "abcdefg")
+    return (
+        f"score={score:.3f} "
+        f"a={a:.2f} b={b:.2f} c={c:.2f} d={d:.2f} e={e:.2f} f={f:.2f} g={g:.2f} "
+        f"{tag}"
+    )
+
+
+# ── Public entry point ────────────────────────────────────────────────────────
+
+def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
+    """
+    Layer 3 — Sugeno Fuzzy Inference System.
+    Input:  candidates that have already passed through L2 (table_row present).
+    Output: same list with l3_score, l3_class, l3_reasoning attached to each c.
+            Also writes l7_fis_score, fuzzy_class, fuzzy_penalty, reasoning into table_row.
+
+    Pre-FIS knockouts (Step 2):
+      consulting_only=True      → l3_score = 0.00, skip FIS
+      possible_fabrication=True → l3_score = 0.05, skip FIS
+      duplicate_job_desc=True   → continue FIS, ×0.40 penalty in Step 8
+
+    No candidates are removed; every candidate exits with l3_score set.
+    """
+    jd_industry = str(jd.get("industry") or jd.get("job_industry") or "").strip().lower()
+    n_inferred  = len(jd.get("inferred_required", []) + jd.get("inferred_bonus", []))
+
+    # ── Step 2: pre-FIS knockouts ──────────────────────────────────────────
+    active: List[dict] = []
+    for c in candidates:
+        row = c.get("table_row")
+        if not isinstance(row, dict):
+            logger.warning(
+                f"L3 fuzzy: no table_row on {c.get('candidate_id', '?')} — assign 0.0"
+            )
+            c["l3_score"] = 0.0; c["l3_class"] = "no_table_row"
+            c["l3_reasoning"] = "missing_l2_output"
+            continue
+        if row.get("consulting_only"):
+            c["l3_score"] = 0.00; c["l3_class"] = "knockout_consulting"
+            c["l3_reasoning"] = "consulting_only=True"
+            row.update(l7_fis_score=0.00, fuzzy_class="knockout_consulting",
+                       fuzzy_penalty=0.0, reasoning="consulting_only=True")
+            continue
+        if row.get("possible_fabrication"):
+            c["l3_score"] = 0.05; c["l3_class"] = "knockout_fabrication"
+            c["l3_reasoning"] = "possible_fabrication=True"
+            row.update(l7_fis_score=0.05, fuzzy_class="knockout_fabrication",
+                       fuzzy_penalty=0.0, reasoning="possible_fabrication=True")
+            continue
+        active.append(c)
+
+    if not active:
+        logger.info(f"L3 fuzzy: all {len(candidates)} candidates knocked out pre-FIS")
         return candidates
 
-    # JD responsibilities text = required + inferred (the "what you'll do" signal)
-    jd_resp = " ".join(jd.get("explicit_required", []) + jd.get("inferred_required", []))
-    jd_emb = st_model.encode([jd_resp], convert_to_numpy=True, normalize_embeddings=True)[0]
+    # ── Step 3: compute a–g for every active candidate ─────────────────────
+    all_conds: List[Dict[str, float]] = [
+        _compute_conditions(c["table_row"], jd_industry, n_inferred) for c in active
+    ]
 
-    texts, idxs = [], []
-    for i, c in enumerate(candidates):
-        wt = utils.get_work_descriptions_only(c)
-        if wt:
-            texts.append(wt)
-            idxs.append(i)
+    # ── Step 4: self-calibrate MF params from run percentiles ──────────────
+    mf_params = _calibrate_mf_params(all_conds)
+
+    # ── Steps 4–9: fuzzify → infer → ceiling → post-adjust → write-back ───
+    scored: List[float] = []
+    for c, conds in zip(active, all_conds):
+        row = c["table_row"]
+
+        mf_vals = _fuzzify(conds, mf_params)                     # Step 4
+        raw, _  = _sugeno_infer(mf_vals)                          # Steps 5–6
+
+        if raw is None:
+            raw = _linear_fallback(conds)                          # degenerate fallback
         else:
-            c["l4_score"] = 0.0  # no work descriptions → score 0, no penalty
+            raw = _apply_ceilings(mf_vals, raw)                    # Step 7
 
-    if texts:
-        embs = st_model.encode(
-            texts, batch_size=C.L4_BATCH_SIZE,
-            convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=False,
+        score = _post_fis_adjust(raw, row)                         # Step 8
+        cls   = _fuzzy_class(score)
+        rsn   = _build_fuzzy_reasoning(row, conds, score)
+
+        c["l3_score"]     = round(score, 4)                        # Step 9
+        c["l3_class"]     = cls
+        c["l3_reasoning"] = rsn
+        row.update(
+            l7_fis_score  = round(score, 4),
+            fuzzy_class   = cls,
+            fuzzy_penalty = round(conds["f"], 4),
+            reasoning     = rsn,
         )
-        scores = embs @ jd_emb
-        for i, s in zip(idxs, scores):
-            candidates[i]["l4_score"] = float(max(0.0, s))
+        scored.append(score)
 
-    logger.info(f"L4: scored {len(texts)} candidates with work descriptions "
-                f"({len(candidates)-len(texts)} had none → score 0)")
+    avg = sum(scored) / len(scored) if scored else 0.0
+    logger.info(
+        f"L3 fuzzy: {len(candidates)} in — {len(active)} FIS-scored "
+        f"(avg={avg:.3f}), {len(candidates) - len(active)} pre-FIS knockouts"
+    )
     return candidates
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# LAYER 6 — BEHAVIORAL SIGNALS
-# ──────────────────────────────────────────────────────────────────────────────
-def l6_behavioral(candidates: List[dict], jd: dict) -> List[dict]:
-    """
-    Sum behavioral signals and normalize to [0,1] by dividing by the max
-    possible score for the role type (absolute, not pool-relative).
+# ══════════════════════════════════════════════════════════════════════════════
+# LAYER 4 — SEMANTIC WORK RELEVANCE
+# ══════════════════════════════════════════════════════════════════════════════
 
-    Tech roles: up to 5 signals (github + 4 others); max_possible = 5.0
-    Non-tech roles: up to 4 signals; max_possible = 4.0
-    Missing signals contribute 0. GitHub absence incurs a -0.1 penalty for
-    tech roles (intentional: being on GitHub is expected for tech candidates).
-    """
-    is_tech = any(k in (jd.get("job_title", "") + " ".join(jd.get("explicit_required", []))).lower()
-                  for k in ["engineer", "developer", "ml", "ai", "data", "software", "python"])
-    max_possible = 5.0 if is_tech else 4.0
+def _jd_responsibilities_text(jd: dict) -> str:
+    """Extract the JD 'what you'll do' / responsibilities text."""
+    for key in (
+        "what_you_will_do", "what_youll_do", "what_will_you_do",
+        "responsibilities", "job_responsibilities", "key_responsibilities",
+        "role_responsibilities", "duties", "role_description",
+    ):
+        val = jd.get(key)
+        if val:
+            if isinstance(val, list):
+                return " ".join(str(v) for v in val if v).strip()
+            s = str(val).strip()
+            if s:
+                return s
+    # Fallback: use the full JD description
+    return str(jd.get("description") or jd.get("job_description") or "").strip()
 
+
+def _cosine_sim_np(a: np.ndarray, b: np.ndarray) -> float:
+    na = np.linalg.norm(a)
+    nb = np.linalg.norm(b)
+    if na < 1e-9 or nb < 1e-9:
+        return 0.0
+    return float(np.dot(a, b) / (na * nb))
+
+
+def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
+    """
+    Layer 4 — Semantic Work Relevance.
+
+    Encodes each candidate's work/project descriptions and the JD
+    'what you'll do' section with all-MiniLM-L6-v2, then scores by cosine
+    similarity.  Negative similarities are clipped to 0.
+
+    Attaches per-candidate:
+      c['l4_work_relevance']  float [0, 1]  — raw semantic similarity
+      c['l4_combined_score']  float [0, 2]  — l3_score + l4_work_relevance
+
+    Returns the top-100 candidates by l4_combined_score descending.
+    No candidates are hard-dropped; those with empty descriptions receive
+    l4_work_relevance = 0.0.
+    """
+    model = utils.load_sentence_transformer()
+
+    jd_text = _jd_responsibilities_text(jd)
+    if not jd_text:
+        logger.warning("L4: JD has no responsibilities/description text — work_relevance=0 for all")
+
+    # Encode JD once
+    jd_vec: np.ndarray = (
+        model.encode(jd_text, convert_to_numpy=True, show_progress_bar=False)
+        if jd_text else np.zeros(C.EMBED_DIM, dtype=np.float32)
+    )
+
+    # Collect candidate work texts (preserve index alignment)
+    work_texts: List[str] = [
+        utils.get_work_descriptions_only(c) for c in candidates
+    ]
+
+    # Batch-encode non-empty texts
+    non_empty_idx = [i for i, t in enumerate(work_texts) if t.strip()]
+    work_relevances = [0.0] * len(candidates)
+
+    if non_empty_idx and jd_text:
+        batch_texts = [work_texts[i] for i in non_empty_idx]
+        batch_size  = C.L4_BATCH_SIZE
+
+        all_vecs: List[np.ndarray] = []
+        for start in range(0, len(batch_texts), batch_size):
+            chunk = batch_texts[start : start + batch_size]
+            vecs  = model.encode(chunk, convert_to_numpy=True, show_progress_bar=False)
+            all_vecs.extend(vecs)
+
+        for list_pos, cand_idx in enumerate(non_empty_idx):
+            sim = _cosine_sim_np(all_vecs[list_pos], jd_vec)
+            work_relevances[cand_idx] = max(0.0, sim)   # clip negatives
+
+    # Write scores and compute combined ranking score
+    for i, c in enumerate(candidates):
+        wr  = round(work_relevances[i], 4)
+        l3  = float(c.get("l3_score") or 0.0)
+        cmb = round(l3 + wr, 4)
+        c["l4_work_relevance"] = wr
+        c["l4_combined_score"] = cmb
+
+    # Sort and keep top 100
+    candidates.sort(key=lambda c: c["l4_combined_score"], reverse=True)
+    top100 = candidates[:100]
+
+    avg_wr  = sum(c["l4_work_relevance"] for c in top100) / max(len(top100), 1)
+    avg_cmb = sum(c["l4_combined_score"]  for c in top100) / max(len(top100), 1)
+    logger.info(
+        f"L4 semantic: {len(candidates)} in → top {len(top100)} out "
+        f"(avg_relevance={avg_wr:.3f}, avg_combined={avg_cmb:.3f})"
+    )
+    return top100
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LAYER 5 — FLASHRANK CROSS-ENCODER RE-RANK
+# ══════════════════════════════════════════════════════════════════════════════
+
+_DONTS_STOPWORDS: frozenset = frozenset({
+    "with", "only", "that", "this", "from", "have", "their", "they", "more",
+    "than", "been", "will", "about", "when", "some", "what", "which", "such",
+    "does", "just", "very", "also", "into", "over", "your", "those", "these",
+    "candidate", "candidates", "background", "experience",
+})
+
+
+def _donts_penalty(c: dict, donts: List[str]) -> float:
+    """
+    Returns a multiplier in [0.70, 1.00].
+    Each JD dont whose keywords match ≥50% in the candidate's profile
+    reduces the score by 10%, floored at 0.70.
+    """
+    if not donts:
+        return 1.0
+
+    profile = (
+        utils.get_work_descriptions_only(c) + " " + utils.get_skills_text(c)
+    ).lower()
+
+    matches = 0
+    for dont in donts:
+        words = [w for w in re.findall(r"[a-z]{4,}", dont.lower())
+                 if w not in _DONTS_STOPWORDS]
+        if not words:
+            continue
+        hit = sum(1 for w in words if w in profile)
+        if hit / len(words) >= 0.50:
+            matches += 1
+
+    return max(0.70, 1.0 - 0.10 * matches)
+
+
+def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
+    """
+    Layer 5 — FlashRank cross-encoder re-rank with JD donts penalty.
+
+    Step 1: Run ms-marco-MiniLM-L-12-v2 cross-encoder on the top
+            C.FLASHRANK_TOP_N (50) candidates against the JD responsibilities text.
+    Step 2: Apply a donts penalty to each top-50 candidate — profiles that match
+            JD 'donts' keywords have their score multiplied down (min ×0.70).
+    Step 3: Compute total_score = (l4_combined_score + flashrank_score) × donts_mult
+    Step 4: Re-sort all candidates by total_score descending.
+
+    Candidates outside top-50 receive flashrank_score = 0.0 and donts_mult = 1.0.
+
+    Attaches per-candidate:
+      c['l5_flashrank_score']  float [0, 1]   — raw cross-encoder relevance
+      c['l5_donts_mult']       float [0.7, 1] — donts penalty multiplier (top-50 only)
+      c['l5_total_score']      float           — final ranking score
+
+    Returns all candidates re-sorted by l5_total_score descending.
+    Input is expected to be the top-100 list from l4_semantic_work.
+    """
+    try:
+        from flashrank import RerankRequest
+    except ImportError:
+        raise ImportError("flashrank required: pip install flashrank")
+
+    ranker  = utils.load_flashrank()
+    jd_text = _jd_responsibilities_text(jd)
+    donts   = [str(d) for d in (jd.get("donts") or []) if d]
+
+    # Initialise every candidate so keys always exist
     for c in candidates:
-        b = c.get("behavioral_signals", {}) or {}
-        score = 0.0
+        c["l5_flashrank_score"] = 0.0
+        c["l5_donts_mult"]      = 1.0
+        c["l5_total_score"]     = round(float(c.get("l4_combined_score") or 0.0), 4)
 
-        if is_tech:
-            gh = b.get("github_activity_score")
-            if gh is not None:
-                score += float(gh)
-            else:
-                score -= 0.1  # mild absence penalty for tech roles
+    if not jd_text:
+        logger.warning("L5: JD has no responsibilities text — flashrank_score=0 for all")
+        return candidates
 
-        for key in ["recruiter_response_rate", "profile_completeness",
-                    "salary_fit", "notice_period_score"]:
-            v = b.get(key)
-            if v is not None:
-                try:
-                    score += float(v)
-                except (ValueError, TypeError):
-                    pass
+    # Apply cross-encoder + donts to top-N only (list is sorted by l4_combined_score)
+    top_n    = min(C.FLASHRANK_TOP_N, len(candidates))
+    top_pool = candidates[:top_n]
 
-        c["l6_score"] = max(0.0, min(1.0, score / max_possible))
+    passages = [
+        {"id": i, "text": utils.get_work_descriptions_only(c) or ""}
+        for i, c in enumerate(top_pool)
+    ]
+    results = ranker.rerank(RerankRequest(query=jd_text, passages=passages))
 
-    logger.info(f"L6: behavioral scored {len(candidates)} candidates (tech_role={is_tech})")
+    id_to_score: Dict[int, float] = {
+        r["id"]: max(0.0, min(1.0, float(r.get("score", 0.0))))
+        for r in results
+    }
+
+    donts_hits = 0
+    for i, c in enumerate(top_pool):
+        fr_score  = id_to_score.get(i, 0.0)
+        dont_mult = _donts_penalty(c, donts)
+        base      = float(c.get("l4_combined_score") or 0.0) + fr_score
+        total     = round(base * dont_mult, 4)
+
+        c["l5_flashrank_score"] = round(fr_score, 4)
+        c["l5_donts_mult"]      = round(dont_mult, 4)
+        c["l5_total_score"]     = total
+        if dont_mult < 1.0:
+            donts_hits += 1
+
+    # Re-sort all candidates by total_score
+    candidates.sort(key=lambda c: c["l5_total_score"], reverse=True)
+
+    avg_fr  = sum(c["l5_flashrank_score"] for c in candidates[:top_n]) / top_n
+    avg_tot = sum(c["l5_total_score"]     for c in candidates) / max(len(candidates), 1)
+    logger.info(
+        f"L5 flashrank: cross-encoded top {top_n} of {len(candidates)}, "
+        f"{donts_hits} donts-penalised "
+        f"(avg_fr={avg_fr:.3f}, avg_total={avg_tot:.3f})"
+    )
     return candidates
+

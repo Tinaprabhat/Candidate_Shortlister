@@ -14,10 +14,9 @@ DATA_DIR = PROJECT_ROOT / "data"
 JD_JSON_PATH = DATA_DIR / "jd.json"
 
 # Model sub-paths (after setup.sh decompresses)
+# Three models only: MiniLM sentence-transformer, FlashRank, Fraud KB
 SENTENCE_TRANSFORMER_DIR = MODELS_DIR / "sentence_transformer"
-FAISS_INDEX_DIR = MODELS_DIR / "faiss_index"
-FLASHRANK_DIR = MODELS_DIR / "flashrank_onnx"
-SPACY_DIR = MODELS_DIR / "spacy_model" / "en_core_web_sm"
+FLASHRANK_DIR = MODELS_DIR / "ms-marco-MiniLM-L-12-v2"   # actual dir from tar extraction
 FRAUD_KB_PATH = MODELS_DIR / "fraud_kb" / "fraud_kb.db"
 
 # Embedding model name (downloaded by build_kb.py)
@@ -28,9 +27,9 @@ EMBED_DIM = 384
 # ──────────────────────────────────────────────────────────────────────────────
 # GATE / THRESHOLDS
 # ──────────────────────────────────────────────────────────────────────────────
-GATE_TOP_FRACTION = 0.50      # top 50% by L2 score
-GATE_RANDOM_FRACTION = 0.05   # + random 5% from bottom half
-GATE_TOTAL = GATE_TOP_FRACTION + GATE_RANDOM_FRACTION  # 55%
+GATE_TOP_FRACTION = 0.50      # top 50% by l1c_score
+GATE_RANDOM_FRACTION = 0.25   # + random 25% from bottom half
+GATE_TOTAL = GATE_TOP_FRACTION + GATE_RANDOM_FRACTION  # 75%
 
 FOLDER_PRUNE_THRESHOLD = 0.15  # folder token-overlap cutoff
 FOLDER_DISPATCH_STAGGER_SEC = 15  # seconds between folder dispatch
@@ -42,23 +41,35 @@ HARD_POOL_CAP = 60_000         # hard cap before expensive layers
 # SCORING WEIGHTS (feed into FIS membership; also used for fallback weighted sum)
 # ──────────────────────────────────────────────────────────────────────────────
 WEIGHTS = {
-    "L2": 0.35,  # bi-encoder wholesome similarity
-    "L4": 0.25,  # semantic work-to-JD relevance
-    "L6": 0.10,  # behavioral
-    # L3 is a penalty multiplier, not a weighted score
+    "L1C": 0.35,  # explicit skill match score
+    "L4": 0.25,   # semantic work-to-JD relevance
+    "L6": 0.10,   # behavioral
+    # L3 and L1b are penalty multipliers, not weighted scores
 }
 
 # Soft penalty magnitudes
 SENIORITY_PENALTY = 0.85       # multiply score if under-qualified (L3)
+DOWNLEVEL_SENIORITY_PENALTY = 0.85  # multiply score if candidate held a higher title (L3)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # BATCH SIZES
 # ──────────────────────────────────────────────────────────────────────────────
-L2_BATCH_SIZE = 128
+L1C_MIN_SKILL_MATCH = 0.0    # per-folder gate inside l1c_skill_match (0.0 = off)
 L4_BATCH_SIZE = 64
 FLASHRANK_TOP_N = 50           # polish only top 50
 FLASHRANK_FIS_WEIGHT = 0.25    # blend weight: final = W*flashrank + (1-W)*fis  → FIS weight = 0.75
 OUTPUT_TOP_N = 100             # final CSV rows
+
+# ──────────────────────────────────────────────────────────────────────────────
+# L7 TIER THRESHOLDS — "very good" candidate criteria
+# A candidate meeting ALL of these (with no L1b flags and no L3 penalty)
+# is promoted to tier "very_good" and guaranteed placement in the top 10.
+# ──────────────────────────────────────────────────────────────────────────────
+L7_VERY_GOOD_L1C_MIN = 0.65       # skill match score
+L7_VERY_GOOD_L4_MIN = 0.60        # semantic work relevance
+L7_VERY_GOOD_L6_MIN = 0.60        # behavioral signals
+L7_VERY_GOOD_EXP_MIN = 7.0        # years of experience
+L7_VERY_GOOD_COMPANY_AGE_MIN = 10.0  # oldest company must be ≥ 10 yrs old (0 = no data, skip)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # FOLDER NAME ABBREVIATION EXPANSION (pruning)

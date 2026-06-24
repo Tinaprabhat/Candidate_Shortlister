@@ -1,7 +1,12 @@
 """
 utils.py — Model loading & shared helpers for rank.py.
 
-All models load from /models/decompressed/ (created by setup.sh).
+Three models only (all in models/decompressed/ after setup.sh):
+  1. sentence_transformer/  — all-MiniLM-L6-v2 (ONNX INT8 + PyTorch fallback)
+  2. ms-marco-MiniLM-L-12-v2/ — FlashRank cross-encoder (ONNX INT8)
+  3. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
+
+FAISS index is built in-memory by L4 each run (no on-disk artifact needed).
 No downloads, no network, no quantization at runtime.
 """
 
@@ -27,71 +32,47 @@ def _get(name: str, loader):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# SENTENCE-TRANSFORMER (L2 + L4)
+# SENTENCE-TRANSFORMER — all-MiniLM-L6-v2 (ONNX INT8; PyTorch fallback)
 # ──────────────────────────────────────────────────────────────────────────────
 def load_sentence_transformer():
     """Load the bi-encoder. Prefers ONNX INT8; falls back to PyTorch ST."""
     def _load():
-        # Try sentence-transformers directly (works whether or not ONNX present)
         from sentence_transformers import SentenceTransformer
         model_dir = C.SENTENCE_TRANSFORMER_DIR
+        onnx_path = model_dir / "onnx" / "model_quantized.onnx"
+        if onnx_path.exists():
+            try:
+                logger.info(f"Loading ONNX INT8 sentence-transformer from {onnx_path}")
+                return SentenceTransformer(str(model_dir), device="cpu", backend="onnx")
+            except Exception as e:
+                logger.warning(f"ONNX INT8 load failed ({e}); falling back to PyTorch")
         if model_dir.exists():
-            logger.info(f"Loading sentence-transformer from {model_dir}")
+            logger.info(f"Loading sentence-transformer (PyTorch) from {model_dir}")
             return SentenceTransformer(str(model_dir), device="cpu")
-        # Fallback: load by name (only works if cached / online — dev convenience)
-        logger.warning(f"{model_dir} not found; loading {C.ST_MODEL_NAME} by name")
+        logger.warning(f"{model_dir} not found; loading {C.ST_MODEL_NAME} by name (requires network)")
         return SentenceTransformer(C.ST_MODEL_NAME, device="cpu")
     return _get("st", _load)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# FAISS INDEX (L4)
-# ──────────────────────────────────────────────────────────────────────────────
-def load_faiss_index():
-    def _load():
-        import faiss
-        idx_path = C.FAISS_INDEX_DIR / "index.bin"
-        if idx_path.exists():
-            logger.info(f"Loading FAISS index from {idx_path}")
-            return faiss.read_index(str(idx_path))
-        logger.warning("FAISS index not found; L4 will build ad-hoc index in memory")
-        return None
-    return _get("faiss", _load)
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# FLASHRANK (L7 polish)
+# FLASHRANK — ms-marco-MiniLM-L-12-v2 (ONNX INT8 cross-encoder, L7 polish)
 # ──────────────────────────────────────────────────────────────────────────────
 def load_flashrank():
+    """Load FlashRank cross-encoder from the local ms-marco-MiniLM-L-12-v2 directory."""
     def _load():
         try:
             from flashrank import Ranker
         except ImportError:
             raise ImportError("flashrank required: pip install flashrank")
-        cache_dir = C.FLASHRANK_DIR
-        logger.info(f"Loading FlashRank ({C.FLASHRANK_MODEL_NAME})")
-        # FlashRank downloads to cache_dir if not present; for offline,
-        # build_kb.py pre-populates this directory.
-        return Ranker(model_name=C.FLASHRANK_MODEL_NAME, cache_dir=str(cache_dir.parent))
+        logger.info(f"Loading FlashRank ({C.FLASHRANK_MODEL_NAME}) from {C.FLASHRANK_DIR}")
+        # Ranker(model_name, cache_dir) looks for cache_dir/model_name/
+        # FLASHRANK_DIR IS the model directory, so cache_dir = FLASHRANK_DIR.parent
+        return Ranker(model_name=C.FLASHRANK_MODEL_NAME, cache_dir=str(C.FLASHRANK_DIR.parent))
     return _get("flashrank", _load)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# SPACY (L5 helper)
-# ──────────────────────────────────────────────────────────────────────────────
-def load_spacy():
-    def _load():
-        import spacy
-        if C.SPACY_DIR.exists():
-            logger.info(f"Loading spaCy from {C.SPACY_DIR}")
-            return spacy.load(str(C.SPACY_DIR))
-        logger.warning("spaCy model dir not found; loading en_core_web_sm by name")
-        return spacy.load("en_core_web_sm")
-    return _get("spacy", _load)
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# FRAUD KB (L1)
+# FRAUD KB — SQLite knowledge base (L1 verification)
 # ──────────────────────────────────────────────────────────────────────────────
 def load_fraud_kb():
     def _load():

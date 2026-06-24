@@ -7,14 +7,21 @@ BEFORE you start a ranking run. Run this after setup.sh.
 
     python setup_check.py
 
+Three required model artifacts:
+  1. sentence_transformer/   — all-MiniLM-L6-v2 (ONNX INT8 + PyTorch fallback)
+  2. ms-marco-MiniLM-L-12-v2/ — FlashRank cross-encoder (ONNX INT8)
+  3. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
+
+FAISS is built in-memory by L4 — no on-disk artifact required.
+
 Checks (in order):
   1. Python version
   2. Required Python packages importable
-  3. Model artifacts present on disk (or graceful-fallback noted)
-  4. Bi-encoder loads and encodes a test sentence
-  5. Fraud KB SQLite opens (or in-code blacklist fallback noted)
-  6. JD parsing prerequisites (local Ollama / existing jd.json) — warning only
-  7. data/jd.json present (needed by rank.py) — warning only
+  3. Model artifacts on disk
+  4. Sentence-transformer live encode test
+  5. Fraud KB SQLite opens
+  6. JD parsing prerequisites — warning only
+  7. data/jd.json present — warning only
 
 Exit code 0 = ready to rank. Non-zero = blocking problem found.
 """
@@ -51,10 +58,10 @@ def check_packages():
     global blocking, warnings
     required = ["numpy", "sentence_transformers"]
     optional = {
-        "faiss": "L4 FAISS accelerator (falls back to in-memory)",
+        "faiss": "L4 FAISS similarity search (in-memory; built each run)",
         "flashrank": "L7 cross-encoder polish (falls back to FIS order)",
-        "spacy": "NLP helper",
         "fitz": "PDF parsing (only needed for JD pre-step)",
+        "groq": "Groq API integration (only needed if GROQ_API_KEY is set)",
         "streamlit": "Web UI (only needed for app.py)",
     }
     for pkg in required:
@@ -74,21 +81,20 @@ def check_packages():
 
 
 def check_models():
-    print("\n3. Model artifacts on disk")
+    print("\n3. Model artifacts on disk (3 required)")
     global warnings
     from src import constants as C
     artifacts = {
-        "Sentence-transformer": C.SENTENCE_TRANSFORMER_DIR,
-        "FAISS index":          C.FAISS_INDEX_DIR / "index.bin",
-        "FlashRank":            C.FLASHRANK_DIR,
-        "spaCy":                C.SPACY_DIR,
-        "Fraud KB (SQLite)":    C.FRAUD_KB_PATH,
+        "MiniLM sentence-transformer (ONNX INT8)": C.SENTENCE_TRANSFORMER_DIR / "onnx" / "model_quantized.onnx",
+        "MiniLM sentence-transformer (PyTorch)":   C.SENTENCE_TRANSFORMER_DIR,
+        "FlashRank cross-encoder (ONNX INT8)":     C.FLASHRANK_DIR,
+        "Fraud KB (SQLite)":                        C.FRAUD_KB_PATH,
     }
     for name, path in artifacts.items():
         if Path(path).exists():
             ok(f"{name}: {path}")
         else:
-            warn(f"{name} not found at {path} — will use fallback/by-name load")
+            warn(f"{name} not found at {path}")
             warnings += 1
 
 

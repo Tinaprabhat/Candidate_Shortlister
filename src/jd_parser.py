@@ -16,6 +16,7 @@ import argparse
 import logging
 import shutil
 import subprocess
+import time
 import zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -182,9 +183,11 @@ def extract_pdf_text(pdf_path: Path) -> str:
     except ImportError:
         raise ImportError("PyMuPDF required: pip install pymupdf")
 
+    t = time.perf_counter()
     doc = fitz.open(str(pdf_path))
     text = "\n".join(page.get_text() for page in doc)
     doc.close()
+    logger.info(f"[jd-io] extract_pdf_text: {pdf_path.name} ({len(text)} chars) in {round(time.perf_counter()-t, 3)}s")
     if not text.strip():
         raise ValueError(f"No text extracted from {pdf_path} (scanned PDF?)")
     return text.strip()
@@ -195,6 +198,7 @@ def extract_docx_text(docx_path: Path) -> str:
     if not zipfile.is_zipfile(docx_path):
         raise ValueError(f"Invalid .docx file: {docx_path}")
 
+    t = time.perf_counter()
     with zipfile.ZipFile(docx_path, "r") as zf:
         try:
             xml_bytes = zf.read("word/document.xml")
@@ -212,6 +216,7 @@ def extract_docx_text(docx_path: Path) -> str:
         elif tag.endswith("}br") or tag.endswith("}cr") or tag.endswith("}p"):
             texts.append("\n")
     text = "".join(texts).strip()
+    logger.info(f"[jd-io] extract_docx_text: {docx_path.name} ({len(text)} chars) in {round(time.perf_counter()-t, 3)}s")
     if not text:
         raise ValueError(f"No text extracted from {docx_path}")
     return text
@@ -219,6 +224,7 @@ def extract_docx_text(docx_path: Path) -> str:
 
 def extract_text_file(text_path: Path) -> str:
     """Extract text from plain-text job description files."""
+    t = time.perf_counter()
     for encoding in ("utf-8-sig", "utf-16", "latin-1"):
         try:
             text = text_path.read_text(encoding=encoding)
@@ -230,6 +236,7 @@ def extract_text_file(text_path: Path) -> str:
 
     if not text.strip():
         raise ValueError(f"No text extracted from {text_path}")
+    logger.info(f"[jd-io] extract_text_file: {text_path.name} ({len(text)} chars) in {round(time.perf_counter()-t, 3)}s")
     return text.strip()
 
 
@@ -334,6 +341,7 @@ def parse_jd_with_ollama(jd_text: str, out_path: Path | None = None) -> dict:
     cmd = ["ollama", "run", model_name, "--format", "json"]
 
     logger.info(f"Calling local Ollama model {model_name} for JD parsing...")
+    t_ollama = time.perf_counter()
     proc = subprocess.run(
         cmd,
         input=prompt,
@@ -342,6 +350,7 @@ def parse_jd_with_ollama(jd_text: str, out_path: Path | None = None) -> dict:
         capture_output=True,
         check=False,
     )
+    logger.info(f"[jd-llm] ollama subprocess elapsed: {round(time.perf_counter()-t_ollama, 3)}s")
 
     # ── Diagnostic: show exactly where output landed ───────────────────────────
     logger.info(f"[ollama] returncode={proc.returncode}")
@@ -446,6 +455,7 @@ def parse_jd_with_groq(jd_text: str, out_path: Path | None = None) -> dict:
     prompt     = PROMPT_TEMPLATE.format(jd_text=jd_text[:12000])
 
     logger.info(f"Calling Groq API ({model_name}) for JD parsing...")
+    t_groq = time.perf_counter()
     response = client.chat.completions.create(
         model=model_name,
         messages=[{"role": "user", "content": prompt}],
@@ -453,6 +463,7 @@ def parse_jd_with_groq(jd_text: str, out_path: Path | None = None) -> dict:
         temperature=0.1,
         max_tokens=4096,
     )
+    logger.info(f"[jd-llm] groq API elapsed: {round(time.perf_counter()-t_groq, 3)}s")
     raw = response.choices[0].message.content.strip()
 
     # Strip markdown fences if the model wrapped anyway
@@ -557,6 +568,7 @@ def validate_and_fill(parsed: dict) -> dict:
 
 def parse_jd(source_path: Path, out_path: Path) -> dict:
     """Full pipeline: source file → text → LLM → validated jd.json on disk."""
+    t_total = time.perf_counter()
     logger.info(f"Extracting text from {source_path}")
     suffix = source_path.suffix.lower()
     if suffix == ".pdf":
@@ -571,7 +583,9 @@ def parse_jd(source_path: Path, out_path: Path) -> dict:
         )
 
     # Pass out_path so Ollama writes jd.json immediately after parsing
+    t_llm = time.perf_counter()
     parsed = parse_jd_with_llm(jd_text, out_path=out_path)
+    logger.info(f"[jd-parse] LLM parse elapsed: {round(time.perf_counter()-t_llm, 3)}s")
     parsed = validate_and_fill(parsed)
 
     # Always write the validated, normalised version to the caller's out_path
@@ -604,6 +618,7 @@ def parse_jd(source_path: Path, out_path: Path) -> dict:
     logger.info(f"  donts:              {len(parsed.get('donts', []))} items")
     logger.info(f"  role_description:   {len(parsed['role_description'])} chars")
     logger.info(f"  company_description:{len(parsed['company_description'])} chars")
+    logger.info(f"[jd-parse] total parse_jd elapsed: {round(time.perf_counter()-t_total, 3)}s")
     return parsed
 
 

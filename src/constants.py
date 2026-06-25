@@ -32,7 +32,7 @@ GATE_RANDOM_FRACTION = 0.25   # + random 25% from bottom half
 GATE_TOTAL = GATE_TOP_FRACTION + GATE_RANDOM_FRACTION  # 75%
 
 FOLDER_PRUNE_THRESHOLD = 0.15  # folder token-overlap cutoff
-FOLDER_DISPATCH_STAGGER_SEC = 15  # seconds between folder dispatch
+FOLDER_DISPATCH_STAGGER_SEC = 8   # seconds between folder dispatch
 MIN_FOLDERS_KEPT = 1           # never drop everything
 
 HARD_POOL_CAP = 60_000         # hard cap before expensive layers

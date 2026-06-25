@@ -473,7 +473,9 @@ def dispatch_folders_staggered(
     def _worker(name: str, data_path: Path):
         logger.info(f"[dispatch] loading '{name}' from {data_path.name}")
         try:
+            t_load = time.perf_counter()
             candidates = _load_candidates(data_path)
+            load_elapsed = round(time.perf_counter() - t_load, 3)
         except Exception as exc:
             logger.error(f"[dispatch] failed to load '{name}': {exc}")
             if tracer:
@@ -481,6 +483,7 @@ def dispatch_folders_staggered(
             return
 
         n_loaded = len(candidates)
+        logger.info(f"[dispatch] '{name}': file read in {load_elapsed}s")
 
         # Tag origin folder before any filtering
         for c in candidates:

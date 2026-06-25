@@ -319,15 +319,19 @@ if run_btn:
         C.DATA_DIR.mkdir(parents=True, exist_ok=True)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
+            t_jd_submit = time.time()
             jd_fut     = ex.submit(parse_jd, jd_path, C.JD_JSON_PATH)
+            t_models_submit = time.time()
             models_fut = ex.submit(_load_models)
             jd_exc = models_exc = None
             try:
                 jd = jd_fut.result()
+                tracer.record_timing("jd_parse", round(time.time() - t_jd_submit, 3))
             except Exception as e:
                 jd_exc = e
             try:
                 models = models_fut.result()
+                tracer.record_timing("models_load", round(time.time() - t_models_submit, 3))
             except Exception as e:
                 models_exc = e
 
@@ -371,8 +375,10 @@ if run_btn:
             all_early_scored.extend(scored)
 
     with st.status("Early cascade (L1→L1b→L1c)...", expanded=True) as status:
+        t_zip = time.time()
         root         = pruning.extract_zip(zip_path)
         folder_paths = pruning.discover_folders(root)
+        tracer.record_timing("zip_extract_discover", round(time.time() - t_zip, 3))
         discovered   = list(folder_paths.keys())
         st.write(f"Discovered **{len(folder_paths)}** folder(s): {discovered}")
 
@@ -433,6 +439,7 @@ if run_btn:
             "reasoning":    c.get("l3_reasoning", ""),
         })
 
+    t_write = time.time()
     json_path = _write_ranked_json(top100, rows, jd, tracer.run_id)
 
     buf = io.StringIO()
@@ -440,6 +447,7 @@ if run_btn:
     w.writeheader()
     w.writerows(rows)
     csv_bytes = buf.getvalue().encode("utf-8")
+    tracer.record_timing("output_write", round(time.time() - t_write, 3))
 
     elapsed    = time.time() - t0
     trace_path = tracer.finish(

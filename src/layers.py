@@ -1118,8 +1118,8 @@ _FUZZY_RULES = [
     ("L", "L", "L", "L", "L", "L", "L",  0.04),  # R32  ★
 ]
 
-# Weights for linear fallback (matches the formula: score=0.4g+0.2f+0.1b+0.1e+0.05a+0.1c+0.05d)
-_FIS_WEIGHTS = {"g": 0.40, "f": 0.20, "b": 0.10, "e": 0.10, "a": 0.05, "c": 0.10, "d": 0.05}
+# Weights for linear fallback (matches the formula: score=0.4g+0.2b+0.1f+0.1e+0.05a+0.05d+0.1c)
+_FIS_WEIGHTS = {"g": 0.40, "b": 0.20, "f": 0.10, "e": 0.10, "a": 0.05, "c": 0.10, "d": 0.05}
 
 
 # ── MF helpers ────────────────────────────────────────────────────────────────
@@ -1173,8 +1173,8 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
     exp = float(row.get("total_exp") or 0.0)
     a = 1.0 if 5.0 <= exp <= 9.0 else (0.5 if 3.0 <= exp <= 12.0 else 0.0)
 
-    b = (float(row.get("skill_match_score") or 0.0)
-         + float(row.get("skill_assessment_score") or 0.0)) / 2.0
+    b = (0.8 * float(row.get("skill_match_score") or 0.0)
+         + 0.2 * float(row.get("skill_assessment_score") or 0.0))
 
     inf_norm = (
         min(float(row.get("inferred_skill_match_score") or 0.0) / n_inferred, 1.0)
@@ -1625,23 +1625,28 @@ def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
     Layer 5 — FlashRank cross-encoder re-rank.
 
     Runs ms-marco-MiniLM-L-12-v2 on the top C.FLASHRANK_TOP_N (50) candidates.
-    total_score = l5_donts_score + flashrank_score  (additive)
+    total_score = 0.4*l4_work_relevance + 0.3*l3_score + 0.3*flashrank_score
 
-    Candidates outside top-50 keep l5_donts_score as their total_score.
+    Candidates outside top-50 keep flashrank_score=0 and use the same weighted
+    final_score formula without FlashRank.
     If FlashRank is not installed or fails to load, degrades gracefully:
-    total_score = l5_donts_score for all candidates.
+    final_score = 0.4*l4_work_relevance + 0.3*l3_score for all candidates.
 
     Input is expected to be the top-100 list from donts_penalty_layer
     (l5_donts_score already present on every candidate).
 
     Attaches per-candidate:
       c['l5_flashrank_score']  float [0, 1]  — raw cross-encoder relevance (0 if degraded)
-      c['l5_total_score']      float          — l5_donts_score + flashrank_score
+      c['l5_total_score']      float          — weighted final score
     """
     # Initialise keys so they always exist regardless of degradation path
     for c in candidates:
         c["l5_flashrank_score"] = 0.0
-        c["l5_total_score"]     = round(float(c.get("l5_donts_score") or 0.0), 4)
+        c["l5_total_score"]     = round(
+            0.4 * float(c.get("l4_work_relevance") or 0.0)
+            + 0.3 * float(c.get("l3_score") or 0.0),
+            4,
+        )
 
     try:
         from flashrank import RerankRequest
@@ -1675,18 +1680,22 @@ def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
 
     for i, c in enumerate(top_pool):
         fr_score = id_to_score.get(i, 0.0)
-        prev     = float(c.get("l5_donts_score") or 0.0)
         c["l5_flashrank_score"] = round(fr_score, 4)
-        c["l5_total_score"]     = round(prev + fr_score, 4)
+        c["l5_total_score"]     = round(
+            0.4 * float(c.get("l4_work_relevance") or 0.0)
+            + 0.3 * float(c.get("l3_score") or 0.0)
+            + 0.3 * fr_score,
+            4,
+        )
 
-    # Re-sort top pool by total_score; tail (ranks 51-100) keeps donts_score order
+    # Re-sort top pool by weighted final_score; tail (ranks 51-100) keeps donts_score order
     top_reranked = sorted(top_pool, key=lambda c: c["l5_total_score"], reverse=True)
     tail         = candidates[top_n:]
 
     avg_fr = sum(c["l5_flashrank_score"] for c in top_reranked) / top_n
     logger.info(
         f"L5 flashrank: cross-encoded top {top_n} of {len(candidates)} "
-        f"(avg_fr={avg_fr:.3f}); total_score = donts_score + flashrank"
+        f"(avg_fr={avg_fr:.3f}); total_score = 0.4*L4 + 0.3*L3 + 0.3*FlashRank"
     )
     return top_reranked + tail
 

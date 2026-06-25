@@ -48,6 +48,7 @@ class RunTracer:
                 "total_output": 0,
             },
             "l7": {},
+            "setup_timings": [],
             "output": {
                 "candidates_ranked": 0,
                 "top_scores": [],
@@ -154,6 +155,14 @@ class RunTracer:
                 "score_min": round(score_range[0], 4),
                 "score_max": round(score_range[1], 4),
             }
+
+    # ── Setup timings (model load / JD parse / I/O) ───────────────────────────
+    def record_timing(self, name: str, elapsed_s: float) -> None:
+        """Record a named elapsed time (seconds) for setup / I/O operations."""
+        with self._lock:
+            self._trace["setup_timings"].append(
+                {"name": name, "elapsed_s": round(elapsed_s, 3)}
+            )
 
     # ── Errors ────────────────────────────────────────────────────────────────
     def record_error(self, context: str, message: str) -> None:

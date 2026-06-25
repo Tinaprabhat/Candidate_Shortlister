@@ -248,7 +248,9 @@ def main():
         ap.error("Provide either --candidates <jsonl> or --zip <zip>")
 
     # Load JD
+    t_jd = time.time()
     jd = utils.load_jd_json(args.jd)
+    tracer.record_timing("jd_load", round(time.time() - t_jd, 3))
     logger.info(
         f"Loaded jd.json: title='{jd.get('job_title','')}' | "
         f"location='{jd.get('location','')}' | industry='{jd.get('industry','')}' | "
@@ -260,10 +262,13 @@ def main():
 
     # Load models
     logger.info("Loading models...")
+    t_models = time.time()
     models = {
         "fraud_kb":  utils.load_fraud_kb(),
         "flashrank": _try_load_flashrank(),
+        "embedder":    utils.load_sentence_transformer()
     }
+    tracer.record_timing("models_load", round(time.time() - t_models, 3))
 
     # Gather candidates — early cascade (L1 → L1b → L1c) per folder
     all_early_scored: List[dict] = []
@@ -275,8 +280,10 @@ def main():
             all_early_scored.extend(scored)
 
     if args.zip:
+        t_zip = time.time()
         root = pruning.extract_zip(args.zip)
         folder_paths = pruning.discover_folders(root)
+        tracer.record_timing("zip_extract_discover", round(time.time() - t_zip, 3))
         discovered = list(folder_paths.keys())
 
         import types
@@ -294,7 +301,9 @@ def main():
             kept, folder_paths, process_fn, stagger_sec=args.stagger, tracer=tracer
         )
     else:
+        t_read = time.time()
         cands = utils.read_jsonl(args.candidates)
+        tracer.record_timing("candidates_io", round(time.time() - t_read, 3))
         logger.info(f"Loaded {len(cands)} candidates from {args.candidates}")
         tracer.record_folder_load("flat", len(cands), len(cands))
         process_fn("flat", cands)
@@ -323,9 +332,11 @@ def main():
         return
 
     # Build output
-    rows      = _build_rows(top100, jd)
+    rows = _build_rows(top100, jd)
+    t_write = time.time()
     json_path = _write_ranked_json(top100, rows, jd, tracer.run_id)
     _write_csv(args.out, rows)
+    tracer.record_timing("output_write", round(time.time() - t_write, 3))
 
     utils.cleanup()
     elapsed = time.time() - t0

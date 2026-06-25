@@ -13,6 +13,7 @@ No downloads, no network, no quantization at runtime.
 import json
 import logging
 import sqlite3
+import time
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -27,7 +28,11 @@ class _Cache:
 
 def _get(name: str, loader):
     if name not in _Cache.store:
+        t = time.perf_counter()
         _Cache.store[name] = loader()
+        elapsed = round(time.perf_counter() - t, 3)
+        logger.info(f"[model-load] '{name}' loaded in {elapsed}s")
+        _Cache.store[f"{name}__load_elapsed_s"] = elapsed
     return _Cache.store[name]
 
 
@@ -97,8 +102,11 @@ def load_jd_json(path: Path = None) -> dict:
             f"Run the pre-step first:\n"
             f"  python -m src.jd_parser --jd ./data/job_description.pdf --out ./data/jd.json"
         )
+    t = time.perf_counter()
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    logger.info(f"[io] load_jd_json: {path.name} read in {round(time.perf_counter()-t, 3)}s")
+    return data
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -114,23 +122,29 @@ def read_json(path: Path) -> List[dict]:
                        (also "data", "results", "items", "records")
       - Single object: {...}  → treated as a one-element list
     """
+    t = time.perf_counter()
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
     if isinstance(data, list):
-        return [item for item in data if isinstance(item, dict)]
-    if isinstance(data, dict):
-        # Unwrap common envelope keys before falling back to single-object
+        result = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        result = []
         for key in ("candidates", "data", "results", "items", "records"):
             val = data.get(key)
             if isinstance(val, list):
-                return [item for item in val if isinstance(item, dict)]
-        # Genuine single-candidate object
-        return [data]
-    return []
+                result = [item for item in val if isinstance(item, dict)]
+                break
+        if not result:
+            result = [data]
+    else:
+        result = []
+    logger.info(f"[io] read_json: {path.name} → {len(result)} records in {round(time.perf_counter()-t, 3)}s")
+    return result
 
 
 def read_jsonl(path: Path) -> List[dict]:
     """Read a .jsonl file into a list of dicts."""
+    t = time.perf_counter()
     out = []
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -140,6 +154,7 @@ def read_jsonl(path: Path) -> List[dict]:
                     out.append(json.loads(line))
                 except json.JSONDecodeError:
                     logger.warning(f"Skipping malformed line in {path}")
+    logger.info(f"[io] read_jsonl: {path.name} → {len(out)} records in {round(time.perf_counter()-t, 3)}s")
     return out
 
 

@@ -321,57 +321,38 @@ class TestL1bProfileIntegrity:
         result = layers.l1b_profile_integrity([c])
         assert result == []
 
-    def test_soft_penalty_skill_career_domain_mismatch(self):
+    # Soft-penalty flags are NO LONGER applied at L1b.
+    # They pass through with penalty=1.0 and are stored as L2 table cols,
+    # then unified into condition 'h' at the L3 FIS layer.
+
+    def test_soft_flags_pass_through_with_no_penalty(self):
+        """All former soft-penalty flags now pass L1b with penalty=1.0."""
+        soft_flags = [
+            "skill_career_domain_mismatch",
+            "education_overlap",
+            "second_undergrad_after_first",
+            "education_career_gap_flag",
+            "all_descriptions_identical",
+        ]
+        for flag in soft_flags:
+            c = make_candidate()
+            c[flag] = True
+            result = layers.l1b_profile_integrity([c])
+            assert len(result) == 1, f"Expected pass for {flag}"
+            assert result[0]["l1b_penalty"] == 1.0, f"Expected no penalty for {flag}"
+            assert result[0]["l1b_flags"] == [], f"Expected empty flags for {flag}"
+            assert result[0]["l1b_status"] == "pass", f"Expected status=pass for {flag}"
+
+    def test_multiple_soft_flags_all_pass(self):
+        """Multiple soft flags together still yield penalty=1.0 at L1b."""
         c = make_candidate()
         c["skill_career_domain_mismatch"] = True
-        result = layers.l1b_profile_integrity([c])
-        assert len(result) == 1
-        assert result[0]["l1b_penalty"] == pytest.approx(0.80, abs=0.001)
-        assert "skill_career_domain_mismatch" in result[0]["l1b_flags"]
-
-    def test_soft_penalty_education_overlap(self):
-        c = make_candidate()
         c["education_overlap"] = True
-        result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == pytest.approx(0.80, abs=0.001)
-
-    def test_soft_penalty_second_undergrad(self):
-        c = make_candidate()
-        c["second_undergrad_after_first"] = True
-        result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == pytest.approx(0.70, abs=0.001)
-
-    def test_soft_penalty_education_career_gap(self):
-        c = make_candidate()
-        c["education_career_gap_flag"] = True
-        result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == pytest.approx(0.90, abs=0.001)
-
-    def test_soft_penalty_duplicate_job_descriptions(self):
-        c = make_candidate()
-        c["duplicate_job_descriptions"] = True
-        result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == pytest.approx(0.50, abs=0.001)
-
-    def test_soft_penalty_all_descriptions_identical(self):
-        c = make_candidate()
         c["all_descriptions_identical"] = True
         result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == pytest.approx(0.20, abs=0.001)
-
-    def test_penalties_accumulate(self):
-        c = make_candidate()
-        c["skill_career_domain_mismatch"] = True  # -0.20
-        c["education_overlap"] = True              # -0.20
-        result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == pytest.approx(0.60, abs=0.001)
-
-    def test_penalty_clamped_to_zero(self):
-        c = make_candidate()
-        c["duplicate_job_descriptions"] = True    # -0.50
-        c["all_descriptions_identical"] = True    # -0.80 → total 1.30 → clamp to 0
-        result = layers.l1b_profile_integrity([c])
-        assert result[0]["l1b_penalty"] == 0.0
+        assert len(result) == 1
+        assert result[0]["l1b_penalty"] == 1.0
+        assert result[0]["l1b_flags"] == []
 
     def test_false_flags_are_ignored(self):
         c = make_candidate()
@@ -381,10 +362,11 @@ class TestL1bProfileIntegrity:
         assert len(result) == 1
         assert result[0]["l1b_penalty"] == 1.0
 
-    def test_hard_reject_takes_priority_over_soft_flags(self):
+    def test_hard_reject_ignores_soft_flags(self):
+        """Hard reject fires even when soft flags are also present."""
         c = make_candidate()
-        c["active_before_signup"] = True           # hard reject
-        c["education_career_gap_flag"] = True      # would be soft
+        c["active_before_signup"] = True       # hard reject
+        c["education_career_gap_flag"] = True  # soft — irrelevant
         result = layers.l1b_profile_integrity([c])
         assert result == []
 
@@ -392,12 +374,13 @@ class TestL1bProfileIntegrity:
         good = make_candidate("G")
         bad = make_candidate("B")
         bad["reverse_degree_order"] = True
-        penalized = make_candidate("P")
-        penalized["education_overlap"] = True
-        result = layers.l1b_profile_integrity([good, bad, penalized])
+        flagged = make_candidate("F")          # soft flag — passes with penalty=1.0
+        flagged["education_overlap"] = True
+        result = layers.l1b_profile_integrity([good, bad, flagged])
         assert len(result) == 2
         ids = {c["candidate_id"] for c in result}
         assert "B" not in ids
+        assert all(c["l1b_penalty"] == 1.0 for c in result)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

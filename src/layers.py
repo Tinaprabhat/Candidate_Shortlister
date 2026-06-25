@@ -1,19 +1,23 @@
 """
-layers.py — The 6-layer cascade (L1, L1b, L1c, L3, L4, L6).
+layers.py — The ranking cascade layers.
 
-L1:  Hard reject (fraud / impossibilities)         → binary
-L1b: Profile integrity flags (ATS-pre-computed)    → hard reject | soft penalty multiplier
-L1c: Skill match (NLP string + synonym match)      → score [0–1], optional gate
-L3:  Seniority regression                          → soft penalty multiplier
-L4:  Semantic work-to-JD relevance (descs only)    → independent score
-L6:  Behavioral signals                            → normalized score
+Early cascade (per-folder):
+  L1   Hard reject (fraud / impossibilities)           → knockout
+  L1b  Profile integrity (ATS pre-computed flags)      → hard reject only; soft flags → L2 cols
+  L1c  Skill match (NLP + synonym)                     → score [0–1]; explicit-skill hard-reject gate
+
+Late cascade (global):
+  L2   Table extract (31 cols)                         → feeds L3 FIS
+  L3   Sugeno fuzzy inference (conditions a–h)         → l3_score; 75% gate after
+  L4   Semantic work relevance (all-MiniLM-L6-v2)      → l4_combined_score; top-200 forwarded
+  L5a  Donts penalty layer (high penalty)              → l5_donts_score; top-100
+  L5b  FlashRank cross-encoder (top-50)                → l5_total_score = donts + flashrank
 """
 
 import math
 import random
 import logging
 import re
-import hashlib
 import numpy as np
 from datetime import datetime
 from typing import List, Dict, Optional
@@ -407,59 +411,39 @@ _L1B_HARD_REJECT_FLAGS = [
     "invalid_degree_field_combination",
 ]
 
-_L1B_SOFT_PENALTIES: dict = {
-    "skill_career_domain_mismatch": 0.20,
-    "education_overlap":            0.20,
-    "second_undergrad_after_first": 0.30,
-    "education_career_gap_flag":    0.10,
-    "duplicate_job_descriptions":   0.50,
-    "all_descriptions_identical":   0.80,
-}
-
-
 def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
     """
-    Layer 1b — Profile integrity: reads pre-computed boolean flags from the
-    candidate dict (set by the ATS / jd_parser upstream).
+    Layer 1b — Profile integrity: hard-reject gate only.
 
-    Hard-reject flags (l1b_status='reject', removed from pool):
+    Hard-reject flags (removed from pool):
       reverse_degree_order, active_before_signup, invalid_degree_field_combination
 
-    Soft-penalty flags (l1b_penalty < 1.0, multiplied into fis_score at L7):
-      skill_career_domain_mismatch (-0.20), education_overlap (-0.20),
-      second_undergrad_after_first (-0.30), education_career_gap_flag (-0.10),
-      duplicate_job_descriptions (-0.50), all_descriptions_identical (-0.80)
+    Soft-penalty flags are NO LONGER applied here.  They are stored as boolean
+    columns in the L2 table (cols 29-31) and unified into condition 'h' by L3.
 
-    All surviving candidates get l1b_penalty, l1b_flags, l1b_status attached.
+    All surviving candidates get l1b_penalty=1.0, l1b_flags=[], l1b_status='pass'.
     """
     survivors = []
     rejected = 0
 
     for c in candidates:
-        # Hard-reject check — first matching flag wins
         reject_flag = next(
             (f for f in _L1B_HARD_REJECT_FLAGS if c.get(f) is True), None
         )
         if reject_flag:
             c["l1b_penalty"] = 0.0
-            c["l1b_flags"] = [reject_flag]
-            c["l1b_status"] = "reject"
+            c["l1b_flags"]   = [reject_flag]
+            c["l1b_status"]  = "reject"
             rejected += 1
             continue
 
-        # Accumulate soft-penalty deductions
-        fired = [f for f in _L1B_SOFT_PENALTIES if c.get(f) is True]
-        total_deduction = sum(_L1B_SOFT_PENALTIES[f] for f in fired)
-
-        c["l1b_penalty"] = round(max(0.0, 1.0 - total_deduction), 4)
-        c["l1b_flags"] = fired
-        c["l1b_status"] = "pass"
+        c["l1b_penalty"] = 1.0
+        c["l1b_flags"]   = []
+        c["l1b_status"]  = "pass"
         survivors.append(c)
 
-    penalized = sum(1 for c in survivors if c.get("l1b_penalty", 1.0) < 1.0)
     logger.info(
-        f"L1b: {len(candidates)} in → {len(survivors)} pass "
-        f"({penalized} penalized, {rejected} hard-rejected)"
+        f"L1b: {len(candidates)} in → {len(survivors)} pass ({rejected} hard-rejected)"
     )
     return survivors
 
@@ -467,7 +451,7 @@ def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
 # ──────────────────────────────────────────────────────────────────────────────
 # LAYER 1c — SKILL MATCH (NLP STRING + SYNONYM MATCH)
 # ──────────────────────────────────────────────────────────────────────────────
-from .dictionary import expand_skill  # noqa: E402 (import after module-level constants)
+from .dictionary import expand_skill, JD_REQUIREMENTS  # noqa: E402 (import after module-level constants)
 
 
 def _candidate_search_text(c: dict) -> str:
@@ -514,6 +498,38 @@ def _skill_in_text(skill: str, text: str) -> bool:
     return False
 
 
+def compute_skill_match(candidate: dict, requirements: dict) -> tuple:
+    """
+    Returns fraction of JD requirements satisfied.
+    Checks skills[] names AND career description text.
+    """
+    cand_skills = {
+        s["name"].lower().strip()
+        for s in candidate.get("skills", [])
+    }
+
+    cand_desc = " ".join(
+        job.get("description", "")
+        for job in candidate.get("career_history", [])
+    ).lower()
+
+    satisfied = 0
+    results = {}
+
+    for req_name, req_data in requirements.items():
+        skill_hit = bool(cand_skills & req_data["skill_tokens"])
+        desc_hit = any(term in cand_desc for term in req_data["desc_terms"])
+
+        if skill_hit or desc_hit:
+            satisfied += 1
+            results[req_name] = "skill" if skill_hit else "desc"
+        else:
+            results[req_name] = "MISS"
+
+    score = satisfied / len(requirements)
+    return score, results
+
+
 def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
     """
     Layer 1c — NLP string skill match using the synonym dictionary.
@@ -529,22 +545,31 @@ def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
         If only bonus:     l1c_score = bon_matched / bon_total
         If no skills in JD: l1c_score = 1.0
 
-    Attaches: l1c_score, l1c_matched_required, l1c_missing_required, l1c_matched_bonus.
+    Hard-reject gate (applied before the optional score gate):
+        If the JD has explicit_required skills and the candidate matches NONE of
+        them → hard reject (removed from pool, not just penalised).
 
-    Optional gate (controlled by C.L1C_MIN_SKILL_MATCH): candidates scoring below
-    the threshold are filtered out. Defaults to 0.0 (no gate — keep all).
+    Optional score gate (C.L1C_MIN_SKILL_MATCH > 0): candidates scoring below
+    the threshold are additionally filtered out. Defaults to 0.0 (off).
+
+    Attaches: l1c_score, l1c_matched_required, l1c_missing_required,
+              l1c_matched_bonus, l1c_matched_explicit.
     """
-    required = jd.get("explicit_required", []) + jd.get("inferred_required", [])
-    bonus = jd.get("explicit_bonus", []) + jd.get("inferred_bonus", [])
+    explicit_req = jd.get("explicit_required", [])
+    inferred_req = jd.get("inferred_required", [])
+    required     = explicit_req + inferred_req
+    bonus        = jd.get("explicit_bonus", []) + jd.get("inferred_bonus", [])
     n_req, n_bon = len(required), len(bonus)
+    n_explicit   = len(explicit_req)
 
     for c in candidates:
         text = _candidate_search_text(c)
 
-        req_match = {s: _skill_in_text(s, text) for s in required}
-        matched_req = [s for s, m in req_match.items() if m]
-        missing_req = [s for s, m in req_match.items() if not m]
-        matched_bon = [s for s in bonus if _skill_in_text(s, text)]
+        req_match    = {s: _skill_in_text(s, text) for s in required}
+        matched_req  = [s for s, m in req_match.items() if m]
+        missing_req  = [s for s, m in req_match.items() if not m]
+        matched_bon  = [s for s in bonus if _skill_in_text(s, text)]
+        matched_expl = [s for s in explicit_req if req_match.get(s)]
 
         req_ratio = len(matched_req) / n_req if n_req else 1.0
         bon_ratio = len(matched_bon) / n_bon if n_bon else 0.0
@@ -558,44 +583,61 @@ def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
         else:
             score = 1.0
 
-        c["l1c_score"] = round(score, 4)
-        c["l1c_matched_required"] = matched_req
-        c["l1c_missing_required"] = missing_req
-        c["l1c_matched_bonus"] = matched_bon
+        c["l1c_score"]             = round(score, 4)
+        c["l1c_matched_required"]  = matched_req
+        c["l1c_missing_required"]  = missing_req
+        c["l1c_matched_bonus"]     = matched_bon
+        c["l1c_matched_explicit"]  = matched_expl
 
-    # Optional gate
+        jd_req_score, jd_req_results = compute_skill_match(c, JD_REQUIREMENTS)
+        c["jd_req_score"]   = round(jd_req_score, 4)
+        c["jd_req_results"] = jd_req_results
+
     before = len(candidates)
-    if C.L1C_MIN_SKILL_MATCH > 0:
-        candidates = [c for c in candidates if c.get("l1c_score", 0.0) >= C.L1C_MIN_SKILL_MATCH]
-        if len(candidates) < before:
+
+    # Hard reject: zero explicit_required matches when JD has explicit skills
+    if n_explicit > 0:
+        candidates = [c for c in candidates if c.get("l1c_matched_explicit")]
+        dropped_explicit = before - len(candidates)
+        if dropped_explicit:
             logger.info(
-                f"L1c gate: {before} → {len(candidates)} "
-                f"(dropped {before - len(candidates)} below min_score={C.L1C_MIN_SKILL_MATCH})"
+                f"L1c hard-reject: {dropped_explicit} candidates matched 0/{n_explicit} "
+                f"explicit required skills → removed"
+            )
+
+    # Optional score gate
+    if C.L1C_MIN_SKILL_MATCH > 0:
+        before_score = len(candidates)
+        candidates = [c for c in candidates if c.get("l1c_score", 0.0) >= C.L1C_MIN_SKILL_MATCH]
+        if len(candidates) < before_score:
+            logger.info(
+                f"L1c score gate: {before_score} → {len(candidates)} "
+                f"(dropped {before_score - len(candidates)} below min_score={C.L1C_MIN_SKILL_MATCH})"
             )
 
     avg = sum(c.get("l1c_score", 0.0) for c in candidates) / max(len(candidates), 1)
     logger.info(
         f"L1c: {before} in → {len(candidates)} pass "
-        f"(avg_score={avg:.3f}, req_skills={n_req}, bonus_skills={n_bon})"
+        f"(avg_score={avg:.3f}, explicit={n_explicit}, req_skills={n_req}, bonus_skills={n_bon})"
     )
     return candidates
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# L1c GLOBAL GATE — 65% (top 50% + random 15%)
-# Applied once globally across all folder threads after per-folder L1c scoring.
+# L3 GLOBAL GATE — 75% (top 50% + random 25%)
+# Applied after L3 fuzzy scoring, before expensive L4 semantic encoding.
 # ──────────────────────────────────────────────────────────────────────────────
-def l1c_gate(candidates: List[dict], seed: int = 42) -> List[dict]:
+def l3_gate(candidates: List[dict], seed: int = 42) -> List[dict]:
     """
-    Keep the top 50% by l1c_score plus a random 15% from the remainder = 65%.
+    Keep the top 50% by l3_score plus a random 25% from the remainder = 75%.
     The random rescue prevents a strong folder monopolising slots and preserves
-    diversity (edge-case candidates with low skill scores but other strengths).
+    diversity (edge-case candidates with low fuzzy scores but other strengths).
     Uses math.ceil so a pool of 1 always yields at least 1 candidate.
     """
     if not candidates:
         return candidates
 
-    ranked = sorted(candidates, key=lambda c: c.get("l1c_score", 0.0), reverse=True)
+    ranked = sorted(candidates, key=lambda c: c.get("l3_score", 0.0), reverse=True)
     n = len(ranked)
     top_k = math.ceil(n * C.GATE_TOP_FRACTION)
     top = ranked[:top_k]
@@ -607,7 +649,7 @@ def l1c_gate(candidates: List[dict], seed: int = 42) -> List[dict]:
 
     gated = top + rescued
     logger.info(
-        f"L1c gate: {n} → {len(gated)} "
+        f"L3 gate: {n} → {len(gated)} "
         f"(top {len(top)} + random {len(rescued)} = {len(gated)/max(n,1)*100:.0f}%)"
     )
     return gated
@@ -801,7 +843,6 @@ def _build_table_row(
     c: dict,
     jd_inferred: List[str],
     n_req: int,
-    global_desc_hashes: dict,
 ) -> dict:
     profile    = c.get("profile") or {}
     signals    = c.get("redrob_signals") or {}
@@ -948,23 +989,7 @@ def _build_table_row(
     if last_active_dt is not None and signup_dt is not None:
         active_before_signup = last_active_dt < signup_dt
 
-    # 26 — duplicate_job_descriptions  (cross-candidate md5 check)
-    duplicate_job_descriptions = False
-    this_hashes: List[str] = []
-    for exp in work_hist:
-        if not isinstance(exp, dict):
-            continue
-        desc = str(exp.get("description") or "").strip()
-        if not desc:
-            continue
-        h = hashlib.md5(desc.encode("utf-8")).hexdigest()
-        if h in global_desc_hashes:
-            duplicate_job_descriptions = True
-        this_hashes.append(h)
-    for h in this_hashes:
-        global_desc_hashes.setdefault(h, candidate_id)
-
-    # 27 — low_engagement_flag
+    # 26 — low_engagement_flag
     apps_30d      = _safe_float(signals.get("applications_submitted_30d"))
     response_rate = _safe_float(signals.get("recruiter_response_rate"))
     low_engagement_flag = (
@@ -987,7 +1012,7 @@ def _build_table_row(
     fabrication_bandwidth = round(min(fab, 1.0), 4)
 
     # 29 — possible_fabrication
-    possible_fabrication = duplicate_job_descriptions or fabrication_bandwidth > 0.5
+    possible_fabrication = fabrication_bandwidth > 0.5
 
     return {
         "candidate_id":               candidate_id,              # 01
@@ -1015,29 +1040,28 @@ def _build_table_row(
         "education_overlap":          education_overlap,         # 23
         "edu_career_gap_flag":        edu_career_gap_flag,       # 24
         "active_before_signup":       active_before_signup,      # 25
-        "duplicate_job_descriptions": duplicate_job_descriptions, # 26
-        "low_engagement_flag":        low_engagement_flag,       # 27
-        "fabrication_bandwidth":      fabrication_bandwidth,     # 28
-        "possible_fabrication":       possible_fabrication,      # 29
+        "low_engagement_flag":        low_engagement_flag,       # 26
+        "fabrication_bandwidth":      fabrication_bandwidth,     # 27
+        "possible_fabrication":       possible_fabrication,      # 28
+        # Soft-penalty flags (read from ATS/upstream; feed L3 condition h)
+        "skill_career_domain_mismatch": bool(c.get("skill_career_domain_mismatch")), # 29
+        "second_undergrad_after_first": bool(c.get("second_undergrad_after_first")), # 30
+        "all_descriptions_identical":   bool(c.get("all_descriptions_identical")),   # 31
     }
 
 
 def l2_table_extract(
     candidates: List[dict],
     jd: dict,
-    global_desc_hashes: dict = None,
 ) -> List[dict]:
     """
     Layer 2 — Table Extract:
-    Builds a 29-column `table_row` dict on every candidate and attaches it as
+    Builds a 31-column `table_row` dict on every candidate and attaches it as
     c['table_row'].  No candidates are filtered; the full list passes through.
 
-    global_desc_hashes: mutable {md5: first_candidate_id} shared across all
-    folders/calls so col 26 (duplicate_job_descriptions) catches cross-candidate
-    copy-pasted descriptions.  Pass the same dict for every call in a pipeline run.
+    Cols 29-31 are the L1b soft-penalty flags read from the upstream ATS dict;
+    they are used by L3 to compute condition 'h' (soft-penalty union).
     """
-    if global_desc_hashes is None:
-        global_desc_hashes = {}
 
     jd_required  = jd.get("explicit_required", []) + jd.get("inferred_required", [])
     jd_inferred  = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
@@ -1045,10 +1069,10 @@ def l2_table_extract(
 
     for c in candidates:
         c["table_row"] = _build_table_row(
-            c, jd_inferred, n_req, global_desc_hashes
+            c, jd_inferred, n_req
         )
 
-    logger.info(f"L2 table extract: {len(candidates)} rows built (29 cols each)")
+    logger.info(f"L2 table extract: {len(candidates)} rows built (31 cols each)")
     return candidates
 
 
@@ -1120,11 +1144,22 @@ def _pct(sv: list, p: float) -> float:
     return sv[lo] + (idx - lo) * (sv[hi] - sv[lo])
 
 
+# ── Soft-penalty flag names (cols 23,24,29-31 of table_row) ─────────────────
+# These are passed from the ATS upstream.  L3 unifies them into condition 'h'.
+_SOFT_PENALTY_COLS: tuple = (
+    "skill_career_domain_mismatch",  # col 29
+    "education_overlap",             # col 23
+    "second_undergrad_after_first",  # col 30
+    "edu_career_gap_flag",           # col 24
+    "all_descriptions_identical",    # col 31
+)
+
+
 # ── Condition computation (Step 3) ───────────────────────────────────────────
 
 def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[str, float]:
     """
-    Derive 7 crisp conditions a–g from a L2 table_row. All outputs in [0, 1].
+    Derive 8 crisp conditions a–h from a L2 table_row. All outputs in [0, 1].
 
     a — experience in JD sweet spot
     b — explicit skill signal (skill_match + skill_assessment)
@@ -1133,6 +1168,7 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
     e — absence of disqualifying traits (phd-only, consulting, stagnant, pure-researcher)
     f — profile integrity (deductions for anomaly flags)
     g — technical breadth (production + arch + testing + tools + open-source/research)
+    h — soft-penalty union (1.0 = any flag fires; ideal candidate has h=0.0)
     """
     exp = float(row.get("total_exp") or 0.0)
     a = 1.0 if 5.0 <= exp <= 9.0 else (0.5 if 3.0 <= exp <= 12.0 else 0.0)
@@ -1165,7 +1201,6 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
     ) / 4.0
 
     f = 1.0
-    if row.get("duplicate_job_descriptions"):  f -= 0.40
     if row.get("low_engagement_flag"):         f -= 0.20
     if row.get("active_before_signup"):        f -= 0.20
     f -= float(row.get("fabrication_bandwidth") or 0.0) * 0.20
@@ -1184,7 +1219,9 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
         + open_or_research
     ) / 5.0
 
-    return {"a": a, "b": b, "c": c, "d": d, "e": e, "f": f, "g": g}
+    h = 1.0 if any(row.get(flag) for flag in _SOFT_PENALTY_COLS) else 0.0
+
+    return {"a": a, "b": b, "c": c, "d": d, "e": e, "f": f, "g": g, "h": h}
 
 
 # ── Self-calibration (Step 4) ─────────────────────────────────────────────────
@@ -1297,12 +1334,11 @@ def _apply_ceilings(mf_vals: Dict[str, dict], raw_score: float) -> float:
 
 # ── Post-FIS adjustments (Step 8) ────────────────────────────────────────────
 
-def _post_fis_adjust(raw_score: float, row: dict) -> float:
-    """Boolean multipliers applied in order after FIS score is computed."""
-    if row.get("duplicate_job_descriptions"):  raw_score *= 0.40   # Step 2 deferred penalty
-    if row.get("research_published") is True:  raw_score *= 1.05
-    if 5.0 <= float(row.get("total_exp") or 0) <= 9.0: raw_score *= 1.08
-    if row.get("edu_career_gap_flag"):         raw_score *= 0.90
+def _post_fis_adjust(raw_score: float, row: dict, h: float = 0.0) -> float:
+    """Multipliers applied after FIS.  h=1 means ≥1 soft-penalty flag fired."""
+    if h > 0.5:                                          raw_score *= 0.90
+    if row.get("research_published") is True:            raw_score *= 1.05
+    if 5.0 <= float(row.get("total_exp") or 0) <= 9.0:  raw_score *= 1.08
     return max(0.0, min(1.0, raw_score))
 
 
@@ -1315,19 +1351,18 @@ def _fuzzy_class(score: float) -> str:
 
 def _build_fuzzy_reasoning(row: dict, conds: Dict[str, float], score: float) -> str:
     flags = []
-    if row.get("possible_fabrication"):          flags.append("fabrication")
-    if row.get("consulting_only"):               flags.append("consulting_only")
-    if row.get("duplicate_job_descriptions"):    flags.append("dup_desc")
-    if row.get("low_engagement_flag"):           flags.append("low_engagement")
-    if row.get("active_before_signup"):          flags.append("active_before_signup")
-    if row.get("edu_career_gap_flag"):           flags.append("edu_gap")
+    if row.get("possible_fabrication"):                  flags.append("fabrication")
+    if row.get("consulting_only"):                        flags.append("consulting_only")
+    if row.get("low_engagement_flag"):                    flags.append("low_engagement")
+    if row.get("active_before_signup"):                   flags.append("active_before_signup")
+    if conds.get("h", 0.0) > 0.5:                        flags.append("soft_penalty")
     if 5.0 <= float(row.get("total_exp") or 0) <= 9.0:  flags.append("ideal_exp")
-    if row.get("research_published"):            flags.append("research")
+    if row.get("research_published"):                     flags.append("research")
     tag = f"[{', '.join(flags)}]" if flags else "clean"
-    a, b, c, d, e, f, g = (conds[k] for k in "abcdefg")
+    a, b, c, d, e, f, g, h = (conds.get(k, 0.0) for k in "abcdefgh")
     return (
         f"score={score:.3f} "
-        f"a={a:.2f} b={b:.2f} c={c:.2f} d={d:.2f} e={e:.2f} f={f:.2f} g={g:.2f} "
+        f"a={a:.2f} b={b:.2f} c={c:.2f} d={d:.2f} e={e:.2f} f={f:.2f} g={g:.2f} h={h:.0f} "
         f"{tag}"
     )
 
@@ -1339,19 +1374,18 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
     Layer 3 — Sugeno Fuzzy Inference System.
     Input:  candidates that have already passed through L2 (table_row present).
     Output: same list with l3_score, l3_class, l3_reasoning attached to each c.
-            Also writes l7_fis_score, fuzzy_class, fuzzy_penalty, reasoning into table_row.
+            Also writes l7_fis_score, fuzzy_class, fuzzy_penalty, l3_h_penalty, reasoning
+            into each candidate's table_row.
 
-    Pre-FIS knockouts (Step 2):
-      consulting_only=True      → l3_score = 0.00, skip FIS
-      possible_fabrication=True → l3_score = 0.05, skip FIS
-      duplicate_job_desc=True   → continue FIS, ×0.40 penalty in Step 8
-
+    No pre-FIS knockouts — all candidates with a valid table_row are scored.
+    Conditions a–g feed the 32-rule Sugeno table; condition h (soft-penalty union)
+    is applied as a ×0.90 multiplier in _post_fis_adjust.
     No candidates are removed; every candidate exits with l3_score set.
     """
     jd_industry = str(jd.get("industry") or jd.get("job_industry") or "").strip().lower()
     n_inferred  = len(jd.get("inferred_required", []) + jd.get("inferred_bonus", []))
 
-    # ── Step 2: pre-FIS knockouts ──────────────────────────────────────────
+    # All candidates enter FIS — only L1 hard-rejects are knockouts
     active: List[dict] = []
     for c in candidates:
         row = c.get("table_row")
@@ -1362,22 +1396,10 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
             c["l3_score"] = 0.0; c["l3_class"] = "no_table_row"
             c["l3_reasoning"] = "missing_l2_output"
             continue
-        if row.get("consulting_only"):
-            c["l3_score"] = 0.00; c["l3_class"] = "knockout_consulting"
-            c["l3_reasoning"] = "consulting_only=True"
-            row.update(l7_fis_score=0.00, fuzzy_class="knockout_consulting",
-                       fuzzy_penalty=0.0, reasoning="consulting_only=True")
-            continue
-        if row.get("possible_fabrication"):
-            c["l3_score"] = 0.05; c["l3_class"] = "knockout_fabrication"
-            c["l3_reasoning"] = "possible_fabrication=True"
-            row.update(l7_fis_score=0.05, fuzzy_class="knockout_fabrication",
-                       fuzzy_penalty=0.0, reasoning="possible_fabrication=True")
-            continue
         active.append(c)
 
     if not active:
-        logger.info(f"L3 fuzzy: all {len(candidates)} candidates knocked out pre-FIS")
+        logger.info(f"L3 fuzzy: no valid candidates with table_row")
         return candidates
 
     # ── Step 3: compute a–g for every active candidate ─────────────────────
@@ -1393,15 +1415,20 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
     for c, conds in zip(active, all_conds):
         row = c["table_row"]
 
-        mf_vals = _fuzzify(conds, mf_params)                     # Step 4
-        raw, _  = _sugeno_infer(mf_vals)                          # Steps 5–6
+        # h is binary (0/1) and not fuzzified through the Sugeno rule table.
+        # Strip it before fuzzification so the MF lookup doesn't KeyError.
+        h         = conds["h"]
+        fis_conds = {k: v for k, v in conds.items() if k != "h"}
+
+        mf_vals = _fuzzify(fis_conds, mf_params)                  # Step 4
+        raw, _  = _sugeno_infer(mf_vals)                           # Steps 5–6
 
         if raw is None:
-            raw = _linear_fallback(conds)                          # degenerate fallback
+            raw = _linear_fallback(fis_conds)                      # degenerate fallback
         else:
             raw = _apply_ceilings(mf_vals, raw)                    # Step 7
 
-        score = _post_fis_adjust(raw, row)                         # Step 8
+        score = _post_fis_adjust(raw, row, h)                      # Step 8
         cls   = _fuzzy_class(score)
         rsn   = _build_fuzzy_reasoning(row, conds, score)
 
@@ -1409,17 +1436,18 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
         c["l3_class"]     = cls
         c["l3_reasoning"] = rsn
         row.update(
-            l7_fis_score  = round(score, 4),
-            fuzzy_class   = cls,
-            fuzzy_penalty = round(conds["f"], 4),
-            reasoning     = rsn,
+            l7_fis_score    = round(score, 4),
+            fuzzy_class     = cls,
+            fuzzy_penalty   = round(fis_conds["f"], 4),
+            l3_h_penalty    = bool(h > 0.5),
+            reasoning       = rsn,
         )
         scored.append(score)
 
     avg = sum(scored) / len(scored) if scored else 0.0
     logger.info(
         f"L3 fuzzy: {len(candidates)} in — {len(active)} FIS-scored "
-        f"(avg={avg:.3f}), {len(candidates) - len(active)} pre-FIS knockouts"
+        f"(avg={avg:.3f}), {len(candidates) - len(active)} skipped (no table_row)"
     )
     return candidates
 
@@ -1446,12 +1474,8 @@ def _jd_responsibilities_text(jd: dict) -> str:
     return str(jd.get("description") or jd.get("job_description") or "").strip()
 
 
-def _cosine_sim_np(a: np.ndarray, b: np.ndarray) -> float:
-    na = np.linalg.norm(a)
-    nb = np.linalg.norm(b)
-    if na < 1e-9 or nb < 1e-9:
-        return 0.0
-    return float(np.dot(a, b) / (na * nb))
+
+_L4_CHAR_LIMIT = 2000   # pre-truncate before tokenisation; model caps at 256 wp anyway
 
 
 def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
@@ -1466,7 +1490,7 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
       c['l4_work_relevance']  float [0, 1]  — raw semantic similarity
       c['l4_combined_score']  float [0, 2]  — l3_score + l4_work_relevance
 
-    Returns the top-100 candidates by l4_combined_score descending.
+    Returns ALL candidates sorted by l4_combined_score descending.
     No candidates are hard-dropped; those with empty descriptions receive
     l4_work_relevance = 0.0.
     """
@@ -1476,54 +1500,60 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
     if not jd_text:
         logger.warning("L4: JD has no responsibilities/description text — work_relevance=0 for all")
 
-    # Encode JD once
-    jd_vec: np.ndarray = (
-        model.encode(jd_text, convert_to_numpy=True, show_progress_bar=False)
-        if jd_text else np.zeros(C.EMBED_DIM, dtype=np.float32)
-    )
+    # Encode JD once; normalize so dot-product == cosine
+    if jd_text:
+        jd_vec: np.ndarray = model.encode(
+            jd_text[:_L4_CHAR_LIMIT],
+            convert_to_numpy=True,
+            show_progress_bar=False,
+            normalize_embeddings=True,
+        )
+    else:
+        jd_vec = np.zeros(C.EMBED_DIM, dtype=np.float32)
 
-    # Collect candidate work texts (preserve index alignment)
+    # Pre-truncate work texts to avoid tokeniser slowdown on huge descriptions
     work_texts: List[str] = [
-        utils.get_work_descriptions_only(c) for c in candidates
+        utils.get_work_descriptions_only(c)[:_L4_CHAR_LIMIT] for c in candidates
     ]
 
-    # Batch-encode non-empty texts
     non_empty_idx = [i for i, t in enumerate(work_texts) if t.strip()]
     work_relevances = [0.0] * len(candidates)
 
     if non_empty_idx and jd_text:
         batch_texts = [work_texts[i] for i in non_empty_idx]
-        batch_size  = C.L4_BATCH_SIZE
 
-        all_vecs: List[np.ndarray] = []
-        for start in range(0, len(batch_texts), batch_size):
-            chunk = batch_texts[start : start + batch_size]
-            vecs  = model.encode(chunk, convert_to_numpy=True, show_progress_bar=False)
-            all_vecs.extend(vecs)
+        # Single encode call — library handles internal chunking via batch_size.
+        # normalize_embeddings=True so rows are unit-norm → dot == cosine.
+        mat: np.ndarray = model.encode(
+            batch_texts,
+            batch_size=C.L4_BATCH_SIZE,
+            convert_to_numpy=True,
+            show_progress_bar=False,
+            normalize_embeddings=True,
+        )  # shape: (len(non_empty_idx), EMBED_DIM)
+
+        # Vectorised cosine: single matrix–vector multiply
+        sims: np.ndarray = mat @ jd_vec  # shape: (N,)
 
         for list_pos, cand_idx in enumerate(non_empty_idx):
-            sim = _cosine_sim_np(all_vecs[list_pos], jd_vec)
-            work_relevances[cand_idx] = max(0.0, sim)   # clip negatives
+            work_relevances[cand_idx] = max(0.0, float(sims[list_pos]))
 
     # Write scores and compute combined ranking score
     for i, c in enumerate(candidates):
         wr  = round(work_relevances[i], 4)
         l3  = float(c.get("l3_score") or 0.0)
-        cmb = round(l3 + wr, 4)
         c["l4_work_relevance"] = wr
-        c["l4_combined_score"] = cmb
+        c["l4_combined_score"] = round(l3 + wr, 4)
 
-    # Sort and keep top 100
     candidates.sort(key=lambda c: c["l4_combined_score"], reverse=True)
-    top100 = candidates[:100]
 
-    avg_wr  = sum(c["l4_work_relevance"] for c in top100) / max(len(top100), 1)
-    avg_cmb = sum(c["l4_combined_score"]  for c in top100) / max(len(top100), 1)
+    avg_wr  = sum(c["l4_work_relevance"] for c in candidates) / max(len(candidates), 1)
+    avg_cmb = sum(c["l4_combined_score"]  for c in candidates) / max(len(candidates), 1)
     logger.info(
-        f"L4 semantic: {len(candidates)} in → top {len(top100)} out "
+        f"L4 semantic: {len(candidates)} scored "
         f"(avg_relevance={avg_wr:.3f}, avg_combined={avg_cmb:.3f})"
     )
-    return top100
+    return candidates
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1540,9 +1570,9 @@ _DONTS_STOPWORDS: frozenset = frozenset({
 
 def _donts_penalty(c: dict, donts: List[str]) -> float:
     """
-    Returns a multiplier in [0.70, 1.00].
+    Returns a multiplier in [0.20, 1.00].
     Each JD dont whose keywords match ≥50% in the candidate's profile
-    reduces the score by 10%, floored at 0.70.
+    reduces the score by 25%, floored at 0.20 (high-penalty mode).
     """
     if not donts:
         return 1.0
@@ -1561,50 +1591,74 @@ def _donts_penalty(c: dict, donts: List[str]) -> float:
         if hit / len(words) >= 0.50:
             matches += 1
 
-    return max(0.70, 1.0 - 0.10 * matches)
+    return max(0.20, 1.0 - 0.25 * matches)
+
+
+def donts_penalty_layer(candidates: List[dict], jd: dict) -> List[dict]:
+    """
+    Donts penalty layer — applied to top-200 before FlashRank.
+
+    For each candidate, multiplies l4_combined_score by _donts_penalty() to
+    produce l5_donts_score.  Penalty per matching dont is 25%, floored at 0.20.
+    Re-sorts by l5_donts_score and returns top 100.
+    """
+    donts = [str(d) for d in (jd.get("donts") or []) if d]
+    for c in candidates:
+        mult  = _donts_penalty(c, donts)
+        base  = float(c.get("l4_combined_score") or 0.0)
+        c["l5_donts_mult"]  = round(mult, 4)
+        c["l5_donts_score"] = round(base * mult, 4)
+
+    candidates.sort(key=lambda c: c["l5_donts_score"], reverse=True)
+    top100 = candidates[:100]
+
+    n_pen = sum(1 for c in top100 if c.get("l5_donts_mult", 1.0) < 1.0)
+    logger.info(
+        f"Donts penalty: {len(candidates)} in → top {len(top100)} out "
+        f"({n_pen} penalised, {len(donts)} dont rules)"
+    )
+    return top100
 
 
 def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
     """
-    Layer 5 — FlashRank cross-encoder re-rank with JD donts penalty.
+    Layer 5 — FlashRank cross-encoder re-rank.
 
-    Step 1: Run ms-marco-MiniLM-L-12-v2 cross-encoder on the top
-            C.FLASHRANK_TOP_N (50) candidates against the JD responsibilities text.
-    Step 2: Apply a donts penalty to each top-50 candidate — profiles that match
-            JD 'donts' keywords have their score multiplied down (min ×0.70).
-    Step 3: Compute total_score = (l4_combined_score + flashrank_score) × donts_mult
-    Step 4: Re-sort all candidates by total_score descending.
+    Runs ms-marco-MiniLM-L-12-v2 on the top C.FLASHRANK_TOP_N (50) candidates.
+    total_score = l5_donts_score + flashrank_score  (additive)
 
-    Candidates outside top-50 receive flashrank_score = 0.0 and donts_mult = 1.0.
+    Candidates outside top-50 keep l5_donts_score as their total_score.
+    If FlashRank is not installed or fails to load, degrades gracefully:
+    total_score = l5_donts_score for all candidates.
+
+    Input is expected to be the top-100 list from donts_penalty_layer
+    (l5_donts_score already present on every candidate).
 
     Attaches per-candidate:
-      c['l5_flashrank_score']  float [0, 1]   — raw cross-encoder relevance
-      c['l5_donts_mult']       float [0.7, 1] — donts penalty multiplier (top-50 only)
-      c['l5_total_score']      float           — final ranking score
-
-    Returns all candidates re-sorted by l5_total_score descending.
-    Input is expected to be the top-100 list from l4_semantic_work.
+      c['l5_flashrank_score']  float [0, 1]  — raw cross-encoder relevance (0 if degraded)
+      c['l5_total_score']      float          — l5_donts_score + flashrank_score
     """
+    # Initialise keys so they always exist regardless of degradation path
+    for c in candidates:
+        c["l5_flashrank_score"] = 0.0
+        c["l5_total_score"]     = round(float(c.get("l5_donts_score") or 0.0), 4)
+
     try:
         from flashrank import RerankRequest
-    except ImportError:
-        raise ImportError("flashrank required: pip install flashrank")
+        ranker = utils.load_flashrank()
+        if ranker is None:
+            raise RuntimeError("FlashRank ranker is None")
+    except Exception as exc:
+        logger.warning(f"L5 FlashRank unavailable ({exc}); total_score = donts_score for all")
+        return candidates
 
     ranker  = utils.load_flashrank()
     jd_text = _jd_responsibilities_text(jd)
-    donts   = [str(d) for d in (jd.get("donts") or []) if d]
-
-    # Initialise every candidate so keys always exist
-    for c in candidates:
-        c["l5_flashrank_score"] = 0.0
-        c["l5_donts_mult"]      = 1.0
-        c["l5_total_score"]     = round(float(c.get("l4_combined_score") or 0.0), 4)
 
     if not jd_text:
         logger.warning("L5: JD has no responsibilities text — flashrank_score=0 for all")
         return candidates
 
-    # Apply cross-encoder + donts to top-N only (list is sorted by l4_combined_score)
     top_n    = min(C.FLASHRANK_TOP_N, len(candidates))
     top_pool = candidates[:top_n]
 
@@ -1619,28 +1673,20 @@ def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
         for r in results
     }
 
-    donts_hits = 0
     for i, c in enumerate(top_pool):
-        fr_score  = id_to_score.get(i, 0.0)
-        dont_mult = _donts_penalty(c, donts)
-        base      = float(c.get("l4_combined_score") or 0.0) + fr_score
-        total     = round(base * dont_mult, 4)
-
+        fr_score = id_to_score.get(i, 0.0)
+        prev     = float(c.get("l5_donts_score") or 0.0)
         c["l5_flashrank_score"] = round(fr_score, 4)
-        c["l5_donts_mult"]      = round(dont_mult, 4)
-        c["l5_total_score"]     = total
-        if dont_mult < 1.0:
-            donts_hits += 1
+        c["l5_total_score"]     = round(prev + fr_score, 4)
 
-    # Re-sort all candidates by total_score
-    candidates.sort(key=lambda c: c["l5_total_score"], reverse=True)
+    # Re-sort top pool by total_score; tail (ranks 51-100) keeps donts_score order
+    top_reranked = sorted(top_pool, key=lambda c: c["l5_total_score"], reverse=True)
+    tail         = candidates[top_n:]
 
-    avg_fr  = sum(c["l5_flashrank_score"] for c in candidates[:top_n]) / top_n
-    avg_tot = sum(c["l5_total_score"]     for c in candidates) / max(len(candidates), 1)
+    avg_fr = sum(c["l5_flashrank_score"] for c in top_reranked) / top_n
     logger.info(
-        f"L5 flashrank: cross-encoded top {top_n} of {len(candidates)}, "
-        f"{donts_hits} donts-penalised "
-        f"(avg_fr={avg_fr:.3f}, avg_total={avg_tot:.3f})"
+        f"L5 flashrank: cross-encoded top {top_n} of {len(candidates)} "
+        f"(avg_fr={avg_fr:.3f}); total_score = donts_score + flashrank"
     )
-    return candidates
+    return top_reranked + tail
 

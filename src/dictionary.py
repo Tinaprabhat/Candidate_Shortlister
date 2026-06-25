@@ -55,6 +55,12 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "dpr", "retrieval system", "embedding based search",
         "neural search", "passage retrieval", "document retrieval",
         "text retrieval", "nearest neighbor search",
+        # Production phrasing variants (LLM often outputs these)
+        "production embeddings", "embeddings in production",
+        "production with embedding", "embedding system",
+        "retrieval with embeddings", "embedding-based search",
+        "vector-based retrieval", "production retrieval system",
+        "production vector search",
     ],
 
     "vector databases": [
@@ -232,12 +238,27 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "llm", "llms", "large language models", "language model",
         "language models", "foundation model", "foundation models",
         "llm engineering", "llm development", "llm fine-tuning",
+        # Production / application variants
+        "llm application", "llm deployment", "llm inference",
+        "llm api", "llm orchestration", "llm pipeline",
+        "llm integration", "llm evaluation", "llm ops",
+        # Open-source model families (commonly listed on resumes)
+        "llama", "llama2", "llama3", "llama 2", "llama 3",
+        "mistral", "mixtral", "falcon", "qwen", "phi", "phi-3",
+        "gemma", "gemma2", "vicuna", "alpaca", "wizard",
+        # Commercial model families
+        "gpt-4", "gpt4", "gpt-3.5", "claude model", "gemini",
+        "palm", "palm2",
     ],
     "retrieval augmented generation": [
         "rag", "retrieval-augmented generation", "retrieval augmented",
         "rag pipeline", "rag system", "rag architecture",
         "rag application", "rag chatbot", "knowledge-augmented generation",
         "grounded generation",
+        # Cross-encoder / reranking overlap (RAG pipelines commonly include reranking)
+        "rag with reranking", "rag reranking", "retrieval and reranking",
+        "retrieval reranking pipeline", "augmented generation",
+        "context retrieval", "knowledge retrieval generation",
     ],
     "transformer": [
         "transformers", "transformer architecture", "attention mechanism",
@@ -258,11 +279,21 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "sentence embeddings", "word vectors", "dense vectors",
         "semantic vectors", "embedding model", "embedding layer",
         "contextual embeddings", "static embeddings",
+        # Similarity / matching variants
+        "similarity matching", "vector similarity matching", "embedding similarity",
+        "semantic similarity matching", "vector similarity",
+        "similarity search", "embedding based", "vector based",
+        "embedding generation", "text embedding", "vector representation",
     ],
     "semantic search": [
         "dense retrieval", "neural search", "vector search",
         "semantic retrieval", "meaning-based search",
         "semantic similarity", "semantic matching",
+        # Overlap with embeddings and retrieval
+        "embedding search", "vector similarity search",
+        "similarity-based search", "similarity based search",
+        "semantic text matching", "dense search",
+        "neural semantic search", "semantic retrieval system",
     ],
     "learning to rank": [
         "ltr", "learntorank", "learn to rank",
@@ -287,6 +318,19 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "rlhf", "supervised fine-tuning", "sft",
         "dpo", "direct preference optimization",
         "rpo", "continued pretraining",
+        # Full names of the abbreviations
+        "low rank adaptation", "low-rank adaptation",
+        "parameter efficient fine tuning", "parameter efficient finetuning",
+        "quantized lora", "quantized low rank adaptation",
+        "reinforcement learning from human feedback",
+        # Broader fine-tuning techniques
+        "model adaptation", "domain adaptation", "task-specific fine-tuning",
+        "adapter tuning", "prefix tuning", "prompt tuning",
+        "llm fine-tuning", "llm finetuning", "language model fine-tuning",
+        "custom model training", "transfer learning fine-tuning",
+        # Common related terms
+        "model alignment", "instruction following", "chat fine-tuning",
+        "axolotl", "unsloth", "llama factory", "trl", "transformers trainer",
     ],
     "multimodal": [
         "multimodal model", "vision language model", "vlm",
@@ -418,7 +462,7 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
     "pinecone": ["pinecone vector", "pinecone client", "pinecone index"],
     "chroma": ["chromadb", "chroma vector", "chroma db"],
     "milvus": ["milvus vector", "milvus db", "pymilvus"],
-    "qdrant": ["qdrant vector", "qdrant client", "qdrant cloud"],
+    "qdrant": ["qdrant vector", "qdrant client", "qdrant cloud", "quadrant vector db"],
     "pgvector": ["pg vector", "postgres vector", "pgvector extension"],
     "lancedb": ["lance db", "lance vector"],
     "vespa": ["vespa.ai", "vespa search"],
@@ -461,6 +505,14 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "re-ranking", "reranker", "cross-encoder reranking",
         "passage reranking", "bge reranker", "cohere rerank",
         "monot5", "monobert",
+        # Cross-encoder is the most common reranking implementation
+        "cross encoders", "cross-encoders", "cross encoder model",
+        "neural reranking", "two-stage reranking", "semantic reranking",
+        "rankgpt", "rank gpt", "llm reranking", "rag reranking",
+        # Flashrank is the reranker used in this pipeline
+        "flash rank", "flashrank reranker",
+        # RAG adjacent — candidates with RAG experience almost always know reranking
+        "rag pipeline reranking", "retrieval reranking",
     ],
     "colbert": ["colbertv2", "late interaction retrieval", "col bert"],
     "bm25": [
@@ -903,6 +955,73 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "firmware", "edge computing", "edge ai",
     ],
     "quantum computing": ["quantum algorithms", "qiskit", "quantum ml"],
+}
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# JD REQUIREMENTS MATCHER
+# skill_tokens: matched against candidate skills[].name (normalized, lowercased)
+# desc_terms:   matched against career_history[].description (lowercased substring)
+# ──────────────────────────────────────────────────────────────────────────────
+JD_REQUIREMENTS = {
+
+    "embeddings_retrieval": {
+        "skill_tokens": {
+            "sentence transformers", "faiss", "embeddings", "semantic search",
+            "vector search", "dense retrieval", "bi-encoder", "cross-encoder",
+            "bge", "e5", "openai embeddings", "cohere embeddings",
+            "all-minilm", "mpnet", "dpr", "colbert", "annoy", "hnswlib",
+            "embedding", "text embeddings", "neural retrieval",
+        },
+        "desc_terms": {
+            "embedding", "semantic search", "dense retrieval", "sentence-transformer",
+            "bi-encoder", "faiss", "annoy", "hnsw", "retrieval system",
+            "vector index", "embedding drift", "index refresh",
+        },
+    },
+
+    "vector_db_hybrid_search": {
+        "skill_tokens": {
+            "pinecone", "weaviate", "qdrant", "milvus", "opensearch",
+            "elasticsearch", "pgvector", "chroma", "lancedb", "vespa",
+            "hybrid search", "vector database", "redis", "typesense",
+            "zilliz", "marqo", "turbopuffer",
+        },
+        "desc_terms": {
+            "pinecone", "weaviate", "qdrant", "milvus", "opensearch",
+            "elasticsearch", "pgvector", "vector database", "hybrid search",
+            "sparse dense", "bm25 embedding", "keyword semantic",
+        },
+    },
+
+    "python": {
+        "skill_tokens": {
+            "python", "pytorch", "tensorflow", "scikit-learn", "sklearn",
+            "numpy", "pandas", "fastapi", "flask", "django", "pydantic",
+            "hugging face", "hugging face transformers", "transformers",
+            "langchain", "llamaindex", "haystack", "ray", "dask",
+        },
+        "desc_terms": {
+            "python", "pytorch", "tensorflow", ".py", "pip install",
+            "sklearn", "pandas", "numpy", "jupyter",
+        },
+    },
+
+    "ranking_eval_frameworks": {
+        "skill_tokens": {
+            "learning to rank", "information retrieval", "ndcg", "mrr", "map",
+            "a/b testing", "ranking", "bm25", "reranking", "flashrank",
+            "evaluation", "offline evaluation", "relevance evaluation",
+            "trec", "beir", "msmarco",
+        },
+        "desc_terms": {
+            "ndcg", "mrr", "map", "recall@", "precision@", "a/b test",
+            "ranking evaluation", "evaluation framework", "offline eval",
+            "online eval", "learning to rank", "relevance label",
+            "click-through", "human judgment", "benchmark", "eval harness",
+            "held-out eval", "ranking metric",
+        },
+    },
 }
 
 

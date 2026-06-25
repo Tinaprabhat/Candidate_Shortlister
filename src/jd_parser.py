@@ -73,10 +73,24 @@ required_seniority
 
 explicit_required  ← READ THE SKILLS SECTION VERY CAREFULLY
   Every technology, language, framework, tool, platform, methodology, or domain the JD
-  directly states as required / must-have / essential. Do NOT summarise or group —
-  list each item individually. Include abbreviations AND their expansions when both appear.
-  If the JD lists "Python, PyTorch, FAISS, vector databases, hybrid search, NDCG",
-  each of those must be a separate entry.
+  directly states as required / must-have / essential.
+
+  CRITICAL OUTPUT RULES — MUST FOLLOW:
+  • Write SHORT skill keywords or tool names (1–4 words max). NEVER write context phrases.
+    BAD:  "Production experience with embeddings-based retrieval systems"
+    GOOD: "embeddings", "sentence-transformers", "faiss", "dense retrieval"
+    BAD:  "Hands-on experience designing evaluation frameworks for ranking systems"
+    GOOD: "learning to rank", "ndcg", "evaluation frameworks for ranking systems"
+    BAD:  "Strong Python" or "Expert-level Python"
+    GOOD: "python"
+    BAD:  "Experience with vector databases or hybrid search infrastructure"
+    GOOD: "vector databases", "hybrid search"
+  • Do NOT summarise or group — list each skill item individually as its own entry.
+  • If one JD bullet contains multiple skills joined by "or" / "and", list each separately.
+  • Include individual tool names (FAISS, Pinecone, Weaviate, BM25, Qdrant) whenever
+    the JD describes a category that implies them.
+  • Include abbreviations AND their expansions when both appear.
+  • Minimum 6 entries; extract every distinct skill the JD marks as required/must-have.
 
 inferred_required
   Skills a strong candidate for THIS specific role would almost certainly have even if

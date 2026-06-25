@@ -4,11 +4,9 @@ rank.py — RedRob ranking entry point (OFFLINE, no API calls).
 
 Pipeline:
   L1 hard-reject → L1b profile-integrity → L1c skill-match
-  → gate (top 50% + random 25% = 75%)
-  → L2 table-extract → L3 fuzzy-score → top 200
-  → L4 semantic-work → top 100
-  → L5 FlashRank + JD-donts penalty (top 50)
-  → final top-100 JSON + CSV
+  → L2 table-extract → L3 fuzzy-score → gate (top 50% + random 25% = 75%)
+  → L4 semantic-score → top 200 → donts penalty → top 100
+  → L5 FlashRank on top 50 (total_score = prev + flashrank) → final top 100
 
 Single-command:
     python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
@@ -61,12 +59,7 @@ def run_early_cascade(
     t = time.time()
     survivors = layers.l1b_profile_integrity(survivors)
     tracer.record_cascade_step("L1b_profile_integrity", before, len(survivors),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "penalized": sum(
-                                       1 for c in survivors if c.get("l1b_penalty", 1.0) < 1.0
-                                   ),
-                               })
+                               notes={"elapsed_s": round(time.time() - t, 3)})
     if not survivors:
         return []
 
@@ -84,62 +77,79 @@ def run_early_cascade(
     return survivors
 
 
-# ── Late cascade (global, after gate) ────────────────────────────────────────
+# ── Late cascade (global, after early cascade) ───────────────────────────────
 
 def run_late_cascade(
     candidates: List[dict], jd: dict, tracer: RunTracer
 ) -> List[dict]:
     """
-    L2 table-extract → L3 fuzzy-score → top 200
-    → L4 semantic-work → top 100
-    → L5 FlashRank + donts → top 100 (re-ranked)
+    L2 table-extract → L3 fuzzy-score → gate (75%)
+    → L4 semantic-score → top 200
+    → donts penalty → top 100
+    → L5 FlashRank top 50 (total_score = donts_score + flashrank) → top 100
     """
-    # L2 — build 29-column table_row per candidate
-    global_desc_hashes: dict = {}
+    # L2 — build 28-column table_row per candidate
     t = time.time()
-    candidates = layers.l2_table_extract(candidates, jd, global_desc_hashes)
+    candidates = layers.l2_table_extract(candidates, jd)
     tracer.record_cascade_step("L2_table_extract", len(candidates), len(candidates),
                                notes={"elapsed_s": round(time.time() - t, 3)})
 
-    # L3 — Sugeno fuzzy score (all pass through)
+    # L3 — Sugeno fuzzy score (no knockouts — all candidates scored)
     t = time.time()
     candidates = layers.l3_fuzzy_score(candidates, jd)
-    n_ko = sum(1 for c in candidates if c.get("l3_class", "").startswith("knockout"))
     tracer.record_cascade_step("L3_fuzzy_score", len(candidates), len(candidates),
                                notes={
                                    "elapsed_s": round(time.time() - t, 3),
-                                   "knockouts": n_ko,
                                    "avg_score": round(
                                        sum(c.get("l3_score", 0) for c in candidates)
                                        / max(len(candidates), 1), 3
                                    ),
                                })
 
-    # Top 200 by l3_score
-    candidates.sort(key=lambda c: c.get("l3_score", 0.0), reverse=True)
-    top200 = candidates[:200]
-    logger.info(f"After L3: {len(candidates)} scored → top {len(top200)} forwarded to L4")
-
-    # L4 — semantic work relevance (returns top 100 sorted by l4_combined_score)
+    # Gate — top 50% + random 25% by l3_score = 75%
+    before_gate = len(candidates)
     t = time.time()
-    top100 = layers.l4_semantic_work(top200, jd)
-    tracer.record_cascade_step("L4_semantic_work", len(top200), len(top100),
+    candidates = layers.l3_gate(candidates)
+    tracer.record_cascade_step("L3_gate", before_gate, len(candidates),
+                               notes={
+                                   "elapsed_s": round(time.time() - t, 3),
+                                   "top_pct":    C.GATE_TOP_FRACTION,
+                                   "random_pct": C.GATE_RANDOM_FRACTION,
+                               })
+    logger.info(f"L3 gate: {before_gate} → {len(candidates)} passed (75%)")
+
+    # L4 — semantic work relevance (returns all sorted by l4_combined_score)
+    t = time.time()
+    candidates = layers.l4_semantic_work(candidates, jd)
+    tracer.record_cascade_step("L4_semantic_work", len(candidates), len(candidates),
                                notes={
                                    "elapsed_s": round(time.time() - t, 3),
                                    "avg_relevance": round(
-                                       sum(c.get("l4_work_relevance", 0) for c in top100)
-                                       / max(len(top100), 1), 3
+                                       sum(c.get("l4_work_relevance", 0) for c in candidates)
+                                       / max(len(candidates), 1), 3
                                    ),
                                })
 
-    # L5 — FlashRank cross-encoder + JD donts penalty on top 50
+    # Top 200 by l4_combined_score (list already sorted)
+    top200 = candidates[:200]
+    logger.info(f"After L4: {len(candidates)} scored → top {len(top200)} forwarded to donts layer")
+
+    # Donts penalty (high) → top 100
     t = time.time()
-    top100 = layers.l5_flashrank_rerank(top100, jd)
+    top100 = layers.donts_penalty_layer(top200, jd)
     n_penalised = sum(1 for c in top100 if c.get("l5_donts_mult", 1.0) < 1.0)
-    tracer.record_cascade_step("L5_flashrank", len(top100), len(top100),
+    tracer.record_cascade_step("Donts_penalty", len(top200), len(top100),
                                notes={
                                    "elapsed_s": round(time.time() - t, 3),
                                    "donts_penalised": n_penalised,
+                               })
+
+    # L5 — FlashRank on top 50; total_score = donts_score + flashrank
+    t = time.time()
+    top100 = layers.l5_flashrank_rerank(top100, jd)
+    tracer.record_cascade_step("L5_flashrank", len(top100), len(top100),
+                               notes={
+                                   "elapsed_s": round(time.time() - t, 3),
                                    "avg_total": round(
                                        sum(c.get("l5_total_score", 0) for c in top100)
                                        / max(len(top100), 1), 3
@@ -187,18 +197,20 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
             "final_score":  row.get("score"),
             "reasoning":    c.get("l3_reasoning", ""),
             "score_breakdown": {
-                "l1c_skill_match":     round(c.get("l1c_score", 0.0), 4),
-                "l1c_matched_required": c.get("l1c_matched_required", []),
-                "l1c_missing_required": c.get("l1c_missing_required", []),
+                "l1c_skill_match":       round(c.get("l1c_score", 0.0), 4),
+                "l1c_matched_explicit":  c.get("l1c_matched_explicit", []),
+                "l1c_matched_required":  c.get("l1c_matched_required", []),
+                "l1c_missing_required":  c.get("l1c_missing_required", []),
                 "l1b_integrity_penalty": round(c.get("l1b_penalty", 1.0), 4),
-                "l1b_flags":           c.get("l1b_flags", []),
-                "l3_fuzzy_score":      round(c.get("l3_score", 0.0), 4),
-                "l3_class":            c.get("l3_class", ""),
-                "l4_work_relevance":   round(c.get("l4_work_relevance", 0.0), 4),
-                "l4_combined_score":   round(c.get("l4_combined_score", 0.0), 4),
-                "l5_flashrank_score":  round(c.get("l5_flashrank_score", 0.0), 4),
-                "l5_donts_mult":       round(c.get("l5_donts_mult", 1.0), 4),
-                "l5_total_score":      round(c.get("l5_total_score", 0.0), 4),
+                "l1b_flags":            c.get("l1b_flags", []),
+                "l3_fuzzy_score":       round(c.get("l3_score", 0.0), 4),
+                "l3_class":             c.get("l3_class", ""),
+                "l4_work_relevance":    round(c.get("l4_work_relevance", 0.0), 4),
+                "l4_combined_score":    round(c.get("l4_combined_score", 0.0), 4),
+                "l5_donts_mult":        round(c.get("l5_donts_mult", 1.0), 4),
+                "l5_donts_score":       round(c.get("l5_donts_score", 0.0), 4),
+                "l5_flashrank_score":   round(c.get("l5_flashrank_score", 0.0), 4),
+                "l5_total_score":       round(c.get("l5_total_score", 0.0), 4),
             },
             "experience_years": utils.get_total_experience_years(c),
             "skills_snippet":   utils.get_skills_text(c)[:200],
@@ -294,32 +306,14 @@ def main():
         tracer.finish(args.out, rows_written=0, elapsed=time.time() - t0)
         return
 
-    # Global gate — top 50% + random 25% = 75%
-    t = time.time()
-    all_gated = layers.l1c_gate(all_early_scored)
-    tracer.record_cascade_step("L1c_gate", len(all_early_scored), len(all_gated),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "top_pct":    C.GATE_TOP_FRACTION,
-                                   "random_pct": C.GATE_RANDOM_FRACTION,
-                               })
-    logger.info(f"Gate: {len(all_early_scored)} in → {len(all_gated)} passed (75%)")
-
-    if not all_gated:
-        logger.error("Gate eliminated all candidates.")
-        tracer.record_error("cascade", "No candidates survived L1c gate")
-        _write_csv(args.out, [])
-        tracer.finish(args.out, rows_written=0, elapsed=time.time() - t0)
-        return
-
-    # Hard pool cap before expensive layers
-    if len(all_gated) > C.HARD_POOL_CAP:
-        all_gated.sort(key=lambda c: c.get("l1c_score", 0), reverse=True)
-        all_gated = all_gated[:C.HARD_POOL_CAP]
+    # Hard pool cap before expensive L2/L3 layers (sort by l1c_score as proxy)
+    if len(all_early_scored) > C.HARD_POOL_CAP:
+        all_early_scored.sort(key=lambda c: c.get("l1c_score", 0), reverse=True)
+        all_early_scored = all_early_scored[:C.HARD_POOL_CAP]
         logger.info(f"Capped pool to {C.HARD_POOL_CAP}")
 
-    # Late cascade — L2 → L3 → top200 → L4 → top100 → L5
-    top100 = run_late_cascade(all_gated, jd, tracer)
+    # Late cascade — L2 → L3 → gate → L4 → top200 → donts → top100 → L5
+    top100 = run_late_cascade(all_early_scored, jd, tracer)
 
     if not top100:
         logger.error("Late cascade produced no candidates.")

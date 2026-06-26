@@ -1,0 +1,3411 @@
+[
+  {
+    "candidate_id": "CAND_0019684",
+    "profile": {
+      "anonymized_name": "Ishaan Khanna",
+      "headline": "Operations Manager | Exploring AI & GenAI applications",
+      "summary": "Operations Manager with 1.2+ years of experience driving outcomes in my domain. I have built strong functional expertise in the typical responsibilities of the role, including team management, stakeholder communication, and project delivery. Recently I've been excited about how AI and GenAI tools can augment my work. I've been taking online courses on RAG and vector databases, experimenting with LangChain and the OpenAI API for side projects, and exploring how LLMs can streamline workflows in my current function. Open to roles that combine my existing domain experience with emerging AI technologies — I think the most interesting opportunities are at this intersection. Looking for positions where I can contribute both my functional expertise and grow my AI capabilities.",
+      "location": "Delhi, Delhi",
+      "country": "India",
+      "years_of_experience": 1.2,
+      "current_title": "Operations Manager",
+      "current_company": "Dunder Mifflin",
+      "current_company_size": "201-500",
+      "current_industry": "Paper Products"
+    },
+    "career_history": [
+      {
+        "company": "Dunder Mifflin",
+        "title": "Operations Manager",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Paper Products",
+        "company_size": "201-500",
+        "description": "Business analyst at a consulting firm, working primarily with retail and CPG clients. Conducted business diagnostics, process re-engineering work, and digital transformation strategy projects. Strong on stakeholder management, structured problem-solving, and the typical consulting toolkit (slide-craft, Excel modeling, executive communication). Recent project work involved AI-strategy advisory but my own technical depth in AI is limited."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Amity University",
+        "degree": "M.Tech",
+        "field_of_study": "MBA",
+        "start_year": 2010,
+        "end_year": 2013,
+        "grade": "7.31 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": true
+      },
+      {
+        "institution": "Generic State University",
+        "degree": "Ph.D",
+        "field_of_study": "Electronics",
+        "start_year": 2003,
+        "end_year": 2007,
+        "grade": "8.37 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Accounting",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 11
+      },
+      {
+        "name": "Hadoop",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 11
+      },
+      {
+        "name": "Databricks",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 14
+      },
+      {
+        "name": "Rust",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 10
+      },
+      {
+        "name": "Figma",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 6
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 2
+      },
+      {
+        "name": "Agile",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 8
+      },
+      {
+        "name": "RAG",
+        "proficiency": "advanced",
+        "endorsements": 1,
+        "duration_months": 14
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 8
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 7
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 16
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 10
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 8
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 4
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 8
+      },
+      {
+        "name": "Semantic Search",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 15
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 12
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 11
+      },
+      {
+        "name": "Vector Search",
+        "proficiency": "advanced",
+        "endorsements": 1,
+        "duration_months": 10
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 48.7,
+      "signup_date": "2025-09-19",
+      "last_active_date": "2026-01-01",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 72,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.67,
+      "avg_response_time_hours": 216.6,
+      "skill_assessment_scores": {},
+      "connection_count": 261,
+      "endorsements_received": 38,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 7.0,
+        "max": 15.4,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 51,
+      "saved_by_recruiters_30d": 9,
+      "interview_completion_rate": 0.86,
+      "offer_acceptance_rate": 0.71,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": true,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 25207,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0020202",
+    "profile": {
+      "anonymized_name": "Shaurya Mukherjee",
+      "headline": "Operations Manager | 1.2+ yrs experience",
+      "summary": "Professional with 1.2+ years of experience. My professional background is in marketing manager — I've built and led teams, owned KPIs, and driven business outcomes in this domain. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Ahmedabad, Gujarat",
+      "country": "India",
+      "years_of_experience": 1.2,
+      "current_title": "Operations Manager",
+      "current_company": "Acme Corp",
+      "current_company_size": "201-500",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Acme Corp",
+        "title": "Operations Manager",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "201-500",
+        "description": "Marketing leadership role at a B2B SaaS company. Owned the demand-generation function — content marketing, paid acquisition, SEO, email nurture. Built and managed a team of 5 across content, performance marketing, and marketing operations. Worked closely with sales on lead-quality definitions and the SDR-handoff process. Recent focus has been on account-based marketing for our enterprise segment."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Generic State University",
+        "degree": "Ph.D",
+        "field_of_study": "Physics",
+        "start_year": 2017,
+        "end_year": 2021,
+        "grade": "8.14 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Apache Flink",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 36
+      },
+      {
+        "name": "Java",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 17
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 13
+      },
+      {
+        "name": "Django",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 14
+      },
+      {
+        "name": "Photoshop",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 23
+      },
+      {
+        "name": "Tally",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 35
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Scrum Master Certified",
+        "issuer": "Scrum Alliance",
+        "year": 2019
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 83.5,
+      "signup_date": "2022-09-28",
+      "last_active_date": "2025-12-06",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 68,
+      "applications_submitted_30d": 5,
+      "recruiter_response_rate": 0.48,
+      "avg_response_time_hours": 118.0,
+      "skill_assessment_scores": {},
+      "connection_count": 354,
+      "endorsements_received": 50,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 13.7,
+        "max": 23.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 138,
+      "saved_by_recruiters_30d": 1,
+      "interview_completion_rate": 0.85,
+      "offer_acceptance_rate": 0.53,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 4.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25237,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0023119",
+    "profile": {
+      "anonymized_name": "Aadhya Khanna",
+      "headline": "Operations Manager | Helping teams scale",
+      "summary": "Professional with 2.0+ years of experience. My professional background is in marketing manager — I've built and led teams, owned KPIs, and driven business outcomes in this domain. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Delhi, Delhi",
+      "country": "India",
+      "years_of_experience": 2.0,
+      "current_title": "Operations Manager",
+      "current_company": "Pied Piper",
+      "current_company_size": "11-50",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Pied Piper",
+        "title": "Operations Manager",
+        "start_date": "2024-06-06",
+        "end_date": null,
+        "duration_months": 24,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "11-50",
+        "description": "Customer support team lead at a SaaS product. Managed a team of 8 support agents handling tier-1 and tier-2 tickets; owned the escalation process to engineering and the customer-feedback loop to product. Built out the support knowledge base and the agent training program. Strong on the people-management side and the process side; lighter on technical depth beyond product expertise."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Amity University",
+        "degree": "M.S.",
+        "field_of_study": "Mechanical Engineering",
+        "start_year": 2016,
+        "end_year": 2021,
+        "grade": "8.15 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Accounting",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 10
+      },
+      {
+        "name": "Excel",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 14
+      },
+      {
+        "name": "SQL",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 8
+      },
+      {
+        "name": "Illustrator",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 3
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 33,
+        "duration_months": 29
+      },
+      {
+        "name": "Next.js",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 18
+      },
+      {
+        "name": "Figma",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 18
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 62.0,
+      "signup_date": "2024-08-19",
+      "last_active_date": "2026-01-29",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 65,
+      "applications_submitted_30d": 4,
+      "recruiter_response_rate": 0.48,
+      "avg_response_time_hours": 73.2,
+      "skill_assessment_scores": {
+        "Weights & Biases": 65.6
+      },
+      "connection_count": 250,
+      "endorsements_received": 43,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 13.7,
+        "max": 13.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 7.7,
+      "search_appearance_30d": 180,
+      "saved_by_recruiters_30d": 6,
+      "interview_completion_rate": 0.77,
+      "offer_acceptance_rate": null,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 3.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25290,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0029140",
+    "profile": {
+      "anonymized_name": "Anil Agarwal",
+      "headline": "Operations Manager | Driving business outcomes",
+      "summary": "Professional with 2.7+ years of experience. My professional background is in marketing manager — I've built and led teams, owned KPIs, and driven business outcomes in this domain. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Vizag, Andhra Pradesh",
+      "country": "India",
+      "years_of_experience": 2.7,
+      "current_title": "Operations Manager",
+      "current_company": "Pied Piper",
+      "current_company_size": "11-50",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Pied Piper",
+        "title": "Operations Manager",
+        "start_date": "2023-10-10",
+        "end_date": null,
+        "duration_months": 32,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "11-50",
+        "description": "Mechanical engineering design role at a hardware-product company. Led the design of two product subsystems through full lifecycle: concept, DFM/DFMA review, prototype, production tooling. Comfortable with CAD (SolidWorks, Creo), FEA (ANSYS), and the typical hardware-development cadence. Worked closely with manufacturing partners on production scale-up."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Tier-3 Engineering College",
+        "degree": "M.S.",
+        "field_of_study": "Mathematics",
+        "start_year": 2015,
+        "end_year": 2018,
+        "grade": "8.43 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Hadoop",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 15
+      },
+      {
+        "name": "AWS",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 15
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 44,
+        "duration_months": 59
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 4
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 12
+      },
+      {
+        "name": "CSS",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 4
+      },
+      {
+        "name": "Java",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 35
+      },
+      {
+        "name": "Data Pipelines",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 8
+      },
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 20
+      },
+      {
+        "name": "Next.js",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 35
+      },
+      {
+        "name": "CI/CD",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 3
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 36.4,
+      "signup_date": "2025-01-11",
+      "last_active_date": "2025-10-03",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 51,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.6,
+      "avg_response_time_hours": 54.6,
+      "skill_assessment_scores": {
+        "MLOps": 38.6
+      },
+      "connection_count": 538,
+      "endorsements_received": 27,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 3.4,
+        "max": 13.6,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 65,
+      "saved_by_recruiters_30d": 12,
+      "interview_completion_rate": 0.31,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 5.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25104,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0032720",
+    "profile": {
+      "anonymized_name": "Aryan Khanna",
+      "headline": "Operations Manager | Driving business outcomes",
+      "summary": "Professional with 1.9+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Hyderabad, Telangana",
+      "country": "India",
+      "years_of_experience": 1.9,
+      "current_title": "Operations Manager",
+      "current_company": "Wipro",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Wipro",
+        "title": "Operations Manager",
+        "start_date": "2025-03-03",
+        "end_date": null,
+        "duration_months": 15,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Marketing leadership role at a B2B SaaS company. Owned the demand-generation function — content marketing, paid acquisition, SEO, email nurture. Built and managed a team of 5 across content, performance marketing, and marketing operations. Worked closely with sales on lead-quality definitions and the SDR-handoff process. Recent focus has been on account-based marketing for our enterprise segment."
+      },
+      {
+        "company": "Wayne Enterprises",
+        "title": "Operations Manager",
+        "start_date": "2024-07-06",
+        "end_date": "2025-02-01",
+        "duration_months": 7,
+        "is_current": false,
+        "industry": "Conglomerate",
+        "company_size": "10001+",
+        "description": "Marketing leadership role at a B2B SaaS company. Owned the demand-generation function — content marketing, paid acquisition, SEO, email nurture. Built and managed a team of 5 across content, performance marketing, and marketing operations. Worked closely with sales on lead-quality definitions and the SDR-handoff process. Recent focus has been on account-based marketing for our enterprise segment."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Lovely Professional University",
+        "degree": "B.Sc",
+        "field_of_study": "Data Science",
+        "start_year": 2009,
+        "end_year": 2013,
+        "grade": "70%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Node.js",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 24
+      },
+      {
+        "name": "Java",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 11
+      },
+      {
+        "name": "Microservices",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 13
+      },
+      {
+        "name": "GCP",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 21
+      },
+      {
+        "name": "FastAPI",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 19
+      },
+      {
+        "name": "Azure",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 12
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Scrum Master Certified",
+        "issuer": "Scrum Alliance",
+        "year": 2021
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 28.3,
+      "signup_date": "2023-04-14",
+      "last_active_date": "2025-10-05",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 17,
+      "applications_submitted_30d": 0,
+      "recruiter_response_rate": 0.15,
+      "avg_response_time_hours": 236.8,
+      "skill_assessment_scores": {},
+      "connection_count": 233,
+      "endorsements_received": 38,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 11.9,
+        "max": 13.1,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 164,
+      "saved_by_recruiters_30d": 11,
+      "interview_completion_rate": 0.85,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 11.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": true,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 50474,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0033488",
+    "profile": {
+      "anonymized_name": "Shaurya Banerjee",
+      "headline": "Operations Manager | Driving business outcomes",
+      "summary": "Professional with 2.5+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Ahmedabad, Gujarat",
+      "country": "India",
+      "years_of_experience": 2.5,
+      "current_title": "Operations Manager",
+      "current_company": "TCS",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "TCS",
+        "title": "Operations Manager",
+        "start_date": "2023-12-09",
+        "end_date": null,
+        "duration_months": 30,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Senior accounting role at a mid-sized company — month-end close, financial reporting, statutory compliance (GAAP / Ind-AS), and tax filings. Owned the GL, fixed-asset register, and the audit-readiness function. Managed a team of 3 staff accountants. Built strong process discipline around the close cycle, reducing close time from 12 days to 7 over the last two years."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Christ University",
+        "degree": "M.S.",
+        "field_of_study": "Commerce",
+        "start_year": 2000,
+        "end_year": 2005,
+        "grade": "87%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": true
+      },
+      {
+        "institution": "Generic State University",
+        "degree": "B.E.",
+        "field_of_study": "Computer Science",
+        "start_year": 2017,
+        "end_year": 2020,
+        "grade": "7.79 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "BigQuery",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 33
+      },
+      {
+        "name": "Azure",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 32
+      },
+      {
+        "name": "Java",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 15
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 29
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 25
+      },
+      {
+        "name": "PowerPoint",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 4
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 70.0,
+      "signup_date": "2023-01-07",
+      "last_active_date": "2026-02-05",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 70,
+      "applications_submitted_30d": 9,
+      "recruiter_response_rate": 0.73,
+      "avg_response_time_hours": 112.0,
+      "skill_assessment_scores": {},
+      "connection_count": 156,
+      "endorsements_received": 46,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 9.7,
+        "max": 17.5,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 36.3,
+      "search_appearance_30d": 40,
+      "saved_by_recruiters_30d": 8,
+      "interview_completion_rate": 0.32,
+      "offer_acceptance_rate": null,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": true,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 3.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": true,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 25078,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0035794",
+    "profile": {
+      "anonymized_name": "Aditya Dalal",
+      "headline": "Operations Manager | Driving business outcomes",
+      "summary": "Professional with 2.9+ years of experience. I'm a marketing manager with substantial experience in cross-functional collaboration, stakeholder management, and execution. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Jaipur, Rajasthan",
+      "country": "India",
+      "years_of_experience": 2.9,
+      "current_title": "Operations Manager",
+      "current_company": "Stark Industries",
+      "current_company_size": "1001-5000",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Stark Industries",
+        "title": "Operations Manager",
+        "start_date": "2023-08-11",
+        "end_date": null,
+        "duration_months": 34,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "1001-5000",
+        "description": "Operations management role at a logistics company. Owned daily fulfillment operations across 3 warehouses, managing a team of 80 across receiving, picking, packing, and outbound. Built and tracked the operational KPIs (on-time fulfillment, accuracy, cost per order) and led the continuous improvement initiatives that drove a 22% productivity gain over 18 months."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Generic State University",
+        "degree": "Ph.D",
+        "field_of_study": "Physics",
+        "start_year": 2000,
+        "end_year": 2005,
+        "grade": "70%",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "PowerPoint",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 13
+      },
+      {
+        "name": "Azure",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 22
+      },
+      {
+        "name": "Redis",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 12
+      },
+      {
+        "name": "Flask",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 8
+      },
+      {
+        "name": "Go",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 5
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 12
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 16
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 31.7,
+      "signup_date": "2023-03-17",
+      "last_active_date": "2025-10-22",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 34,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.24,
+      "avg_response_time_hours": 160.0,
+      "skill_assessment_scores": {},
+      "connection_count": 401,
+      "endorsements_received": 26,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 12.2,
+        "max": 21.9,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 84,
+      "saved_by_recruiters_30d": 10,
+      "interview_completion_rate": 0.67,
+      "offer_acceptance_rate": 0.54,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 18.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25029,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0046822",
+    "profile": {
+      "anonymized_name": "Anjali Dalal",
+      "headline": "Operations Manager | Exploring AI & GenAI applications",
+      "summary": "Operations Manager with 1.3+ years of experience driving outcomes in my domain. I have built strong functional expertise in the typical responsibilities of the role, including team management, stakeholder communication, and project delivery. Recently I've been excited about how AI and GenAI tools can augment my work. I've been taking online courses on RAG and vector databases, experimenting with LangChain and the OpenAI API for side projects, and exploring how LLMs can streamline workflows in my current function. Open to roles that combine my existing domain experience with emerging AI technologies — I think the most interesting opportunities are at this intersection. Looking for positions where I can contribute both my functional expertise and grow my AI capabilities.",
+      "location": "Trivandrum, Kerala",
+      "country": "India",
+      "years_of_experience": 1.3,
+      "current_title": "Operations Manager",
+      "current_company": "Initech",
+      "current_company_size": "51-200",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Initech",
+        "title": "Operations Manager",
+        "start_date": "2025-03-03",
+        "end_date": null,
+        "duration_months": 15,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "51-200",
+        "description": "Customer support team lead at a SaaS product. Managed a team of 8 support agents handling tier-1 and tier-2 tickets; owned the escalation process to engineering and the customer-feedback loop to product. Built out the support knowledge base and the agent training program. Strong on the people-management side and the process side; lighter on technical depth beyond product expertise."
+      }
+    ],
+    "education": [
+      {
+        "institution": "COEP Pune",
+        "degree": "M.E.",
+        "field_of_study": "Physics",
+        "start_year": 2012,
+        "end_year": 2016,
+        "grade": "67%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Christ University",
+        "degree": "Ph.D",
+        "field_of_study": "Machine Learning",
+        "start_year": 2013,
+        "end_year": 2017,
+        "grade": "9.20 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "GCP",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 10
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 11
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 10
+      },
+      {
+        "name": "Figma",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 13
+      },
+      {
+        "name": "Vue.js",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 9
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "advanced",
+        "endorsements": 4,
+        "duration_months": 7
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 5
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 6
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 15
+      },
+      {
+        "name": "Semantic Search",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 11
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 17
+      },
+      {
+        "name": "RAG",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 10
+      },
+      {
+        "name": "Vector Search",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 6
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 66.0,
+      "signup_date": "2026-01-19",
+      "last_active_date": "2025-12-17",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 23,
+      "applications_submitted_30d": 0,
+      "recruiter_response_rate": 0.17,
+      "avg_response_time_hours": 131.1,
+      "skill_assessment_scores": {},
+      "connection_count": 159,
+      "endorsements_received": 48,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 3.2,
+        "max": 9.1,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": 25.0,
+      "search_appearance_30d": 139,
+      "saved_by_recruiters_30d": 12,
+      "interview_completion_rate": 0.53,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 8.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 33,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 4,
+    "fabrication_bandwidth": 25290,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0059039",
+    "profile": {
+      "anonymized_name": "Anika Goyal",
+      "headline": "Operations Manager | 3.0+ yrs experience",
+      "summary": "Professional with 3.0+ years of experience. My professional background is in marketing manager — I've built and led teams, owned KPIs, and driven business outcomes in this domain. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Jaipur, Rajasthan",
+      "country": "India",
+      "years_of_experience": 3.0,
+      "current_title": "Operations Manager",
+      "current_company": "Initech",
+      "current_company_size": "51-200",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Initech",
+        "title": "Operations Manager",
+        "start_date": "2024-10-04",
+        "end_date": null,
+        "duration_months": 20,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "51-200",
+        "description": "Business analyst at a consulting firm, working primarily with retail and CPG clients. Conducted business diagnostics, process re-engineering work, and digital transformation strategy projects. Strong on stakeholder management, structured problem-solving, and the typical consulting toolkit (slide-craft, Excel modeling, executive communication). Recent project work involved AI-strategy advisory but my own technical depth in AI is limited."
+      },
+      {
+        "company": "Stark Industries",
+        "title": "Operations Manager",
+        "start_date": "2023-06-12",
+        "end_date": "2024-09-04",
+        "duration_months": 15,
+        "is_current": false,
+        "industry": "Manufacturing",
+        "company_size": "1001-5000",
+        "description": "Brand design and creative direction at a consumer-products company. Owned brand identity (logo, visual system, typography), packaging design, and digital creative across web and social. Led the recent rebrand and managed a small external agency for production work. Comfortable across the Adobe suite, Figma, and the production side of brand and packaging design."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Thapar University",
+        "degree": "B.Tech",
+        "field_of_study": "Machine Learning",
+        "start_year": 2011,
+        "end_year": 2014,
+        "grade": "7.21 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "VIT Vellore",
+        "degree": "B.Sc",
+        "field_of_study": "Machine Learning",
+        "start_year": 2003,
+        "end_year": 2006,
+        "grade": "7.64 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 20
+      },
+      {
+        "name": "Apache Beam",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 34
+      },
+      {
+        "name": "Redux",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 35
+      },
+      {
+        "name": "Django",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 12
+      },
+      {
+        "name": "Accounting",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 8
+      },
+      {
+        "name": "Databricks",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 7
+      },
+      {
+        "name": "SQL",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 35
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 84.1,
+      "signup_date": "2026-05-15",
+      "last_active_date": "2026-01-13",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 65,
+      "applications_submitted_30d": 4,
+      "recruiter_response_rate": 0.6,
+      "avg_response_time_hours": 257.1,
+      "skill_assessment_scores": {},
+      "connection_count": 130,
+      "endorsements_received": 40,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 14.4,
+        "max": 16.9,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 2,
+      "saved_by_recruiters_30d": 3,
+      "interview_completion_rate": 0.44,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": true,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 122,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 50371,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0067031",
+    "profile": {
+      "anonymized_name": "Sai Reddy",
+      "headline": "Operations Manager | Helping teams scale",
+      "summary": "Professional with 3.0+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Noida, Uttar Pradesh",
+      "country": "India",
+      "years_of_experience": 3.0,
+      "current_title": "Operations Manager",
+      "current_company": "Hooli",
+      "current_company_size": "1001-5000",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Hooli",
+        "title": "Operations Manager",
+        "start_date": "2024-09-04",
+        "end_date": null,
+        "duration_months": 21,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "1001-5000",
+        "description": "Customer support team lead at a SaaS product. Managed a team of 8 support agents handling tier-1 and tier-2 tickets; owned the escalation process to engineering and the customer-feedback loop to product. Built out the support knowledge base and the agent training program. Strong on the people-management side and the process side; lighter on technical depth beyond product expertise."
+      },
+      {
+        "company": "Wipro",
+        "title": "HR Manager",
+        "start_date": "2023-06-12",
+        "end_date": "2024-08-05",
+        "duration_months": 14,
+        "is_current": false,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Brand design and creative direction at a consumer-products company. Owned brand identity (logo, visual system, typography), packaging design, and digital creative across web and social. Led the recent rebrand and managed a small external agency for production work. Comfortable across the Adobe suite, Figma, and the production side of brand and packaging design."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Chandigarh University",
+        "degree": "B.Sc",
+        "field_of_study": "Mechanical Engineering",
+        "start_year": 2001,
+        "end_year": 2005,
+        "grade": "74%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Six Sigma",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 27
+      },
+      {
+        "name": "Snowflake",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 4
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 9
+      },
+      {
+        "name": "Accounting",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 3
+      },
+      {
+        "name": "Excel",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 6
+      },
+      {
+        "name": "dbt",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 10
+      },
+      {
+        "name": "Hadoop",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 10
+      },
+      {
+        "name": "Project Management",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 9
+      },
+      {
+        "name": "Data Pipelines",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 2
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 43,
+        "duration_months": 33
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 30
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 67.8,
+      "signup_date": "2024-07-11",
+      "last_active_date": "2026-02-27",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 22,
+      "applications_submitted_30d": 4,
+      "recruiter_response_rate": 0.11,
+      "avg_response_time_hours": 87.0,
+      "skill_assessment_scores": {},
+      "connection_count": 117,
+      "endorsements_received": 24,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 4.4,
+        "max": 17.4,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 168,
+      "saved_by_recruiters_30d": 10,
+      "interview_completion_rate": 0.35,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 18.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 50454,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0070590",
+    "profile": {
+      "anonymized_name": "Vihaan Kapoor",
+      "headline": "Operations Manager | AI enthusiast | Building with LLMs",
+      "summary": "Operations Manager with 1.8+ years of experience driving outcomes in my domain. I have built strong functional expertise in the typical responsibilities of the role, including team management, stakeholder communication, and project delivery. Recently I've been excited about how AI and GenAI tools can augment my work. I've been taking online courses on RAG and vector databases, experimenting with LangChain and the OpenAI API for side projects, and exploring how LLMs can streamline workflows in my current function. Open to roles that combine my existing domain experience with emerging AI technologies — I think the most interesting opportunities are at this intersection. Looking for positions where I can contribute both my functional expertise and grow my AI capabilities.",
+      "location": "Ahmedabad, Gujarat",
+      "country": "India",
+      "years_of_experience": 1.8,
+      "current_title": "Operations Manager",
+      "current_company": "Globex Inc",
+      "current_company_size": "501-1000",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Globex Inc",
+        "title": "Operations Manager",
+        "start_date": "2024-09-04",
+        "end_date": null,
+        "duration_months": 21,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "501-1000",
+        "description": "Mechanical engineering design role at a hardware-product company. Led the design of two product subsystems through full lifecycle: concept, DFM/DFMA review, prototype, production tooling. Comfortable with CAD (SolidWorks, Creo), FEA (ANSYS), and the typical hardware-development cadence. Worked closely with manufacturing partners on production scale-up."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Delhi College of Engineering",
+        "degree": "Ph.D",
+        "field_of_study": "MBA",
+        "start_year": 2016,
+        "end_year": 2020,
+        "grade": "6.97 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Terraform",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 31
+      },
+      {
+        "name": "GCP",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 16
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 8
+      },
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 28
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 14
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 29
+      },
+      {
+        "name": "Vector Search",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 4
+      },
+      {
+        "name": "RAG",
+        "proficiency": "advanced",
+        "endorsements": 4,
+        "duration_months": 6
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 15
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 7
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "advanced",
+        "endorsements": 1,
+        "duration_months": 18
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 14
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 18
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 75.1,
+      "signup_date": "2024-04-09",
+      "last_active_date": "2025-10-10",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 62,
+      "applications_submitted_30d": 4,
+      "recruiter_response_rate": 0.26,
+      "avg_response_time_hours": 81.2,
+      "skill_assessment_scores": {},
+      "connection_count": 281,
+      "endorsements_received": 35,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 15.8,
+        "max": 16.8,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 122,
+      "saved_by_recruiters_30d": 0,
+      "interview_completion_rate": 0.84,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 4.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 25104,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0071222",
+    "profile": {
+      "anonymized_name": "Ayaan Tiwari",
+      "headline": "Operations Manager | 1.2+ yrs experience",
+      "summary": "Professional with 1.2+ years of experience. I'm a marketing manager with substantial experience in cross-functional collaboration, stakeholder management, and execution. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Chandigarh, Chandigarh",
+      "country": "India",
+      "years_of_experience": 1.2,
+      "current_title": "Operations Manager",
+      "current_company": "Pied Piper",
+      "current_company_size": "11-50",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Pied Piper",
+        "title": "Operations Manager",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "11-50",
+        "description": "Business analyst at a consulting firm, working primarily with retail and CPG clients. Conducted business diagnostics, process re-engineering work, and digital transformation strategy projects. Strong on stakeholder management, structured problem-solving, and the typical consulting toolkit (slide-craft, Excel modeling, executive communication). Recent project work involved AI-strategy advisory but my own technical depth in AI is limited."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Generic State University",
+        "degree": "M.E.",
+        "field_of_study": "Physics",
+        "start_year": 2016,
+        "end_year": 2019,
+        "grade": "7.39 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "HTML",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 13
+      },
+      {
+        "name": "Rust",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 21
+      },
+      {
+        "name": "SEO",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 15
+      },
+      {
+        "name": "Webpack",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 33
+      },
+      {
+        "name": "BigQuery",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 20
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 61.1,
+      "signup_date": "2022-10-06",
+      "last_active_date": "2026-01-02",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 65,
+      "applications_submitted_30d": 3,
+      "recruiter_response_rate": 0.55,
+      "avg_response_time_hours": 254.9,
+      "skill_assessment_scores": {},
+      "connection_count": 527,
+      "endorsements_received": 47,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 7.0,
+        "max": 27.8,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 17,
+      "saved_by_recruiters_30d": 1,
+      "interview_completion_rate": 0.44,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 6.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25207,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0073636",
+    "profile": {
+      "anonymized_name": "Nisha Rao",
+      "headline": "Operations Manager | Driving business outcomes",
+      "summary": "Professional with 2.1+ years of experience. I'm a marketing manager with substantial experience in cross-functional collaboration, stakeholder management, and execution. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Chandigarh, Chandigarh",
+      "country": "India",
+      "years_of_experience": 2.1,
+      "current_title": "Operations Manager",
+      "current_company": "Infosys",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Infosys",
+        "title": "Operations Manager",
+        "start_date": "2024-05-07",
+        "end_date": null,
+        "duration_months": 25,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Senior accounting role at a mid-sized company — month-end close, financial reporting, statutory compliance (GAAP / Ind-AS), and tax filings. Owned the GL, fixed-asset register, and the audit-readiness function. Managed a team of 3 staff accountants. Built strong process discipline around the close cycle, reducing close time from 12 days to 7 over the last two years."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IIT Roorkee",
+        "degree": "B.E.",
+        "field_of_study": "Computer Science",
+        "start_year": 2008,
+        "end_year": 2012,
+        "grade": "87%",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "SAP",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 18
+      },
+      {
+        "name": "Airflow",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 8
+      },
+      {
+        "name": "Spark",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 2
+      },
+      {
+        "name": "MLflow",
+        "proficiency": "advanced",
+        "endorsements": 56,
+        "duration_months": 56
+      },
+      {
+        "name": "Databricks",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 20
+      },
+      {
+        "name": "Salesforce CRM",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 15
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 11
+      },
+      {
+        "name": "Snowflake",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 30
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 3
+      },
+      {
+        "name": "Data Pipelines",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 13
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 37.4,
+      "signup_date": "2023-10-24",
+      "last_active_date": "2025-11-02",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 30,
+      "applications_submitted_30d": 2,
+      "recruiter_response_rate": 0.26,
+      "avg_response_time_hours": 75.3,
+      "skill_assessment_scores": {},
+      "connection_count": 372,
+      "endorsements_received": 27,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 7.8,
+        "max": 11.6,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 91,
+      "saved_by_recruiters_30d": 8,
+      "interview_completion_rate": 0.35,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25078,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0074559",
+    "profile": {
+      "anonymized_name": "Jay Singh",
+      "headline": "Operations Manager | Exploring AI & GenAI applications",
+      "summary": "Operations Manager with 2.5+ years of experience driving outcomes in my domain. I have built strong functional expertise in the typical responsibilities of the role, including team management, stakeholder communication, and project delivery. Recently I've been excited about how AI and GenAI tools can augment my work. I've been taking online courses on RAG and vector databases, experimenting with LangChain and the OpenAI API for side projects, and exploring how LLMs can streamline workflows in my current function. Open to roles that combine my existing domain experience with emerging AI technologies — I think the most interesting opportunities are at this intersection. Looking for positions where I can contribute both my functional expertise and grow my AI capabilities.",
+      "location": "Hyderabad, Telangana",
+      "country": "India",
+      "years_of_experience": 2.5,
+      "current_title": "Operations Manager",
+      "current_company": "Hooli",
+      "current_company_size": "1001-5000",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Hooli",
+        "title": "Operations Manager",
+        "start_date": "2024-12-03",
+        "end_date": null,
+        "duration_months": 18,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "1001-5000",
+        "description": "Enterprise sales of cloud software solutions into the mid-market segment. Carried a $1.8M ARR quota and consistently delivered against it across the last three years. Owned the full sales cycle: prospecting, discovery, technical evaluation (with SE support), commercial negotiation, and close. Strong on consultative selling for technical buyers; comfortable engaging with both engineering and finance stakeholders."
+      },
+      {
+        "company": "Initech",
+        "title": "Marketing Manager",
+        "start_date": "2023-11-25",
+        "end_date": "2024-11-19",
+        "duration_months": 12,
+        "is_current": false,
+        "industry": "Software",
+        "company_size": "51-200",
+        "description": "Content writing and SEO strategy for a tech-focused publication. Wrote longform articles on developer tools, cloud platforms, and AI/ML topics — including some that ranked on the first page of search for high-competition keywords. Managed a freelance writer pool and the editorial calendar. Recent work has been on AI-assisted content production, using LLM tools for research, drafting, and editing while maintaining editorial quality."
+      }
+    ],
+    "education": [
+      {
+        "institution": "KIIT University",
+        "degree": "M.S.",
+        "field_of_study": "Electrical Engineering",
+        "start_year": 2007,
+        "end_year": 2011,
+        "grade": "8.50 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "KIIT University",
+        "degree": "Ph.D",
+        "field_of_study": "Information Technology",
+        "start_year": 2016,
+        "end_year": 2019,
+        "grade": "7.69 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Angular",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 13
+      },
+      {
+        "name": "Rust",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 4
+      },
+      {
+        "name": "Hadoop",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 21
+      },
+      {
+        "name": "Accounting",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 15
+      },
+      {
+        "name": "ETL",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 29
+      },
+      {
+        "name": "FastAPI",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 3
+      },
+      {
+        "name": "HTML",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 14
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 10
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 9
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "advanced",
+        "endorsements": 1,
+        "duration_months": 4
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 16
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 16
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 6
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 10
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "advanced",
+        "endorsements": 4,
+        "duration_months": 13
+      },
+      {
+        "name": "RAG",
+        "proficiency": "advanced",
+        "endorsements": 4,
+        "duration_months": 4
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 13
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 14
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Six Sigma Green Belt",
+        "issuer": "ASQ",
+        "year": 2018
+      },
+      {
+        "name": "Scrum Master Certified",
+        "issuer": "Scrum Alliance",
+        "year": 2024
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 82.7,
+      "signup_date": "2023-09-05",
+      "last_active_date": "2026-02-26",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 38,
+      "applications_submitted_30d": 10,
+      "recruiter_response_rate": 0.28,
+      "avg_response_time_hours": 94.8,
+      "skill_assessment_scores": {},
+      "connection_count": 460,
+      "endorsements_received": 16,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 12.4,
+        "max": 14.6,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 110,
+      "saved_by_recruiters_30d": 4,
+      "interview_completion_rate": 0.6,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 4.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 50586,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0082416",
+    "profile": {
+      "anonymized_name": "Riya Subramanian",
+      "headline": "Operations Manager | 2.8+ yrs experience",
+      "summary": "Professional with 2.8+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "New York",
+      "country": "USA",
+      "years_of_experience": 2.8,
+      "current_title": "Operations Manager",
+      "current_company": "Acme Corp",
+      "current_company_size": "201-500",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Acme Corp",
+        "title": "Operations Manager",
+        "start_date": "2023-09-10",
+        "end_date": null,
+        "duration_months": 33,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "201-500",
+        "description": "Operations management role at a logistics company. Owned daily fulfillment operations across 3 warehouses, managing a team of 80 across receiving, picking, packing, and outbound. Built and tracked the operational KPIs (on-time fulfillment, accuracy, cost per order) and led the continuous improvement initiatives that drove a 22% productivity gain over 18 months."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Jadavpur University",
+        "degree": "B.E.",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2002,
+        "end_year": 2007,
+        "grade": "86%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Data Pipelines",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 30
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 19
+      },
+      {
+        "name": "PowerPoint",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 12
+      },
+      {
+        "name": "CSS",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 9
+      },
+      {
+        "name": "Airflow",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 17
+      },
+      {
+        "name": "TypeScript",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 5
+      },
+      {
+        "name": "Six Sigma",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 4
+      },
+      {
+        "name": "Webpack",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 14
+      },
+      {
+        "name": "Vue.js",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 32
+      },
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 35
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Cloud Practitioner",
+        "issuer": "AWS",
+        "year": 2021
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 42.0,
+      "signup_date": "2026-05-11",
+      "last_active_date": "2025-12-26",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 36,
+      "applications_submitted_30d": 6,
+      "recruiter_response_rate": 0.74,
+      "avg_response_time_hours": 71.3,
+      "skill_assessment_scores": {},
+      "connection_count": 459,
+      "endorsements_received": 17,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 6.0,
+        "max": 10.2,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 135,
+      "saved_by_recruiters_30d": 8,
+      "interview_completion_rate": 0.47,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 16.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 136,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 25029,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0085882",
+    "profile": {
+      "anonymized_name": "Advaith Patel",
+      "headline": "Operations Manager | 2.5+ yrs experience",
+      "summary": "Professional with 2.5+ years of experience. My professional background is in marketing manager — I've built and led teams, owned KPIs, and driven business outcomes in this domain. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Mumbai, Maharashtra",
+      "country": "India",
+      "years_of_experience": 2.5,
+      "current_title": "Operations Manager",
+      "current_company": "Initech",
+      "current_company_size": "51-200",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Initech",
+        "title": "Operations Manager",
+        "start_date": "2023-12-09",
+        "end_date": null,
+        "duration_months": 30,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "51-200",
+        "description": "Marketing leadership role at a B2B SaaS company. Owned the demand-generation function — content marketing, paid acquisition, SEO, email nurture. Built and managed a team of 5 across content, performance marketing, and marketing operations. Worked closely with sales on lead-quality definitions and the SDR-handoff process. Recent focus has been on account-based marketing for our enterprise segment."
+      }
+    ],
+    "education": [
+      {
+        "institution": "VIT Chennai",
+        "degree": "M.Tech",
+        "field_of_study": "Electronics",
+        "start_year": 2008,
+        "end_year": 2011,
+        "grade": "89%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "TypeScript",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 13
+      },
+      {
+        "name": "Hadoop",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 15
+      },
+      {
+        "name": "PowerPoint",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 16
+      },
+      {
+        "name": "Scrum",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 19
+      },
+      {
+        "name": "MongoDB",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 19
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 50,
+        "duration_months": 50
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Cloud Practitioner",
+        "issuer": "AWS",
+        "year": 2022
+      },
+      {
+        "name": "Six Sigma Green Belt",
+        "issuer": "ASQ",
+        "year": 2021
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 45.1,
+      "signup_date": "2022-08-11",
+      "last_active_date": "2025-10-22",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 71,
+      "applications_submitted_30d": 10,
+      "recruiter_response_rate": 0.41,
+      "avg_response_time_hours": 201.9,
+      "skill_assessment_scores": {},
+      "connection_count": 427,
+      "endorsements_received": 20,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 12.1,
+        "max": 17.5,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 0.7,
+      "search_appearance_30d": 50,
+      "saved_by_recruiters_30d": 5,
+      "interview_completion_rate": 0.58,
+      "offer_acceptance_rate": null,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25237,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0089582",
+    "profile": {
+      "anonymized_name": "Arnav Patel",
+      "headline": "Operations Manager | 2.5+ yrs experience",
+      "summary": "Professional with 2.5+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "London",
+      "country": "UK",
+      "years_of_experience": 2.5,
+      "current_title": "Operations Manager",
+      "current_company": "Hooli",
+      "current_company_size": "1001-5000",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Hooli",
+        "title": "Operations Manager",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "1001-5000",
+        "description": "Enterprise sales of cloud software solutions into the mid-market segment. Carried a $1.8M ARR quota and consistently delivered against it across the last three years. Owned the full sales cycle: prospecting, discovery, technical evaluation (with SE support), commercial negotiation, and close. Strong on consultative selling for technical buyers; comfortable engaging with both engineering and finance stakeholders."
+      },
+      {
+        "company": "Wayne Enterprises",
+        "title": "Mechanical Engineer",
+        "start_date": "2023-12-09",
+        "end_date": "2025-03-03",
+        "duration_months": 15,
+        "is_current": false,
+        "industry": "Conglomerate",
+        "company_size": "10001+",
+        "description": "Marketing leadership role at a B2B SaaS company. Owned the demand-generation function — content marketing, paid acquisition, SEO, email nurture. Built and managed a team of 5 across content, performance marketing, and marketing operations. Worked closely with sales on lead-quality definitions and the SDR-handoff process. Recent focus has been on account-based marketing for our enterprise segment."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Thapar University",
+        "degree": "B.E.",
+        "field_of_study": "Information Technology",
+        "start_year": 2007,
+        "end_year": 2011,
+        "grade": "6.58 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Apache Beam",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 11
+      },
+      {
+        "name": "Scrum",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 28
+      },
+      {
+        "name": "Vue.js",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 14
+      },
+      {
+        "name": "Tally",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 9
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 17
+      },
+      {
+        "name": "SQL",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 3
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 4
+      },
+      {
+        "name": "Agile",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 17
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 26
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 35
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 39.0,
+      "signup_date": "2026-03-23",
+      "last_active_date": "2025-12-25",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 23,
+      "applications_submitted_30d": 10,
+      "recruiter_response_rate": 0.58,
+      "avg_response_time_hours": 43.6,
+      "skill_assessment_scores": {},
+      "connection_count": 337,
+      "endorsements_received": 12,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 10.7,
+        "max": 25.6,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": 19.7,
+      "search_appearance_30d": 25,
+      "saved_by_recruiters_30d": 7,
+      "interview_completion_rate": 0.61,
+      "offer_acceptance_rate": null,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 88,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 50752,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0091961",
+    "profile": {
+      "anonymized_name": "Aarav Gupta",
+      "headline": "Operations Manager | Helping teams scale",
+      "summary": "Professional with 2.2+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Mumbai, Maharashtra",
+      "country": "India",
+      "years_of_experience": 2.2,
+      "current_title": "Operations Manager",
+      "current_company": "TCS",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "TCS",
+        "title": "Operations Manager",
+        "start_date": "2024-04-07",
+        "end_date": null,
+        "duration_months": 26,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Brand design and creative direction at a consumer-products company. Owned brand identity (logo, visual system, typography), packaging design, and digital creative across web and social. Led the recent rebrand and managed a small external agency for production work. Comfortable across the Adobe suite, Figma, and the production side of brand and packaging design."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Local Engineering College",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Science",
+        "start_year": 2002,
+        "end_year": 2007,
+        "grade": "8.12 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Local Engineering College",
+        "degree": "B.Sc",
+        "field_of_study": "Electronics",
+        "start_year": 2018,
+        "end_year": 2022,
+        "grade": "7.08 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Kubernetes",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 24
+      },
+      {
+        "name": "Marketing",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 13
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 12
+      },
+      {
+        "name": "Content Writing",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 14
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 18
+      },
+      {
+        "name": "Salesforce CRM",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 10
+      },
+      {
+        "name": "React",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 9
+      },
+      {
+        "name": "Photoshop",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 31
+      },
+      {
+        "name": "REST APIs",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 6
+      },
+      {
+        "name": "CSS",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 4
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 28.9,
+      "signup_date": "2024-09-01",
+      "last_active_date": "2025-12-17",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 7,
+      "applications_submitted_30d": 3,
+      "recruiter_response_rate": 0.06,
+      "avg_response_time_hours": 62.8,
+      "skill_assessment_scores": {},
+      "connection_count": 396,
+      "endorsements_received": 17,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 7.3,
+        "max": 18.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": 3.4,
+      "search_appearance_30d": 168,
+      "saved_by_recruiters_30d": 5,
+      "interview_completion_rate": 0.51,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": true,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 2.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 25164,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0093843",
+    "profile": {
+      "anonymized_name": "Diya Joshi",
+      "headline": "Operations Manager | 2.5+ yrs experience",
+      "summary": "Professional with 2.5+ years of experience. I'm a marketing manager with substantial experience in cross-functional collaboration, stakeholder management, and execution. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Berlin",
+      "country": "Germany",
+      "years_of_experience": 2.5,
+      "current_title": "Operations Manager",
+      "current_company": "Pied Piper",
+      "current_company_size": "11-50",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Pied Piper",
+        "title": "Operations Manager",
+        "start_date": "2023-12-09",
+        "end_date": null,
+        "duration_months": 30,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "11-50",
+        "description": "Brand design and creative direction at a consumer-products company. Owned brand identity (logo, visual system, typography), packaging design, and digital creative across web and social. Led the recent rebrand and managed a small external agency for production work. Comfortable across the Adobe suite, Figma, and the production side of brand and packaging design."
+      }
+    ],
+    "education": [
+      {
+        "institution": "KIIT University",
+        "degree": "M.Tech",
+        "field_of_study": "Statistics",
+        "start_year": 2009,
+        "end_year": 2014,
+        "grade": "9.44 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "PostgreSQL",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 13
+      },
+      {
+        "name": "Django",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 18
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 17
+      },
+      {
+        "name": "Marketing",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 19
+      },
+      {
+        "name": "Redis",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 13
+      },
+      {
+        "name": "Six Sigma",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 22
+      },
+      {
+        "name": "Scrum",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 10
+      },
+      {
+        "name": "Microservices",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 24
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 26
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 15
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 65.2,
+      "signup_date": "2026-03-22",
+      "last_active_date": "2025-11-07",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 11,
+      "applications_submitted_30d": 1,
+      "recruiter_response_rate": 0.31,
+      "avg_response_time_hours": 206.3,
+      "skill_assessment_scores": {},
+      "connection_count": 139,
+      "endorsements_received": 49,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 5.9,
+        "max": 24.8,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 141,
+      "saved_by_recruiters_30d": 6,
+      "interview_completion_rate": 0.46,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 135,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 25164,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0094097",
+    "profile": {
+      "anonymized_name": "Anjali Gupta",
+      "headline": "Operations Manager | Driving business outcomes",
+      "summary": "Professional with 2.8+ years of experience. I've spent my career in marketing manager roles, mostly focused on driving outcomes through process, people, and customer relationships. Lately I've been curious about how AI tools could augment my work — I've experimented with ChatGPT and a few other tools for productivity and content creation, and I think the space is exciting. Open to roles where I can apply my domain expertise alongside emerging AI capabilities.",
+      "location": "Chennai, Tamil Nadu",
+      "country": "India",
+      "years_of_experience": 2.8,
+      "current_title": "Operations Manager",
+      "current_company": "Globex Inc",
+      "current_company_size": "501-1000",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Globex Inc",
+        "title": "Operations Manager",
+        "start_date": "2023-09-10",
+        "end_date": null,
+        "duration_months": 33,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "501-1000",
+        "description": "Customer support team lead at a SaaS product. Managed a team of 8 support agents handling tier-1 and tier-2 tickets; owned the escalation process to engineering and the customer-feedback loop to product. Built out the support knowledge base and the agent training program. Strong on the people-management side and the process side; lighter on technical depth beyond product expertise."
+      }
+    ],
+    "education": [
+      {
+        "institution": "VIT Chennai",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2005,
+        "end_year": 2010,
+        "grade": "7.83 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Webpack",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 17
+      },
+      {
+        "name": "Project Management",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 28
+      },
+      {
+        "name": "FastAPI",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 11
+      },
+      {
+        "name": "Agile",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 17
+      },
+      {
+        "name": "Kubernetes",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 5
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 26.1,
+      "signup_date": "2024-06-03",
+      "last_active_date": "2025-12-05",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 50,
+      "applications_submitted_30d": 9,
+      "recruiter_response_rate": 0.07,
+      "avg_response_time_hours": 191.6,
+      "skill_assessment_scores": {},
+      "connection_count": 423,
+      "endorsements_received": 49,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 13.8,
+        "max": 22.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 28.1,
+      "search_appearance_30d": 113,
+      "saved_by_recruiters_30d": 12,
+      "interview_completion_rate": 0.31,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 13.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 25290,
+    "possible_fabrication": true
+  }
+]

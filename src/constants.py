@@ -32,7 +32,7 @@ GATE_RANDOM_FRACTION = 0.25   # + random 25% from bottom half
 GATE_TOTAL = GATE_TOP_FRACTION + GATE_RANDOM_FRACTION  # 75%
 
 FOLDER_PRUNE_THRESHOLD = 0.15  # folder token-overlap cutoff
-FOLDER_DISPATCH_STAGGER_SEC = 8   # seconds between folder dispatch
+FOLDER_DISPATCH_STAGGER_SEC = 0   # 0 = all folder threads start simultaneously
 MIN_FOLDERS_KEPT = 1           # never drop everything
 
 HARD_POOL_CAP = 60_000         # hard cap before expensive layers
@@ -85,7 +85,8 @@ FOLDER_ABBREVIATIONS = {
     "hr": "human resources recruiter",
     "pm": "product manager",
     "qa": "quality assurance testing",
-    "devops": "development operations",
+    "devops": "development operations devops",
+    "cloud": "cloud computing infrastructure",
     "fe": "frontend front end",
     "be": "backend back end",
     "fullstack": "full stack",
@@ -116,7 +117,7 @@ SKILL_ALIASES = {
 # ──────────────────────────────────────────────────────────────────────────────
 # SENIORITY LEVELS (L3)
 # ──────────────────────────────────────────────────────────────────────────────
-SENIORITY_KEYWORDS = {
+"""SENIORITY_KEYWORDS = {
     "intern": 0,
     "junior": 1,
     "entry": 1,
@@ -128,7 +129,7 @@ SENIORITY_KEYWORDS = {
     "staff": 8,
     "principal": 9,
     "director": 10,
-}
+}"""
 
 # ──────────────────────────────────────────────────────────────────────────────
 # STRUCTURED FOLDER PRUNING RULES
@@ -181,8 +182,27 @@ INACTIVE_CANDIDATE_STATUSES: frozenset = frozenset({
 # is a bucket of inactive candidates.  The branch is hard-dropped in Phase 1
 # before any candidate is loaded.
 INACTIVE_FOLDER_NAMES: frozenset = frozenset({
-    "inactive", "not active", "not_active", "closed", "unavailable",
+    # All entries must be the POST-normalisation form (underscores already
+    # replaced with spaces by _path_parts_normalized before comparison).
+    "inactive", "not active", "closed", "unavailable",
     "deactivated", "blacklisted", "rejected", "archived",
+})
+
+# ── New tree: root-level code/no-code bucket identifiers ─────────────────────
+# Used by Phase 1a to prune the entire branch when the JD's coding requirement
+# contradicts the folder's root-level bucket.
+
+# Normalised root folder names that mean "no coding required" candidates.
+NO_CODE_FOLDER_ROOTS: frozenset = frozenset({
+    "no code", "no_code", "nocode",
+    "non code", "non_code",
+    "non tech", "non_tech",
+    "no coding", "non coding", "non_coding",
+})
+
+# Normalised root folder names that mean "coding / technical" candidates.
+CODE_FOLDER_ROOTS: frozenset = frozenset({
+    "code", "coding", "tech", "technical",
 })
 
 # Folder names that confirm a branch is openly active/eligible.

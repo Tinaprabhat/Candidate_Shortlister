@@ -407,7 +407,7 @@ def l1_hard_reject(candidates: List[dict], fraud_kb) -> List[dict]:
 
 _L1B_HARD_REJECT_FLAGS = [
     "reverse_degree_order",
-    "active_before_signup",
+    "all_descriptions_identical",
     "invalid_degree_field_combination",
 ]
 
@@ -416,7 +416,7 @@ def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
     Layer 1b — Profile integrity: hard-reject gate only.
 
     Hard-reject flags (removed from pool):
-      reverse_degree_order, active_before_signup, invalid_degree_field_combination
+      reverse_degree_order, all_descriptions_identical, invalid_degree_field_combination
 
     Soft-penalty flags are NO LONGER applied here.  They are stored as boolean
     columns in the L2 table (cols 29-31) and unified into condition 'h' by L3.
@@ -695,23 +695,107 @@ _TESTING_EVAL_KW: Dict[str, float] = {
     "f1 score": 0.12,
 }
 
-# ── Tools vocabulary for col 18 ───────────────────────────────────────────────
-_TOOLS_SET: frozenset = frozenset({
-    "faiss", "elasticsearch", "opensearch", "solr", "qdrant", "milvus",
-    "weaviate", "pinecone", "chromadb", "chroma", "pgvector", "lancedb", "vespa",
-    "mlflow", "kubeflow", "wandb", "dvc", "ray", "triton", "bentoml",
-    "pandas", "numpy", "scipy", "polars", "dask", "duckdb",
-    "spark", "pyspark", "kafka", "airflow", "dbt",
-    "sagemaker", "bigquery", "databricks", "snowflake", "redshift",
-    "docker", "kubernetes", "terraform", "jenkins", "prometheus", "grafana",
-    "datadog", "opentelemetry",
-    "tensorflow", "pytorch", "keras", "sklearn", "xgboost",
-    "lightgbm", "huggingface", "langchain", "llamaindex",
-    "postgresql", "postgres", "mysql", "mongodb", "redis", "cassandra", "neo4j",
-    "streamlit", "gradio", "fastapi", "flask", "django",
-    "haystack", "colbert", "bm25", "flashrank", "onnx", "tensorrt",
-    "git", "jira",
-})
+# ── Tools vocabulary for col 18 — weighted by stack relevance ────────────────
+# CV-specific tools (opencv, torchvision, detectron2, yolo, albumentations …)
+# are deliberately excluded.  Categories and weights:
+#   Embedding tools          → 1.0–0.90  (highest: core IR capability)
+#   Vector DB / ANN indexes  → 0.85–0.70  (high)
+#   Ranking / reranking      → 0.90–0.80  (high)
+#   NLP & LLM models         → 0.70–0.50  (medium)
+#   Deployment / MLOps       → 0.50–0.40  (medium)
+#   AI orchestration         → 0.30–0.25  (low)
+#   Cloud ML platforms       → 0.20       (lowest)
+
+# Embedding tools — highest weight
+_EMBEDDING_TOOLS: Dict[str, float] = {
+    "sentence-transformers": 1.00,
+    "fastembed":             1.00,
+    "huggingface":           0.90,   # HF Hub / Transformers ecosystem
+    "cohere":                0.90,   # Cohere embed + rerank API
+}
+
+# Vector database / ANN index tools — high weight
+_VECTOR_DB_TOOLS: Dict[str, float] = {
+    "faiss":         0.85,
+    "qdrant":        0.85,
+    "milvus":        0.85,
+    "weaviate":      0.85,
+    "pinecone":      0.85,
+    "chromadb":      0.85,
+    "pgvector":      0.85,
+    "lancedb":       0.85,
+    "vespa":         0.85,
+    "elasticsearch": 0.80,
+    "opensearch":    0.80,
+    "solr":          0.70,
+}
+
+# Ranking / reranking tools — high weight
+_RANKING_TOOLS: Dict[str, float] = {
+    "flashrank":     0.90,
+    "colbert":       0.90,
+    "cross-encoder": 0.85,
+    "bm25":          0.80,
+    "reranker":      0.80,
+}
+
+# NLP and LLM model tools — medium weight
+_NLP_MODEL_TOOLS: Dict[str, float] = {
+    "bert":        0.70,
+    "llama":       0.70,
+    "spacy":       0.65,
+    "mistral":     0.65,
+    "openai":      0.65,   # GPT / embeddings API
+    "gensim":      0.60,
+    "pytorch":     0.60,
+    "anthropic":   0.60,
+    "nltk":        0.55,
+    "tensorflow":  0.55,
+    "keras":       0.50,
+    "onnx":        0.50,
+    "tensorrt":    0.50,
+}
+
+# Deployment / serving / MLOps tools — medium weight
+_DEPLOYMENT_TOOLS: Dict[str, float] = {
+    "docker":     0.50,
+    "kubernetes": 0.50,
+    "triton":     0.50,
+    "bentoml":    0.50,
+    "ray":        0.45,
+    "mlflow":     0.45,
+    "kubeflow":   0.45,
+    "wandb":      0.40,
+    "dvc":        0.40,
+}
+
+# AI orchestration frameworks — low weight
+_ORCHESTRATION_TOOLS: Dict[str, float] = {
+    "langchain":  0.30,
+    "llamaindex": 0.30,
+    "haystack":   0.30,
+    "crewai":     0.25,
+}
+
+# Cloud ML platforms — lowest weight
+_CLOUD_TOOLS: Dict[str, float] = {
+    "sagemaker":  0.20,
+    "bigquery":   0.20,
+    "databricks": 0.20,
+    "snowflake":  0.20,
+    "redshift":   0.20,
+}
+
+# Merged lookup: tool_name → weight  (used for tools_score computation)
+_TOOLS_WEIGHTED: Dict[str, float] = {
+    **_EMBEDDING_TOOLS,
+    **_VECTOR_DB_TOOLS,
+    **_RANKING_TOOLS,
+    **_NLP_MODEL_TOOLS,
+    **_DEPLOYMENT_TOOLS,
+    **_ORCHESTRATION_TOOLS,
+    **_CLOUD_TOOLS,
+}
 
 # ── Consulting firms / industries for col 19 ─────────────────────────────────
 _CONSULTING_FIRMS: frozenset = frozenset({
@@ -926,12 +1010,12 @@ def _build_table_row(
     )
     research_published = True if any(kw in research_text for kw in _RESEARCH_KW) else None
 
-    # 18 — tools_score  (raw count of distinct tool matches)
+    # 18 — tools_score  (weighted sum; normalized by 3.0 in L3 _compute_conditions)
     skills_text = " ".join(
         str(s.get("name") if isinstance(s, dict) else s).lower() for s in skills_raw
     )
     full_text = skills_text + " " + wtext
-    tools_score = sum(1 for tool in _TOOLS_SET if tool in full_text)
+    tools_score = sum(w for t, w in _TOOLS_WEIGHTED.items() if t in full_text)
 
     # 19 — consulting_only
     consulting_only = bool(work_hist) and all(
@@ -981,13 +1065,8 @@ def _build_table_row(
         education_overlap    = latest_edu_end > first_career_start
         gap                  = first_career_start - latest_edu_end
         edu_career_gap_flag  = gap > 1.5
-
-    # 25 — active_before_signup
-    active_before_signup = False
-    last_active_dt = _parse_date_to_dt(signals.get("last_active_date"))
-    signup_dt      = _parse_date_to_dt(signals.get("signup_date"))
-    if last_active_dt is not None and signup_dt is not None:
-        active_before_signup = last_active_dt < signup_dt
+    # Merge with upstream ATS flag so either source can set it
+    edu_career_gap_flag = edu_career_gap_flag or bool(c.get("edu_career_gap_flag"))
 
     # 26 — low_engagement_flag
     apps_30d      = _safe_float(signals.get("applications_submitted_30d"))
@@ -998,7 +1077,7 @@ def _build_table_row(
     )
 
     # 28 — fabrication_bandwidth  [0, 1]
-    fab = 0.0
+    """fab = 0.0
     if _sal_inverted:
         fab += 0.30
     if active_before_signup:
@@ -1008,11 +1087,11 @@ def _build_table_row(
     if cur_title and job_title and cur_title != job_title:
         fab += 0.20
     if "marketing manager" in summary:
-        fab += 0.10
-    fabrication_bandwidth = round(min(fab, 1.0), 4)
+        fab += 0.10"""
+    fabrication_bandwidth = float(c.get("fabrication_bandwidth_score") or 0.0)/100.0
 
     # 29 — possible_fabrication
-    possible_fabrication = fabrication_bandwidth > 0.5
+    possible_fabrication = bool(c.get("possible_fabrication"))
 
     return {
         "candidate_id":               candidate_id,              # 01
@@ -1038,17 +1117,14 @@ def _build_table_row(
         "last_career_company":        last_career_company,       # 21
         "no_offer_history":           no_offer_history,          # 22
         "education_overlap":          education_overlap,         # 23
-        "edu_career_gap_flag":        edu_career_gap_flag,       # 24
-        "active_before_signup":       active_before_signup,      # 25
+        "edu_career_gap_flag":        edu_career_gap_flag,       # 24 (local OR ATS)
         "low_engagement_flag":        low_engagement_flag,       # 26
         "fabrication_bandwidth":      fabrication_bandwidth,     # 27
         "possible_fabrication":       possible_fabrication,      # 28
         # Soft-penalty flags (read from ATS/upstream; feed L3 condition h)
         "skill_career_domain_mismatch": bool(c.get("skill_career_domain_mismatch")), # 29
         "second_undergrad_after_first": bool(c.get("second_undergrad_after_first")), # 30
-        "all_descriptions_identical":   bool(c.get("all_descriptions_identical")),   # 31
     }
-
 
 def l2_table_extract(
     candidates: List[dict],
@@ -1063,7 +1139,7 @@ def l2_table_extract(
     they are used by L3 to compute condition 'h' (soft-penalty union).
     """
 
-    jd_required  = jd.get("explicit_required", []) + jd.get("inferred_required", [])
+    jd_required  = jd.get("explicit_required", []) + jd.get("explicit_bonus", []) 
     jd_inferred  = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
     n_req        = len(jd_required)
 
@@ -1080,46 +1156,47 @@ def l2_table_extract(
 # LAYER 3 — SUGENO FUZZY INFERENCE SYSTEM  (reads table_row from L2)
 # ──────────────────────────────────────────────────────────────────────────────
 
-# 32-rule Sugeno table — (a, b, c, d, e, f, g, output_value)
+# 32-rule Sugeno table — (a, b, c, d, e, f, g, h, output_value)
 # Condition levels: H=HIGH  M=MED  L=LOW  P=PARTIAL (g only)  W=WARNING (f only)
+# h is the soft-penalty flag (L=no penalty, M/H=penalty present); not fuzzified in Sugeno.
 _FUZZY_RULES = [
-    #  a    b    c    d    e    f    g     out
-    ("H", "H", "H", "H", "H", "H", "H",  1.00),  # R01
-    ("H", "H", "H", "L", "H", "H", "H",  0.95),  # R02
-    ("H", "H", "H", "H", "H", "H", "P",  0.91),  # R03
-    ("H", "H", "H", "H", "H", "W", "H",  0.82),  # R04  ★ f=W ceiling
-    ("H", "H", "M", "H", "H", "H", "H",  0.95),  # R05
-    ("H", "M", "H", "H", "H", "H", "H",  0.95),  # R06
-    ("M", "H", "H", "H", "H", "H", "H",  0.97),  # R07
-    ("H", "H", "H", "H", "H", "H", "P",  0.91),  # R08
-    ("H", "H", "H", "H", "M", "H", "H",  0.95),  # R09
-    ("H", "H", "H", "H", "H", "H", "L",  0.55),  # R10  ★ g=L ceiling
-    ("H", "H", "H", "H", "H", "L", "H",  0.75),  # R11  ★ f=L ceiling
-    ("H", "H", "M", "L", "H", "H", "P",  0.78),  # R12
-    ("L", "H", "H", "H", "H", "H", "M",  0.85),  # R13
-    ("H", "M", "M", "H", "H", "H", "M",  0.77),  # R14
-    ("H", "H", "L", "H", "H", "H", "M",  0.77),  # R15
-    ("H", "H", "H", "H", "L", "H", "M",  0.77),  # R16
-    ("H", "M", "M", "H", "H", "H", "L",  0.45),  # R17  ★
-    ("H", "H", "M", "L", "L", "H", "L",  0.42),  # R18  ★
-    ("H", "M", "H", "H", "L", "W", "M",  0.62),  # R19  ★
-    ("L", "M", "M", "L", "H", "H", "M",  0.68),  # R20
-    ("H", "L", "M", "H", "H", "H", "M",  0.72),  # R21
-    ("H", "H", "L", "H", "L", "W", "L",  0.35),  # R22  ★
-    ("H", "L", "L", "H", "L", "H", "M",  0.53),  # R23
-    ("L", "M", "L", "L", "L", "H", "L",  0.27),  # R24  ★
-    ("H", "M", "L", "L", "L", "W", "L",  0.24),  # R25  ★
-    ("H", "L", "L", "H", "H", "W", "L",  0.27),  # R26  ★
-    ("L", "L", "M", "L", "L", "H", "L",  0.22),  # R27  ★
-    ("H", "L", "L", "H", "L", "L", "L",  0.16),  # R28  ★
-    ("H", "M", "L", "L", "L", "L", "L",  0.17),  # R29  ★
-    ("L", "L", "L", "L", "L", "H", "L",  0.20),  # R30  ★
-    ("H", "L", "L", "H", "L", "L", "L",  0.16),  # R31  ★
-    ("L", "L", "L", "L", "L", "L", "L",  0.04),  # R32  ★
+    #  a    b    c    d    e    f    g    h    out
+    ("H", "H", "H", "H", "H", "H", "H", "L", 1.00),  # R01
+    ("H", "H", "H", "L", "H", "H", "H", "L", 0.95),  # R02
+    ("H", "H", "H", "H", "H", "H", "P", "L", 0.91),  # R03
+    ("H", "H", "H", "H", "H", "W", "H", "L", 0.82),  # R04  ★ f=W ceiling
+    ("H", "H", "M", "H", "H", "H", "H", "L", 0.95),  # R05
+    ("H", "M", "H", "H", "H", "H", "H", "L", 0.95),  # R06
+    ("M", "H", "H", "H", "H", "H", "H", "L", 0.97),  # R07
+    ("H", "H", "H", "H", "H", "H", "P", "L", 0.91),  # R08
+    ("H", "H", "H", "H", "M", "H", "H", "L", 0.95),  # R09
+    ("H", "H", "H", "H", "H", "H", "L", "L", 0.55),  # R10  ★ g=L ceiling
+    ("H", "H", "H", "H", "H", "L", "H", "L", 0.75),  # R11  ★ f=L ceiling
+    ("H", "H", "M", "L", "H", "H", "P", "L", 0.78),  # R12
+    ("L", "H", "H", "H", "H", "H", "M", "L", 0.85),  # R13
+    ("H", "M", "M", "H", "H", "H", "M", "L", 0.77),  # R14
+    ("H", "H", "L", "H", "H", "H", "M", "L", 0.77),  # R15
+    ("H", "H", "H", "H", "L", "H", "M", "M", 0.77),  # R16
+    ("H", "M", "M", "H", "H", "H", "L", "M", 0.45),  # R17  ★
+    ("H", "H", "M", "L", "L", "H", "L", "M", 0.42),  # R18  ★
+    ("H", "M", "H", "H", "L", "W", "M", "M", 0.62),  # R19  ★
+    ("L", "M", "M", "L", "H", "H", "M", "M", 0.68),  # R20
+    ("H", "L", "M", "H", "H", "H", "M", "M", 0.72),  # R21
+    ("H", "H", "L", "H", "L", "W", "L", "M", 0.35),  # R22  ★
+    ("H", "L", "L", "H", "L", "H", "M", "M", 0.53),  # R23
+    ("L", "M", "L", "L", "L", "H", "L", "M", 0.27),  # R24  ★
+    ("H", "M", "L", "L", "L", "W", "L", "M", 0.24),  # R25  ★
+    ("H", "L", "L", "H", "H", "W", "L", "H", 0.27),  # R26  ★
+    ("L", "L", "M", "L", "L", "H", "L", "H", 0.22),  # R27  ★
+    ("H", "L", "L", "H", "L", "L", "L", "H", 0.16),  # R28  ★
+    ("H", "M", "L", "L", "L", "L", "L", "H", 0.17),  # R29  ★
+    ("L", "L", "L", "L", "L", "H", "L", "H", 0.20),  # R30  ★
+    ("H", "L", "L", "H", "L", "L", "L", "H", 0.16),  # R31  ★
+    ("L", "L", "L", "L", "L", "L", "L", "H", 0.04),  # R32  ★
 ]
 
 # Weights for linear fallback (matches the formula: score=0.4g+0.2b+0.1f+0.1e+0.05a+0.05d+0.1c)
-_FIS_WEIGHTS = {"g": 0.40, "b": 0.20, "f": 0.10, "e": 0.10, "a": 0.05, "c": 0.10, "d": 0.05}
+_FIS_WEIGHTS = {"g": 0.40, "b": 0.20, "f": 0.05, "e": 0.10, "a": 0.05, "c": 0.10, "d": 0.05, "h": 0.05}
 
 
 # ── MF helpers ────────────────────────────────────────────────────────────────
@@ -1150,8 +1227,8 @@ _SOFT_PENALTY_COLS: tuple = (
     "skill_career_domain_mismatch",  # col 29
     "education_overlap",             # col 23
     "second_undergrad_after_first",  # col 30
-    "edu_career_gap_flag",           # col 24
-    "all_descriptions_identical",    # col 31
+    "edu_career_gap_flag",           # col 24  (local computation OR ATS flag)
+    # fabrication_bandwidth is NOT here — already deducted continuously in condition f
 )
 
 
@@ -1206,18 +1283,18 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
     f -= float(row.get("fabrication_bandwidth") or 0.0) * 0.20
     f = max(0.0, f)
 
-    tools_norm      = min(float(row.get("tools_score") or 0.0) / 10.0, 1.0)
+    tools_norm      = min(float(row.get("tools_score") or 0.0) / 3.0, 1.0)
     open_or_research = max(
         float(row.get("open_source_score") or 0.0),
         1.0 if row.get("research_published") is True else 0.0,
     )
     g = (
-        float(row.get("production_score") or 0.0)
-        + float(row.get("architecture_score") or 0.0)
-        + float(row.get("testing_evaluation_score") or 0.0)
-        + tools_norm
-        + open_or_research
-    ) / 5.0
+        float(row.get("production_score") or 0.0)*0.3
+        + float(row.get("architecture_score") or 0.0)*0.3
+        + float(row.get("testing_evaluation_score") or 0.0)*0.2
+        + tools_norm*0.1
+        + open_or_research*0.1
+    )
 
     h = 1.0 if any(row.get(flag) for flag in _SOFT_PENALTY_COLS) else 0.0
 
@@ -1297,7 +1374,7 @@ def _sugeno_infer(mf_vals: Dict[str, dict]):
     """
     ws = 0.0
     ts = 0.0
-    for a_l, b_l, c_l, d_l, e_l, f_l, g_l, out in _FUZZY_RULES:
+    for a_l, b_l, c_l, d_l, e_l, f_l, g_l, _, out in _FUZZY_RULES:
         s = min(
             mf_vals["a"][a_l], mf_vals["b"][b_l], mf_vals["c"][c_l],
             mf_vals["d"][d_l], mf_vals["e"][e_l], mf_vals["f"][f_l],

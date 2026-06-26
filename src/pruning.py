@@ -3,16 +3,30 @@ pruning.py — Structured + heuristic folder pruning, then timed thread dispatch
 
 Pruning is applied in five phases (hard → soft):
 
-  Phase 1a — Location    : drop folders that are explicitly outside the JD city
+  Phase 1a — Code/No-code: drop root-level buckets whose code/no-code type
+                           contradicts the JD requirement (e.g. no_code/ when
+                           JD is a software-engineering role).
+  Phase 1b — Inactive    : drop folders whose name identifies them as an
+                           inactive/unavailable candidate bucket.
+  Phase 1c — Location    : drop folders that are explicitly outside the JD city
                            (e.g. india_outside when JD is Bangalore).
-  Phase 1b — Experience  : drop folders whose experience ceiling is below the JD
-                           minimum (e.g. 0-4yrs when JD requires 5+ yrs).
-  Phase 1c — Role        : drop folders labelled as a different role family
+  Phase 1d — Experience  : drop folders whose experience ceiling is below the
+                           JD minimum (e.g. 0-3/ when JD requires 5+ yrs).
+  Phase 1e — Role        : drop folders labelled as a different role family
                            (e.g. other_role when JD is an engineering position).
-  Phase 1d — Inactive    : drop folders whose name identifies them as an inactive
-                           candidate bucket (e.g. a folder literally named "inactive").
   Phase 2  — Token-overlap: score surviving folders against JD title + skills;
-                           drop those below FOLDER_PRUNE_THRESHOLD.
+                           all Phase-1 survivors are kept, sorted by relevance.
+
+Tree layout expected on disk (new structure):
+  <code|no_code>/
+    <available|unavailable>/
+      <0-3|4-9|10+>/
+        <engineering|cloud|devops|…>/
+          <role_bucket>.json   ← e.g. swe_.json, ai_engineer.json
+
+Each leaf JSON file is treated as its own candidate bucket (keyed by its full
+relative path including the file stem), so multiple files in the same domain
+folder are all discovered and pruned independently.
 
 After folder selection, individual inactive candidates are also filtered out
 inside each kept folder before the cascade layers run.
@@ -44,7 +58,7 @@ _EXP_RANGE_TO_RE = re.compile(
     r'(\d{1,2})\s+to\s+(\d{1,2})\s*(?:yr|yrs|year|years)?\b', re.I
 )
 _EXP_PLUS_RE = re.compile(
-    r'(\d{1,2})\s*\+\s*(?:yr|yrs|year|years)?\b', re.I
+    r'(\d{1,2})\s*\+\s*(?:yr|yrs|year|years)?(?:\b|$)', re.I
 )
 _EXP_PLUS_WORD_RE = re.compile(
     r'(\d{1,2})\s*plus\b', re.I
@@ -137,6 +151,51 @@ def _classify_jd_role(jd: dict) -> str:
     return "other"
 
 
+def _classify_jd_coding(jd: dict) -> str:
+    """
+    Return 'code' if the JD requires coding/technical skills, 'no_code' otherwise.
+
+    Detection order (first match wins):
+      1. Explicit boolean flag: requires_coding / coding_required / is_technical
+      2. job_type string containing a no-code or code keyword
+      3. Fall back to engineering role classification (engineering → code)
+    """
+    for field in ("requires_coding", "coding_required", "is_technical"):
+        val = jd.get(field)
+        if val is not None:
+            return "code" if bool(val) else "no_code"
+
+    job_type = str(jd.get("job_type") or "").lower()
+    if job_type:
+        for token in ("no_code", "no code", "nocode", "non tech", "non_tech", "non-tech",
+                      "no coding", "non coding"):
+            if token in job_type:
+                return "no_code"
+        for token in ("code", "tech", "technical", "software", "engineering"):
+            if token in job_type:
+                return "code"
+
+    return "code" if _classify_jd_role(jd) == "engineering" else "no_code"
+
+
+def _is_coding_type_excluded(path_str: str, coding_type: str) -> bool:
+    """
+    Return True if the folder's root-level bucket contradicts the JD coding type.
+
+    The new tree root is either 'code/' or 'no_code/' (and variants).
+    If the JD wants coding candidates ('code'), drop any no_code root branch.
+    If the JD wants non-coding candidates ('no_code'), drop any code root branch.
+    If the root is not a recognised code/no-code token, return False (pass through).
+    """
+    parts = _path_parts_normalized(path_str)
+    root = parts[0] if parts else ""
+    if coding_type == "code":
+        return root in C.NO_CODE_FOLDER_ROOTS
+    if coding_type == "no_code":
+        return root in C.CODE_FOLDER_ROOTS
+    return False
+
+
 def _parse_exp_from_path(path_str: str) -> Optional[Tuple[int, int]]:
     """
     Parse an experience range from a folder path string.
@@ -144,11 +203,10 @@ def _parse_exp_from_path(path_str: str) -> Optional[Tuple[int, int]]:
 
     Recognised formats (checked on each path component, both raw and with
     underscores normalised to spaces):
-      "0-4yrs", "0_4yrs"          → dash/underscore range  (0, 4)
-      "0_to_4", "0 to 4"          → word-form range         (0, 4)
-      "5_to_9", "5-9"             → range                   (5, 9)
-      "10+yrs", "10 + years"      → open lower bound        (10, 99)
-      "10_plus", "10 plus"        → word-form open bound    (10, 99)
+      "0-3", "4-9", "0-4yrs"     → dash/underscore range  (lo, hi)
+      "0_to_4", "0 to 4"         → word-form range         (lo, hi)
+      "10+", "10+yrs", "10+"     → plain-plus open bound   (10, 99)
+      "10_plus", "10 plus"       → word-form open bound    (10, 99)
     """
     raw_parts = path_str.replace("\\", "/").split("/")
     # For each component try both the raw form and the underscore-normalised form
@@ -305,57 +363,84 @@ def prune_folders(
     jd: dict,
 ) -> List[Tuple[str, float]]:
     """
-    Score and filter folders in two phases.
+    Score and filter candidate buckets in two phases.
 
-    Phase 1 (structured hard-prune) — location → experience → role → inactive:
-      Folders that explicitly violate JD constraints are dropped immediately.
+    Phase 1 (structured hard-prune) — code/no-code → inactive → location
+                                      → experience → role:
+      Buckets that explicitly violate JD constraints are dropped immediately.
 
     Phase 2 (token-overlap soft-prune):
-      Surviving folders are scored by token overlap with the JD signal.
-      Folders below FOLDER_PRUNE_THRESHOLD are dropped; if all fall below,
-      the top folders by raw token count are kept as a safety fallback.
+      Surviving buckets are scored by token overlap with the JD signal.
+      All Phase-1 survivors are kept, sorted by relevance score descending.
 
-    Returns kept folders sorted by token-overlap score descending:
-      [(folder_name, score), ...]
+    Returns kept buckets sorted by token-overlap score descending:
+      [(bucket_key, score), ...]
     """
-    jd_location = jd.get("location", "").strip()
-    exp_min = int(jd.get("experience_min") or 0)
+    jd_location  = jd.get("location", "").strip()
+    exp_min      = int(jd.get("experience_min") or 0)
     role_category = _classify_jd_role(jd)
+    coding_type  = _classify_jd_coding(jd)
 
     logger.info(
-        f"Pruning meta — location='{jd_location}', "
+        f"Pruning meta — coding='{coding_type}', location='{jd_location}', "
         f"exp_min={exp_min}yrs, role='{role_category}'"
     )
 
     # ── Phase 1: structured hard-prune ────────────────────────────────────────
+    # Phase 1a drops are tracked separately because they are CATEGORICAL
+    # exclusions (wrong candidate type) and must never be restored by the
+    # fallback that handles over-aggressive Phase 1b–1e heuristics.
+    phase1a_excluded: set = set()
     remaining: List[str] = []
     decisions: Dict[str, str] = {}
 
     for name in folder_names:
-        if _is_inactive_folder(name):
-            reason = "inactive folder"
-            logger.info(f"  '{name}': hard-DROP → {reason}")
+        if _is_coding_type_excluded(name, coding_type):        # Phase 1a — categorical
+            phase1a_excluded.add(name)
+            reason = f"coding-type mismatch (JD wants '{coding_type}')"
+            logger.info(f"  '{name}': hard-DROP [1a] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_location_excluded(name, jd_location):
-            reason = f"location outside {jd_location}"
-            logger.info(f"  '{name}': hard-DROP → {reason}")
+        elif _is_inactive_folder(name):                        # Phase 1b
+            reason = "inactive/unavailable folder"
+            logger.info(f"  '{name}': hard-DROP [1b] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_experience_excluded(name, exp_min):
+        elif _is_location_excluded(name, jd_location):         # Phase 1c
+            reason = f"location outside '{jd_location}'"
+            logger.info(f"  '{name}': hard-DROP [1c] → {reason}")
+            decisions[name] = f"DROP:{reason}"
+        elif _is_experience_excluded(name, exp_min):           # Phase 1d
             reason = f"experience ceiling below {exp_min}yrs"
-            logger.info(f"  '{name}': hard-DROP → {reason}")
+            logger.info(f"  '{name}': hard-DROP [1d] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_role_excluded(name, role_category):
+        elif _is_role_excluded(name, role_category):           # Phase 1e
             reason = f"role mismatch (not {role_category})"
-            logger.info(f"  '{name}': hard-DROP → {reason}")
+            logger.info(f"  '{name}': hard-DROP [1e] → {reason}")
             decisions[name] = f"DROP:{reason}"
         else:
             remaining.append(name)
 
     if not remaining:
-        logger.warning(
-            "All folders hard-pruned by structured rules; reverting to full list"
-        )
-        remaining = list(folder_names)
+        # Phase 1b–1e may be over-restrictive for this dataset (e.g. no
+        # experience range in any folder path).  Re-admit folders that
+        # survived Phase 1a (the coding-type check) but were dropped by
+        # the heuristic phases.  Phase 1a drops are NEVER re-admitted.
+        eligible = [n for n in folder_names if n not in phase1a_excluded]
+        if eligible:
+            logger.warning(
+                f"Phase 1b–1e pruned all {len(folder_names) - len(phase1a_excluded)} "
+                f"post-1a folders; reverting heuristic drops "
+                f"({len(phase1a_excluded)} Phase-1a exclusions kept)"
+            )
+            remaining = eligible
+        else:
+            # Entire dataset is wrong coding type — surface it clearly rather
+            # than silently returning no-code candidates for a coding JD.
+            logger.error(
+                f"All {len(folder_names)} folders are Phase-1a excluded "
+                f"(coding_type='{coding_type}').  "
+                "Check that the ZIP contains the correct code/no_code root bucket."
+            )
+            remaining = []   # return empty; pipeline will produce 0 candidates
 
     # ── Phase 2: token-overlap ranking (sort only — no further drops) ─────────
     # The four structured phases above already remove all clearly irrelevant
@@ -393,29 +478,33 @@ def extract_zip(zip_path: Path) -> Path:
 
 def discover_folders(root: Path) -> Dict[str, Path]:
     """
-    Find all candidate data folders inside the extracted ZIP root.
+    Find all candidate data buckets inside the extracted ZIP root.
 
-    Returns {relative_folder_path: path_to_data_file}.
+    Returns {bucket_key: path_to_data_file}.
 
-    Key is the folder path relative to `root` (e.g. "bangalore/engineering/5-9yrs"),
-    so sibling folders with the same leaf name (e.g. bangalore/active and
-    india_outside/active) are kept as distinct entries and the full path is
-    available to the structured pruning rules.
+    Key format: "<relative_dir>/<file_stem>"  (e.g.
+      "code/available/0-3/engineering/swe_"   or
+      "code/available/4-9/cloud/cloud_engineer")
 
-    Supports both .json (array) and .jsonl (one object per line) candidate files.
-    If a folder contains multiple data files only the first found is used.
+    Using the file stem as the final key component means that multiple JSON
+    files inside the same domain folder (e.g. swe_.json AND ai_engineer.json
+    both inside engineering/) are each registered as independent buckets and
+    are individually subject to heuristic pruning and cascade scoring.
+
+    Flat files at the ZIP root are keyed by their stem only.
+    Both .json (array) and .jsonl (one object per line) are supported.
     """
     folders: Dict[str, Path] = {}
 
     for pattern in ("*.json", "*.jsonl"):
         for data_file in root.rglob(pattern):
             rel_dir = data_file.parent.relative_to(root)
-            folder_key = str(rel_dir).replace("\\", "/")
-            if folder_key == ".":
-                folder_key = data_file.stem  # flat file at root
-            # First file found per folder wins; don't overwrite with a second file
-            if folder_key not in folders:
-                folders[folder_key] = data_file
+            rel_dir_str = str(rel_dir).replace("\\", "/")
+            if rel_dir_str == ".":
+                folder_key = data_file.stem          # flat file at root
+            else:
+                folder_key = f"{rel_dir_str}/{data_file.stem}"
+            folders[folder_key] = data_file          # each file is its own bucket
 
     if not folders:
         # Absolute fallback: any data file directly at root
@@ -426,7 +515,7 @@ def discover_folders(root: Path) -> Dict[str, Path]:
                 folders[data_file.stem] = data_file
 
     logger.info(
-        f"Discovered {len(folders)} candidate folder(s):\n"
+        f"Discovered {len(folders)} candidate bucket(s):\n"
         + "\n".join(f"  {k}  →  {v.name}" for k, v in sorted(folders.items()))
     )
     return folders

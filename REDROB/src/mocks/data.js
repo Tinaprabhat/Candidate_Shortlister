@@ -14,6 +14,8 @@ export const candidates = [
     dominant_trait: 'Core Algorithm',
     verified_at: '2026-06-26T04:40:00Z',
     logic_scores: { l2: 94, l3: 88, l4: 92, l5: 96, l6: 90, l7: 85 },
+    required_skills: ['PyTorch', 'Transformers', 'Python', 'Distributed Training', 'LLM Research'],
+    inferred_skills: ['CUDA Optimization', 'Low-latency Systems', 'Retrieval Architectures', 'Edge Deployment'],
     evidence: [
       'High-confidence authorship match across research history.',
       'Repeated signal in low-latency ranking and retrieval systems.',
@@ -40,6 +42,8 @@ export const candidates = [
     dominant_trait: 'Systems Engineering',
     verified_at: '2026-06-26T03:50:00Z',
     logic_scores: { l2: 88, l3: 95, l4: 82, l5: 88, l6: 92, l7: 90 },
+    required_skills: ['Python', 'Distributed Training', 'LLM Research', 'Kubernetes'],
+    inferred_skills: ['ML Ops', 'Observability', 'Platform Reliability', 'Cloud Infra'],
     evidence: [
       'Strong distributed training and observability record.',
       'Consistent release velocity across infra-heavy programs.',
@@ -66,6 +70,8 @@ export const candidates = [
     dominant_trait: 'Publication Velocity',
     verified_at: '2026-06-25T18:30:00Z',
     logic_scores: { l2: 82, l3: 80, l4: 85, l5: 91, l6: 88, l7: 84 },
+    required_skills: ['Python', 'LLM Research', 'Transformers'],
+    inferred_skills: ['RLHF', 'Evaluation Design', 'Safety Research', 'Red-teaming'],
     evidence: [
       'Excellent evaluation design signal.',
       'One low-confidence co-author network requires human review.',
@@ -92,6 +98,8 @@ export const candidates = [
     dominant_trait: 'ML Research',
     verified_at: '2026-06-25T15:18:00Z',
     logic_scores: { l2: 85, l3: 82, l4: 78, l5: 88, l6: 82, l7: 80 },
+    required_skills: ['PyTorch', 'Transformers', 'Python', 'LLM Research'],
+    inferred_skills: ['Research Management', 'Publication Strategy', 'Cross-functional Delivery'],
     evidence: [
       'Strong publication quality with durable citation signal.',
       'Excellent cross-functional delivery history.',
@@ -118,6 +126,8 @@ export const candidates = [
     dominant_trait: 'Alignment',
     verified_at: '2026-06-25T11:42:00Z',
     logic_scores: { l2: 80, l3: 84, l4: 78, l5: 86, l6: 82, l7: 79 },
+    required_skills: ['Python', 'LLM Research', 'Transformers'],
+    inferred_skills: ['Alignment Research', 'Evaluation Design', 'Red-teaming', 'Safety Probing'],
     evidence: [
       'Best evidence appears in eval design and red-team loops.',
       'Career depth is lower but trajectory is strong.',

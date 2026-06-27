@@ -3,6 +3,7 @@ import { create } from 'zustand'
 const defaultFilters = {
   score_min: 70,
   verified_only: true,
+  risk_flagged: false,
   domain: 'all',
   page: 1,
   limit: 20

@@ -1,10 +1,24 @@
 import { RotateCcw } from 'lucide-react'
+import { useCandidates } from '../../hooks/useCandidates.js'
 import { useAppStore } from '../../store/useAppStore.js'
 
 export default function FilterRail() {
   const filters = useAppStore((state) => state.filters)
   const setFilters = useAppStore((state) => state.setFilters)
   const resetFilters = useAppStore((state) => state.resetFilters)
+  const { data: candidates = [] } = useCandidates()
+
+  // Collect unique required and inferred skills from currently visible candidates
+  const requiredSkills = [...new Set(candidates.flatMap((c) => c.required_skills || []))]
+  const inferredSkills = [...new Set(candidates.flatMap((c) => c.inferred_skills || []))]
+
+  function handleVerifiedOnly(checked) {
+    setFilters({ verified_only: checked, ...(checked ? { risk_flagged: false } : {}) })
+  }
+
+  function handleRiskFlagged(checked) {
+    setFilters({ risk_flagged: checked, ...(checked ? { verified_only: false } : {}) })
+  }
 
   return (
     <aside className="filter-rail">
@@ -33,12 +47,16 @@ export default function FilterRail() {
         <input
           type="checkbox"
           checked={filters.verified_only}
-          onChange={(event) => setFilters({ verified_only: event.target.checked })}
+          onChange={(event) => handleVerifiedOnly(event.target.checked)}
         />
         <span>Verified only</span>
       </label>
       <label className="checkbox-line">
-        <input type="checkbox" checked={false} readOnly />
+        <input
+          type="checkbox"
+          checked={filters.risk_flagged}
+          onChange={(event) => handleRiskFlagged(event.target.checked)}
+        />
         <span>Risk flagged</span>
       </label>
 
@@ -58,6 +76,32 @@ export default function FilterRail() {
         <button type="button" onClick={() => setFilters({ domain: 'systems' })}>Cloud Infra</button>
         <button type="button" onClick={() => setFilters({ domain: 'alignment' })}>PyTorch</button>
       </div>
+
+      {requiredSkills.length > 0 && (
+        <>
+          <div className="rail-heading">
+            <span>Required Matched Skills</span>
+          </div>
+          <div className="skill-tag-rail">
+            {requiredSkills.map((skill) => (
+              <span key={skill} className="skill-tag skill-tag--required">{skill}</span>
+            ))}
+          </div>
+        </>
+      )}
+
+      {inferredSkills.length > 0 && (
+        <>
+          <div className="rail-heading">
+            <span>Inferred Matched Skills</span>
+          </div>
+          <div className="skill-tag-rail">
+            {inferredSkills.map((skill) => (
+              <span key={skill} className="skill-tag skill-tag--inferred">{skill}</span>
+            ))}
+          </div>
+        </>
+      )}
 
       <button className="ghost-button" type="button" onClick={resetFilters}>
         <RotateCcw size={16} aria-hidden="true" />

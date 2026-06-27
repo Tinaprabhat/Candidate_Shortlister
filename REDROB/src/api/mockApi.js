@@ -9,11 +9,13 @@ function delay(value, ms = 240) {
 export function listCandidates(filters = {}) {
   const scoreMin = Number(filters.score_min ?? 0)
   const verifiedOnly = filters.verified_only === true || filters.verified_only === 'true'
+  const riskFlagged = filters.risk_flagged === true || filters.risk_flagged === 'true'
   const domain = filters.domain || 'all'
 
   const rows = candidates
     .filter((candidate) => candidate.score >= scoreMin)
     .filter((candidate) => !verifiedOnly || candidate.integrity_status === 'CLEAN')
+    .filter((candidate) => !riskFlagged || candidate.integrity_status !== 'CLEAN')
     .filter((candidate) => domain === 'all' || candidate.domain === domain)
     .sort((a, b) => b.score - a.score)
 

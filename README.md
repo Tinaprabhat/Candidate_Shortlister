@@ -1,3 +1,14 @@
+---
+title: RedRob Ranker
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: "1.32.0"
+app_file: app.py
+pinned: false
+---
+
 # RedRob — Intelligent Candidate Discovery & Ranking System
 
 > **Redrob Hackathon Submission** · Team RedRob · India Runs Data & AI Challenge 2026

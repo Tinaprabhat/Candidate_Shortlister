@@ -1,0 +1,136 @@
+{
+  "job_title": "Senior AI Engineer — Founding Team",
+  "role": "Senior AI Engineer owning the full intelligence layer — ranking, retrieval, and candidate-JD matching — on Redrob AI's founding engineering team.",
+  "industry": "HR Tech",
+  "location": "Pune/Noida, India",
+  "experience_min": 5,
+  "experience_max": 9,
+  "required_seniority": "senior",
+
+  "explicit_required": [
+    "embeddings-based retrieval systems",
+    "vector databases",
+    "hybrid search infrastructure",
+    "evaluation frameworks for ranking systems",
+    "python",
+    "information retrieval"
+  ],
+
+  "inferred_required": [
+    "machine learning",
+    "natural language processing",
+    "git",
+    "docker",
+    "sql",
+    "linux",
+    "mlflow",
+    "rest api",
+    "system design",
+    "nlp"
+  ],
+
+  "explicit_bonus": [
+    "lora",
+    "learning to rank",
+    "recommender systems",
+    "distributed systems",
+    "mlops",
+    "open source"
+  ],
+
+  "inferred_bonus": [
+    "kubernetes",
+    "fastapi",
+    "postgresql",
+    "redis",
+    "aws",
+    "gcp",
+    "pytorch",
+    "transformers",
+    "huggingface",
+    "spacy",
+    "onnx"
+  ],
+
+  "semantic_neighbors": {
+    "embeddings-based retrieval systems": [
+      "sentence-transformers", "sentence transformers", "faiss", "dense retrieval",
+      "bi-encoder", "dual-encoder", "neural retrieval", "semantic search",
+      "pgvector", "ann search", "hnsw", "scann", "openai embeddings",
+      "bge", "e5", "embedding search", "retrieval system",
+      "dense passage retrieval", "dpr", "vector similarity search"
+    ],
+    "vector databases": [
+      "pinecone", "qdrant", "weaviate", "milvus", "faiss", "chroma",
+      "lancedb", "opensearch", "elasticsearch", "pgvector", "vespa",
+      "vector store", "vector db", "vectordb", "embedding database",
+      "ann database", "similarity search database"
+    ],
+    "hybrid search infrastructure": [
+      "bm25", "tf-idf", "elasticsearch", "opensearch", "solr",
+      "hybrid search", "hybrid retrieval", "reranking", "re-ranking",
+      "cross-encoder", "colbert", "splade", "reciprocal rank fusion", "rrf",
+      "two-stage retrieval", "sparse retrieval", "keyword search",
+      "query expansion", "retrieval pipeline"
+    ],
+    "evaluation frameworks for ranking systems": [
+      "ndcg", "mrr", "map", "precision@k", "recall@k",
+      "a/b testing", "beir", "trec", "msmarco", "offline evaluation",
+      "online evaluation", "interleaving", "ranking evaluation",
+      "retrieval evaluation", "search relevance", "relevance judgment",
+      "ir metrics", "hit rate", "ranking quality"
+    ],
+    "python": [
+      "python3", "pytorch", "tensorflow", "scikit-learn", "numpy",
+      "pandas", "python scripting", "python development", "python engineer"
+    ],
+    "information retrieval": [
+      "ir", "search systems", "ranking systems", "search ranking",
+      "learning to rank", "ltr", "search relevance", "document ranking",
+      "passage ranking", "search infrastructure", "retrieval infrastructure"
+    ],
+    "lora": [
+      "qlora", "peft", "fine-tuning", "llm fine-tuning", "instruction tuning",
+      "parameter efficient fine-tuning", "adapter tuning"
+    ],
+    "learning to rank": [
+      "ltr", "learntorank", "lambdamart", "listnet", "ranknet",
+      "xgboost ranking", "pairwise ranking", "listwise ranking"
+    ]
+  },
+
+  "role_description": "The Senior AI Engineer will own end-to-end the intelligence layer of Redrob AI's product — the ranking, retrieval, and matching systems that decide what recruiters see when they search candidates and what candidates see when they search roles. The company is at Series A, has just raised its round, and is building a new AI Engineering org from scratch; this is a founding-team hire with direct product ownership. The role requires simultaneous depth in modern ML systems (embeddings, retrieval, ranking, LLMs, fine-tuning) and a product-engineering attitude willing to ship a working ranker in a week and iterate from real user signals.",
+
+  "company_description": "Redrob AI is a Series A AI-native talent intelligence platform that has recently closed its funding round and is building its AI Engineering organisation from scratch. The company operates in HR Tech, providing intelligent candidate discovery, ranking, and JD-to-candidate matching for enterprise recruiters. The engineering team is currently 4 people and will grow to 12 in the next 12 months.",
+
+  "what_you_will_do": "As Senior AI Engineer on Redrob's founding team, you will own end-to-end the intelligence layer of the platform — the ranking, retrieval, and matching systems that drive recruiter and candidate search experiences. Your primary mandate is to transform the current BM25 and rule-based scoring pipeline into a production-grade ML system using embeddings-based dense retrieval, hybrid search combining sparse BM25 with dense bi-encoders, and LLM-based cross-encoder reranking. In your first three weeks you will audit the existing retrieval infrastructure, identify the three or four highest-leverage improvements, and document the current system's failure modes. In weeks four through eight you will ship a v2 ranking system that demonstrably improves recruiter-engagement metrics (click-through rate, shortlist rate, recruiter response rate), integrating sentence-transformers or BGE-family bi-encoders with vector databases such as Qdrant or FAISS for approximate nearest-neighbor search, building hybrid retrieval pipelines that fuse dense and sparse scores via reciprocal rank fusion. In weeks nine through twelve you will establish the evaluation infrastructure: offline benchmarks tracking NDCG, MRR, and MAP on held-out recruiter-click datasets, online A/B testing with interleaving, and recruiter-feedback loops that close the offline-online correlation gap. Beyond the initial sprint, you will design the long-term architecture for candidate-to-JD semantic matching at scale — exploring learning-to-rank models (XGBoost-LTR, ListNet, neural rerankers), LLM fine-tuning (LoRA, QLoRA, PEFT) for domain adaptation, and distributed inference optimisation for real-time search latency targets. You will instrument production models for embedding drift detection, index refresh pipelines, and retrieval-quality regression alerts. You will write production Python daily — clean, tested, reviewable code — mentor two or three engineers as the team scales from four to twelve, collaborate with the recruiter-experience PM to translate product requirements into ML problem formulations, and own trade-off decisions between model quality, inference latency, and operational cost.",
+
+  "candidate_work": [
+    "Own the intelligence layer of Redrob's product end-to-end — ranking, retrieval, and candidate-JD matching systems.",
+    "Audit the current BM25 + rule-based scoring pipeline and identify the three to four highest-leverage improvements within the first three weeks.",
+    "Ship a v2 ranking system using embeddings-based dense retrieval and hybrid search that demonstrably improves recruiter-engagement metrics (CTR, shortlist rate, response rate).",
+    "Build and maintain hybrid retrieval pipelines combining sparse BM25/TF-IDF with dense bi-encoders using reciprocal rank fusion or learned score fusion.",
+    "Integrate and operate vector databases (Qdrant, FAISS, Pinecone, or similar) for approximate nearest-neighbour candidate search at scale.",
+    "Design and own offline evaluation infrastructure: NDCG, MRR, MAP benchmarks on held-out recruiter-click datasets; BEIR-style evaluation harnesses.",
+    "Set up online A/B testing and interleaving experiments; build recruiter-feedback loops to close offline-online correlation gaps.",
+    "Instrument production embedding models for drift detection, index refresh scheduling, and retrieval-quality regression alerting.",
+    "Explore and prototype LLM-based reranking (cross-encoders, ColBERT, SPLADE) and LLM fine-tuning (LoRA, QLoRA, PEFT) for domain-adapted ranking.",
+    "Drive the long-term architecture of candidate-JD matching at scale — including learning-to-rank models (XGBoost-LTR, ListNet, neural LTR), distributed inference, and query understanding.",
+    "Write production Python daily: clean, tested, peer-reviewed code deployed to real users.",
+    "Mentor two to three engineers as the team scales from four to twelve; participate in technical hiring.",
+    "Collaborate with the recruiter-experience PM to translate product requirements into ML problem formulations and communicate ML constraints back to product."
+  ],
+
+  "donts": [
+    "Candidates with only academic or research-lab experience and no shipped production ML systems — especially those coming directly from PhD programs or research-only roles without production deployment history.",
+    "Candidates whose AI experience consists primarily of wrapping OpenAI or calling LangChain APIs for under 12 months with no prior ML experience from before the LLM era — the JD explicitly disqualifies these profiles.",
+    "Senior engineers who have not written production code in the last 18 months because they have moved fully into architecture, tech-lead, or principal roles — this role writes code daily.",
+    "Title-chasers who show a pattern of switching companies every 12 to 18 months specifically to obtain the next seniority title (e.g. engineer → senior → staff at three different companies in four years) with no demonstrated long-term product ownership.",
+    "Framework enthusiasts whose GitHub and profile consist primarily of LangChain tutorials, LLM demo projects, or blog posts about hot frameworks rather than evidence of designing and operating search or retrieval systems.",
+    "Candidates who have spent their entire career exclusively at IT services or consulting firms (TCS, Infosys, Wipro, Accenture, Cognizant, Capgemini, HCL, Tech Mahindra) with zero product-company experience — the JD explicitly flags this as a poor fit.",
+    "Candidates whose primary ML domain is computer vision, speech recognition, or robotics with no significant NLP, information retrieval, or ranking system exposure — domain fundamentals would need to be rebuilt from scratch.",
+    "Candidates whose production experience is entirely on closed-source proprietary systems for five or more years with no external validation through papers, talks, open-source contributions, or public benchmarks.",
+    "Candidates who require a fully scoped, stable codebase and well-defined technical specifications before being productive — this is a founding-team role that demands autonomy, comfort with ambiguity, and the ability to set one's own technical direction.",
+    "Candidates in notice periods longer than 30 days where no buyout is possible and there is no demonstrated urgency to join — a strong candidate on a 60-day notice with no flexibility is operationally a low-priority match."
+  ]
+}

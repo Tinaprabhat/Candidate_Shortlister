@@ -1,0 +1,209 @@
+[
+  {
+    "candidate_id": "CAND_0036437",
+    "profile": {
+      "anonymized_name": "Arjun Joshi",
+      "headline": "Search Engineer | Search, Ranking & Retrieval",
+      "summary": "Machine learning engineer with 4.8 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I shipped our first RAG-based feature this year and now own the eval framework for it. I've spent enough time debugging production ranking issues to know which signals matter and which are noise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Kolkata, West Bengal",
+      "country": "India",
+      "years_of_experience": 4.8,
+      "current_title": "Search Engineer",
+      "current_company": "Rephrase.ai",
+      "current_company_size": "11-50",
+      "current_industry": "AI/ML"
+    },
+    "career_history": [
+      {
+        "company": "Rephrase.ai",
+        "title": "Search Engineer",
+        "start_date": "2024-09-04",
+        "end_date": null,
+        "duration_months": 21,
+        "is_current": true,
+        "industry": "AI/ML",
+        "company_size": "11-50",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Nykaa",
+        "title": "Machine Learning Engineer",
+        "start_date": "2023-04-29",
+        "end_date": "2024-08-21",
+        "duration_months": 16,
+        "is_current": false,
+        "industry": "E-commerce",
+        "company_size": "1001-5000",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Ola",
+        "title": "AI Engineer",
+        "start_date": "2021-09-29",
+        "end_date": "2023-04-22",
+        "duration_months": 19,
+        "is_current": false,
+        "industry": "Transportation",
+        "company_size": "5001-10000",
+        "description": "Built and operated production ML pipelines using MLflow for experiment tracking, Kubeflow for orchestration, and our internal feature store. My main project was a churn prediction model that's now used by the customer success team to prioritize outreach. Designed the model monitoring stack: data drift detection, prediction distribution checks, and alerting. Mentored a junior engineer through their first end-to-end ML project last year."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Anna University",
+        "degree": "B.Tech",
+        "field_of_study": "Machine Learning",
+        "start_year": 2007,
+        "end_year": 2011,
+        "grade": "65%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 28
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 28
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "expert",
+        "endorsements": 32,
+        "duration_months": 48
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "expert",
+        "endorsements": 11,
+        "duration_months": 92
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 9
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "expert",
+        "endorsements": 4,
+        "duration_months": 93
+      },
+      {
+        "name": "Milvus",
+        "proficiency": "advanced",
+        "endorsements": 38,
+        "duration_months": 57
+      },
+      {
+        "name": "Vector Search",
+        "proficiency": "expert",
+        "endorsements": 32,
+        "duration_months": 50
+      },
+      {
+        "name": "Weaviate",
+        "proficiency": "expert",
+        "endorsements": 11,
+        "duration_months": 73
+      },
+      {
+        "name": "Accounting",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 27
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "advanced",
+        "endorsements": 60,
+        "duration_months": 37
+      },
+      {
+        "name": "GANs",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 30
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 93.9,
+      "signup_date": "2025-07-30",
+      "last_active_date": "2026-05-14",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 241,
+      "applications_submitted_30d": 20,
+      "recruiter_response_rate": 0.87,
+      "avg_response_time_hours": 35.0,
+      "skill_assessment_scores": {
+        "OpenSearch": 81.2,
+        "Elasticsearch": 60.6
+      },
+      "connection_count": 555,
+      "endorsements_received": 32,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 22.3,
+        "max": 58.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 35.2,
+      "search_appearance_30d": 962,
+      "saved_by_recruiters_30d": 15,
+      "interview_completion_rate": 0.9,
+      "offer_acceptance_rate": 0.51,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 10.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 213,
+    "possible_fabrication": true
+  }
+]

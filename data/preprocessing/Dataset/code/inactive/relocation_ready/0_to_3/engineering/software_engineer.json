@@ -1,0 +1,1870 @@
+[
+  {
+    "candidate_id": "CAND_0045583",
+    "profile": {
+      "anonymized_name": "Karan Sethi",
+      "headline": "Software Engineer | Full-stack development",
+      "summary": "Software engineer with 2.3 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. My background is full-stack, but my comfort zone is the backend and the database. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Ahmedabad, Gujarat",
+      "country": "India",
+      "years_of_experience": 2.3,
+      "current_title": "Software Engineer",
+      "current_company": "Dunder Mifflin",
+      "current_company_size": "201-500",
+      "current_industry": "Paper Products"
+    },
+    "career_history": [
+      {
+        "company": "Dunder Mifflin",
+        "title": "Software Engineer",
+        "start_date": "2024-03-08",
+        "end_date": null,
+        "duration_months": 27,
+        "is_current": true,
+        "industry": "Paper Products",
+        "company_size": "201-500",
+        "description": "Test automation and QA engineering for a fintech product. Built and maintained the end-to-end test suite using Selenium and pytest, plus the load-testing setup using Locust. Worked closely with developers on testability patterns and with product on acceptance criteria. Recent work has been on shifting test responsibility into the dev team — moving from QA-as-gate to QA-as-coach. Career has been entirely in QA/test engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Tier-3 Engineering College",
+        "degree": "B.Sc",
+        "field_of_study": "Mathematics",
+        "start_year": 2010,
+        "end_year": 2015,
+        "grade": "9.44 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Amity University",
+        "degree": "B.Tech",
+        "field_of_study": "Machine Learning",
+        "start_year": 2003,
+        "end_year": 2007,
+        "grade": "92%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Airflow",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 16
+      },
+      {
+        "name": "Agile",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 4
+      },
+      {
+        "name": "Photoshop",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 35
+      },
+      {
+        "name": "Redis",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 30
+      },
+      {
+        "name": "Hadoop",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 13
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 28
+      },
+      {
+        "name": "CSS",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 18
+      },
+      {
+        "name": "Figma",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 14
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 13
+      },
+      {
+        "name": "Marketing",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 16
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 24
+      },
+      {
+        "name": "Snowflake",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 33
+      },
+      {
+        "name": "Redux",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 2
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Scrum Master Certified",
+        "issuer": "Scrum Alliance",
+        "year": 2018
+      },
+      {
+        "name": "AWS Certified Cloud Practitioner",
+        "issuer": "AWS",
+        "year": 2020
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 81.4,
+      "signup_date": "2023-03-22",
+      "last_active_date": "2026-03-06",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 42,
+      "applications_submitted_30d": 6,
+      "recruiter_response_rate": 0.24,
+      "avg_response_time_hours": 173.9,
+      "skill_assessment_scores": {
+        "LangChain": 51.6
+      },
+      "connection_count": 366,
+      "endorsements_received": 29,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 19.9,
+        "max": 29.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 27,
+      "saved_by_recruiters_30d": 16,
+      "interview_completion_rate": 0.91,
+      "offer_acceptance_rate": 0.27,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": true,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 9785,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0087365",
+    "profile": {
+      "anonymized_name": "Arjun Tiwari",
+      "headline": "Software Engineer | Full-stack development",
+      "summary": "Software engineer with 1.2 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've spent most of my career on web and API development — Python/Django and Node.js mostly. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Chandigarh, Chandigarh",
+      "country": "India",
+      "years_of_experience": 1.2,
+      "current_title": "Software Engineer",
+      "current_company": "Dunder Mifflin",
+      "current_company_size": "201-500",
+      "current_industry": "Paper Products"
+    },
+    "career_history": [
+      {
+        "company": "Dunder Mifflin",
+        "title": "Software Engineer",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Paper Products",
+        "company_size": "201-500",
+        "description": "Android mobile development using Java and (more recently) Kotlin at a consumer-app company. Built and maintained multiple production features including the main shopping flow, push notification system, and the offline-first sync layer. Comfortable with the Android framework, Jetpack components, and the typical patterns (MVVM, Hilt, Coroutines). My career has been entirely on mobile so far; interested in expanding into broader backend or platform engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Regional Technical Institute",
+        "degree": "B.E.",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2013,
+        "end_year": 2017,
+        "grade": "73%",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Hadoop",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 5
+      },
+      {
+        "name": "Kubernetes",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 18
+      },
+      {
+        "name": "Tally",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 26
+      },
+      {
+        "name": "Spark",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 31
+      },
+      {
+        "name": "BentoML",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 32
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 18,
+        "duration_months": 58
+      },
+      {
+        "name": "BigQuery",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 16
+      },
+      {
+        "name": "CI/CD",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 20
+      },
+      {
+        "name": "Java",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 10
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 26
+      },
+      {
+        "name": "Tailwind",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 24
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 69.7,
+      "signup_date": "2025-08-23",
+      "last_active_date": "2026-02-22",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 9,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.6,
+      "avg_response_time_hours": 185.9,
+      "skill_assessment_scores": {
+        "Statistical Modeling": 48.4
+      },
+      "connection_count": 397,
+      "endorsements_received": 68,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 12.0,
+        "max": 19.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": 42.3,
+      "search_appearance_30d": 109,
+      "saved_by_recruiters_30d": 20,
+      "interview_completion_rate": 0.51,
+      "offer_acceptance_rate": null,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 8.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 10055,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0017817",
+    "profile": {
+      "anonymized_name": "Ananya Dutta",
+      "headline": "Software Engineer | Full-stack development",
+      "summary": "Software engineer with 3.0 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've worked across web frontends, REST APIs, and cloud deployments; comfortable in most parts of a typical SaaS stack. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Chandigarh, Chandigarh",
+      "country": "India",
+      "years_of_experience": 3.0,
+      "current_title": "Software Engineer",
+      "current_company": "Mphasis",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Mphasis",
+        "title": "Software Engineer",
+        "start_date": "2023-06-12",
+        "end_date": null,
+        "duration_months": 36,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Android mobile development using Java and (more recently) Kotlin at a consumer-app company. Built and maintained multiple production features including the main shopping flow, push notification system, and the offline-first sync layer. Comfortable with the Android framework, Jetpack components, and the typical patterns (MVVM, Hilt, Coroutines). My career has been entirely on mobile so far; interested in expanding into broader backend or platform engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "KIIT University",
+        "degree": "B.E.",
+        "field_of_study": "Statistics",
+        "start_year": 2012,
+        "end_year": 2016,
+        "grade": "77%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Vue.js",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 18
+      },
+      {
+        "name": "Databricks",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 18
+      },
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 25
+      },
+      {
+        "name": "Sales",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 17
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 19
+      },
+      {
+        "name": "Six Sigma",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 13
+      },
+      {
+        "name": "SAP",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 24
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 24
+      },
+      {
+        "name": "CNN",
+        "proficiency": "advanced",
+        "endorsements": 26,
+        "duration_months": 50
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 17
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 74.1,
+      "signup_date": "2025-09-07",
+      "last_active_date": "2026-03-12",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 5,
+      "applications_submitted_30d": 2,
+      "recruiter_response_rate": 0.29,
+      "avg_response_time_hours": 202.3,
+      "skill_assessment_scores": {
+        "CNN": 28.2
+      },
+      "connection_count": 115,
+      "endorsements_received": 45,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 15.3,
+        "max": 16.9,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 57,
+      "saved_by_recruiters_30d": 3,
+      "interview_completion_rate": 0.44,
+      "offer_acceptance_rate": 0.71,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 7.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 10055,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0019446",
+    "profile": {
+      "anonymized_name": "Amit Dutta",
+      "headline": "Software Engineer | Backend systems & APIs",
+      "summary": "Software engineer with 2.2 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've worked across web frontends, REST APIs, and cloud deployments; comfortable in most parts of a typical SaaS stack. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Vizag, Andhra Pradesh",
+      "country": "India",
+      "years_of_experience": 2.2,
+      "current_title": "Software Engineer",
+      "current_company": "Mphasis",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Mphasis",
+        "title": "Software Engineer",
+        "start_date": "2024-04-07",
+        "end_date": null,
+        "duration_months": 26,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Java backend development at a large enterprise — Spring Boot microservices, Kafka for inter-service messaging, Postgres + Redis for storage. Worked on the customer onboarding flow which involved orchestrating multiple downstream services. Solid on the Spring ecosystem, transaction handling, and the operational side of Java services. Looking to either go deeper on distributed systems or expand into modern application stacks."
+      }
+    ],
+    "education": [
+      {
+        "institution": "RV College of Engineering",
+        "degree": "M.E.",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2013,
+        "end_year": 2017,
+        "grade": "76%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Symbiosis International",
+        "degree": "Ph.D",
+        "field_of_study": "Machine Learning",
+        "start_year": 2006,
+        "end_year": 2011,
+        "grade": "8.07 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Scrum",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 18
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 23
+      },
+      {
+        "name": "Haystack",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 19
+      },
+      {
+        "name": "SEO",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 13
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 16,
+        "duration_months": 29
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 24
+      },
+      {
+        "name": "Agile",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 4
+      },
+      {
+        "name": "HTML",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 10
+      },
+      {
+        "name": "LlamaIndex",
+        "proficiency": "advanced",
+        "endorsements": 50,
+        "duration_months": 53
+      },
+      {
+        "name": "Data Pipelines",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 16
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 29
+      },
+      {
+        "name": "Accounting",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 4
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 71.3,
+      "signup_date": "2025-03-11",
+      "last_active_date": "2026-02-12",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 59,
+      "applications_submitted_30d": 12,
+      "recruiter_response_rate": 0.61,
+      "avg_response_time_hours": 127.1,
+      "skill_assessment_scores": {
+        "Weights & Biases": 76.4,
+        "LlamaIndex": 57.0
+      },
+      "connection_count": 545,
+      "endorsements_received": 4,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 20.2,
+        "max": 33.2,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 59.5,
+      "search_appearance_30d": 33,
+      "saved_by_recruiters_30d": 14,
+      "interview_completion_rate": 0.75,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 7.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 10015,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0023378",
+    "profile": {
+      "anonymized_name": "Jay Mehta",
+      "headline": "Software Engineer | Cloud & DevOps",
+      "summary": "Software engineer with 1.8 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've spent most of my career on web and API development — Python/Django and Node.js mostly. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Vizag, Andhra Pradesh",
+      "country": "India",
+      "years_of_experience": 1.8,
+      "current_title": "Software Engineer",
+      "current_company": "Tech Mahindra",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Tech Mahindra",
+        "title": "Software Engineer",
+        "start_date": "2024-09-04",
+        "end_date": null,
+        "duration_months": 21,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Cloud infrastructure and DevOps work at an enterprise SaaS company. Owned the AWS account architecture (VPC, IAM, networking), the Terraform modules for our service deployments, and the Kubernetes cluster operations. Designed the CI/CD pipelines (GitLab CI + ArgoCD) and the monitoring stack (Prometheus, Grafana, Loki). Strong on the infra and ops side; haven't done much application development."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Amity University",
+        "degree": "B.E.",
+        "field_of_study": "Data Science",
+        "start_year": 2013,
+        "end_year": 2017,
+        "grade": "6.82 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 53,
+        "duration_months": 18
+      },
+      {
+        "name": "AWS",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 9
+      },
+      {
+        "name": "Data Pipelines",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 11
+      },
+      {
+        "name": "Airflow",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 21
+      },
+      {
+        "name": "Django",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 5
+      },
+      {
+        "name": "Snowflake",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 22
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 13
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 14
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "advanced",
+        "endorsements": 7,
+        "duration_months": 23
+      },
+      {
+        "name": "CSS",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 6
+      },
+      {
+        "name": "Microservices",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 14
+      },
+      {
+        "name": "Angular",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 26
+      },
+      {
+        "name": "SAP",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 27
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 5
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 57.5,
+      "signup_date": "2026-04-21",
+      "last_active_date": "2026-02-07",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 97,
+      "applications_submitted_30d": 8,
+      "recruiter_response_rate": 0.79,
+      "avg_response_time_hours": 47.3,
+      "skill_assessment_scores": {},
+      "connection_count": 152,
+      "endorsements_received": 27,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 14.3,
+        "max": 32.4,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 265,
+      "saved_by_recruiters_30d": 14,
+      "interview_completion_rate": 0.47,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 7.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 73,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 10125,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0099507",
+    "profile": {
+      "anonymized_name": "Tanya Chowdary",
+      "headline": "Software Engineer | Full-stack development",
+      "summary": "Software engineer with 1.2 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. My background is full-stack, but my comfort zone is the backend and the database. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Bangalore, Karnataka",
+      "country": "India",
+      "years_of_experience": 1.2,
+      "current_title": "Software Engineer",
+      "current_company": "Tech Mahindra",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Tech Mahindra",
+        "title": "Software Engineer",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Frontend engineering at a media company. React, TypeScript, and the typical surrounding tooling (Webpack, Jest, Cypress). Built the company's design system from scratch and led the migration from a legacy AngularJS app. Strong on the frontend craft — accessibility, performance, animations — but limited backend exposure."
+      }
+    ],
+    "education": [
+      {
+        "institution": "KIIT University",
+        "degree": "M.E.",
+        "field_of_study": "Computer Science",
+        "start_year": 2001,
+        "end_year": 2006,
+        "grade": "82%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Thapar University",
+        "degree": "B.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2009,
+        "end_year": 2014,
+        "grade": "84%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "TypeScript",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 29
+      },
+      {
+        "name": "Kafka",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 35
+      },
+      {
+        "name": "Salesforce CRM",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 6
+      },
+      {
+        "name": "Django",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 10
+      },
+      {
+        "name": "Rust",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 3
+      },
+      {
+        "name": "FastAPI",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 9
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "advanced",
+        "endorsements": 17,
+        "duration_months": 37
+      },
+      {
+        "name": "Photoshop",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 11
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "advanced",
+        "endorsements": 48,
+        "duration_months": 57
+      },
+      {
+        "name": "Snowflake",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 22
+      },
+      {
+        "name": "HTML",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 12
+      },
+      {
+        "name": "BigQuery",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 8
+      },
+      {
+        "name": "CSS",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 18
+      },
+      {
+        "name": "SEO",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 27
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 22
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 58.2,
+      "signup_date": "2025-05-27",
+      "last_active_date": "2025-12-27",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 22,
+      "applications_submitted_30d": 8,
+      "recruiter_response_rate": 0.72,
+      "avg_response_time_hours": 124.4,
+      "skill_assessment_scores": {},
+      "connection_count": 343,
+      "endorsements_received": 64,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 7.4,
+        "max": 15.9,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": 53.8,
+      "search_appearance_30d": 7,
+      "saved_by_recruiters_30d": 2,
+      "interview_completion_rate": 0.8,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": true,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 11.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 10025,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0047031",
+    "profile": {
+      "anonymized_name": "Suresh Bose",
+      "headline": "Software Engineer | 2.2+ yrs in data engineering",
+      "summary": "Software / data professional with 2.2 years of experience building data pipelines, backend systems, and analytics infrastructure. I'm a backend/data hybrid — Spark, Airflow, SQL warehouses are home territory; I'm building competence on the ML side. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Chennai, Tamil Nadu",
+      "country": "India",
+      "years_of_experience": 2.2,
+      "current_title": "Software Engineer",
+      "current_company": "Freshworks",
+      "current_company_size": "5001-10000",
+      "current_industry": "SaaS"
+    },
+    "career_history": [
+      {
+        "company": "Freshworks",
+        "title": "Software Engineer",
+        "start_date": "2024-10-04",
+        "end_date": null,
+        "duration_months": 20,
+        "is_current": true,
+        "industry": "SaaS",
+        "company_size": "5001-10000",
+        "description": "Backend development with Python (FastAPI), PostgreSQL, and Redis at a B2B SaaS product. Owned the analytics-and-reporting service which serves dashboards to ~3K paying customers. Recent work includes integrating a model-serving service (built by another team) into our API layer; my work was the integration and observability, not the model itself. Strong on API design, database performance, and reliability engineering."
+      },
+      {
+        "company": "Wayne Enterprises",
+        "title": "Senior Data Engineer",
+        "start_date": "2024-03-24",
+        "end_date": "2024-09-20",
+        "duration_months": 6,
+        "is_current": false,
+        "industry": "Conglomerate",
+        "company_size": "10001+",
+        "description": "Mixed data science and analytics-engineering role at a marketing-analytics startup. Spent maybe 30% of my time on lightweight ML (clustering, classification, churn prediction in sklearn/XGBoost) and 70% on data infrastructure and dashboards. Comfortable with the modeling work but I wouldn't call myself an ML specialist. Built our experimentation framework that supports the product team's A/B tests."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Bharati Vidyapeeth",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2009,
+        "end_year": 2013,
+        "grade": "6.86 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "scikit-learn",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 32
+      },
+      {
+        "name": "Deep Learning",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 44
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 27
+      },
+      {
+        "name": "HTML",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 36
+      },
+      {
+        "name": "MLflow",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 24
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 30
+      },
+      {
+        "name": "BigQuery",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 7
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 22
+      },
+      {
+        "name": "Illustrator",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 11
+      },
+      {
+        "name": "Databricks",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 15
+      },
+      {
+        "name": "Content Writing",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 22
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "advanced",
+        "endorsements": 33,
+        "duration_months": 19
+      },
+      {
+        "name": "ASR",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 9
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 44.7,
+      "signup_date": "2025-02-26",
+      "last_active_date": "2026-03-01",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 142,
+      "applications_submitted_30d": 9,
+      "recruiter_response_rate": 0.41,
+      "avg_response_time_hours": 46.2,
+      "skill_assessment_scores": {},
+      "connection_count": 370,
+      "endorsements_received": 53,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 17.7,
+        "max": 41.0,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 65.1,
+      "search_appearance_30d": 171,
+      "saved_by_recruiters_30d": 25,
+      "interview_completion_rate": 0.58,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 11.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 3597,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0055982",
+    "profile": {
+      "anonymized_name": "Pari Sethi",
+      "headline": "Software Engineer | Full-stack development",
+      "summary": "Software engineer with 1.8 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've worked across web frontends, REST APIs, and cloud deployments; comfortable in most parts of a typical SaaS stack. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Hyderabad, Telangana",
+      "country": "India",
+      "years_of_experience": 1.8,
+      "current_title": "Software Engineer",
+      "current_company": "Globex Inc",
+      "current_company_size": "501-1000",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Globex Inc",
+        "title": "Software Engineer",
+        "start_date": "2024-09-04",
+        "end_date": null,
+        "duration_months": 21,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "501-1000",
+        "description": "Android mobile development using Java and (more recently) Kotlin at a consumer-app company. Built and maintained multiple production features including the main shopping flow, push notification system, and the offline-first sync layer. Comfortable with the Android framework, Jetpack components, and the typical patterns (MVVM, Hilt, Coroutines). My career has been entirely on mobile so far; interested in expanding into broader backend or platform engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Chandigarh University",
+        "degree": "M.Tech",
+        "field_of_study": "Physics",
+        "start_year": 2008,
+        "end_year": 2012,
+        "grade": "92%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Christ University",
+        "degree": "M.S.",
+        "field_of_study": "Civil Engineering",
+        "start_year": 2011,
+        "end_year": 2015,
+        "grade": "72%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 18
+      },
+      {
+        "name": "SQL",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 8
+      },
+      {
+        "name": "Airflow",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 13
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 21
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "advanced",
+        "endorsements": 60,
+        "duration_months": 26
+      },
+      {
+        "name": "Deep Learning",
+        "proficiency": "advanced",
+        "endorsements": 38,
+        "duration_months": 45
+      },
+      {
+        "name": "Sales",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 2
+      },
+      {
+        "name": "GANs",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 31
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 9
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 23
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 42.0,
+      "signup_date": "2026-02-09",
+      "last_active_date": "2026-03-02",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 104,
+      "applications_submitted_30d": 0,
+      "recruiter_response_rate": 0.55,
+      "avg_response_time_hours": 177.4,
+      "skill_assessment_scores": {},
+      "connection_count": 179,
+      "endorsements_received": 24,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 7.5,
+        "max": 22.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 60,
+      "saved_by_recruiters_30d": 19,
+      "interview_completion_rate": 0.79,
+      "offer_acceptance_rate": 0.59,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 10055,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0041667",
+    "profile": {
+      "anonymized_name": "Kiara Krishnan",
+      "headline": "Software Engineer | 2.5+ yrs in data engineering",
+      "summary": "Software / data professional with 2.5 years of experience building data pipelines, backend systems, and analytics infrastructure. Most of my work has been data pipelines and analytics infrastructure; I've shipped a couple of small ML features but it's not the core of my day. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "San Francisco",
+      "country": "USA",
+      "years_of_experience": 2.5,
+      "current_title": "Software Engineer",
+      "current_company": "Acme Corp",
+      "current_company_size": "201-500",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Acme Corp",
+        "title": "Software Engineer",
+        "start_date": "2023-12-09",
+        "end_date": null,
+        "duration_months": 30,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "201-500",
+        "description": "Backend development with Python (FastAPI), PostgreSQL, and Redis at a B2B SaaS product. Owned the analytics-and-reporting service which serves dashboards to ~3K paying customers. Recent work includes integrating a model-serving service (built by another team) into our API layer; my work was the integration and observability, not the model itself. Strong on API design, database performance, and reliability engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "VIT Chennai",
+        "degree": "M.E.",
+        "field_of_study": "Machine Learning",
+        "start_year": 2001,
+        "end_year": 2006,
+        "grade": "8.77 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Chandigarh University",
+        "degree": "M.Tech",
+        "field_of_study": "MBA",
+        "start_year": 2007,
+        "end_year": 2011,
+        "grade": "75%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": true
+      }
+    ],
+    "skills": [
+      {
+        "name": "Microservices",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 2
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "advanced",
+        "endorsements": 35,
+        "duration_months": 34
+      },
+      {
+        "name": "Redis",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 23
+      },
+      {
+        "name": "PowerPoint",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 12
+      },
+      {
+        "name": "GCP",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 32
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "advanced",
+        "endorsements": 28,
+        "duration_months": 23
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "advanced",
+        "endorsements": 49,
+        "duration_months": 52
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 30
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 30
+      },
+      {
+        "name": "CNN",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 9
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 79.6,
+      "signup_date": "2025-08-02",
+      "last_active_date": "2026-02-12",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 63,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.66,
+      "avg_response_time_hours": 179.5,
+      "skill_assessment_scores": {
+        "FAISS": 50.5,
+        "Computer Vision": 74.4
+      },
+      "connection_count": 413,
+      "endorsements_received": 50,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 27.1,
+        "max": 47.9,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 12.3,
+      "search_appearance_30d": 351,
+      "saved_by_recruiters_30d": 17,
+      "interview_completion_rate": 0.93,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": true,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 1790,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0068503",
+    "profile": {
+      "anonymized_name": "Riya Sharma",
+      "headline": "Software Engineer | 2.2+ yrs in data engineering",
+      "summary": "Software / data professional with 2.2 years of experience building data pipelines, backend systems, and analytics infrastructure. I'm a backend/data hybrid — Spark, Airflow, SQL warehouses are home territory; I'm building competence on the ML side. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Seattle",
+      "country": "USA",
+      "years_of_experience": 2.2,
+      "current_title": "Software Engineer",
+      "current_company": "HCL",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "HCL",
+        "title": "Software Engineer",
+        "start_date": "2024-04-07",
+        "end_date": null,
+        "duration_months": 26,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Backend + data hybrid role at a growth-stage startup. Built the company's first proper data warehouse (migrating from a tangled set of Postgres replicas to a clean Snowflake setup with dbt), the orchestration layer (Airflow), and the BI integration (Looker). Shipped a couple of small predictive features but the bulk of the role was data infrastructure."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Chandigarh University",
+        "degree": "M.Sc",
+        "field_of_study": "Chemical Engineering",
+        "start_year": 2012,
+        "end_year": 2016,
+        "grade": "8.24 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 57,
+        "duration_months": 34
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "advanced",
+        "endorsements": 25,
+        "duration_months": 56
+      },
+      {
+        "name": "SAP",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 13
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "advanced",
+        "endorsements": 24,
+        "duration_months": 33
+      },
+      {
+        "name": "AWS",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 9
+      },
+      {
+        "name": "Django",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 28
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "advanced",
+        "endorsements": 14,
+        "duration_months": 18
+      },
+      {
+        "name": "LlamaIndex",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 10
+      },
+      {
+        "name": "HTML",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 11
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "advanced",
+        "endorsements": 41,
+        "duration_months": 39
+      },
+      {
+        "name": "FastAPI",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 2
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 15
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "advanced",
+        "endorsements": 50,
+        "duration_months": 49
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 74.5,
+      "signup_date": "2026-05-21",
+      "last_active_date": "2026-02-20",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 24,
+      "applications_submitted_30d": 6,
+      "recruiter_response_rate": 0.51,
+      "avg_response_time_hours": 6.6,
+      "skill_assessment_scores": {
+        "Weights & Biases": 53.7,
+        "Sentence Transformers": 66.0
+      },
+      "connection_count": 989,
+      "endorsements_received": 51,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 30.2,
+        "max": 44.4,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 112,
+      "saved_by_recruiters_30d": 16,
+      "interview_completion_rate": 0.53,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 8.0,
+    "active_before_signup": true,
+    "signup_active_gap_days": 90,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 1823,
+    "possible_fabrication": true
+  }
+]

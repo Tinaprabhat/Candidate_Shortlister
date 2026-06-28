@@ -1,0 +1,226 @@
+[
+  {
+    "candidate_id": "CAND_0003977",
+    "profile": {
+      "anonymized_name": "Anjali Patel",
+      "headline": "Recommendation Systems Engineer | ML, NLP, Recommendation Systems",
+      "summary": "Machine learning engineer with 4.6 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I care a lot about evaluation rigor — too many teams ship models without offline benchmarks they trust. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Delhi, Delhi",
+      "country": "India",
+      "years_of_experience": 4.6,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Google",
+      "current_company_size": "10001+",
+      "current_industry": "Internet"
+    },
+    "career_history": [
+      {
+        "company": "Google",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2022-05-18",
+        "end_date": null,
+        "duration_months": 49,
+        "is_current": true,
+        "industry": "Internet",
+        "company_size": "10001+",
+        "description": "Developed a semantic search feature for an internal knowledge base of ~500K documents. Used sentence-transformers (all-MiniLM-L6-v2 initially, later upgraded to bge-base) with FAISS for fast nearest-neighbor retrieval. Designed the query expansion module that handles vocabulary mismatch between user queries and document terms. Reported search-relevance improvement of 35% over the prior Elasticsearch BM25 setup, validated through human relevance judgments."
+      },
+      {
+        "company": "Rephrase.ai",
+        "title": "NLP Engineer",
+        "start_date": "2021-11-12",
+        "end_date": "2022-05-11",
+        "duration_months": 6,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "11-50",
+        "description": "Developed a semantic search feature for an internal knowledge base of ~500K documents. Used sentence-transformers (all-MiniLM-L6-v2 initially, later upgraded to bge-base) with FAISS for fast nearest-neighbor retrieval. Designed the query expansion module that handles vocabulary mismatch between user queries and document terms. Reported search-relevance improvement of 35% over the prior Elasticsearch BM25 setup, validated through human relevance judgments."
+      }
+    ],
+    "education": [
+      {
+        "institution": "COEP Pune",
+        "degree": "M.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2005,
+        "end_year": 2009,
+        "grade": "8.88 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "NIT Surathkal",
+        "degree": "M.Sc",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2004,
+        "end_year": 2009,
+        "grade": "68%",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Learning to Rank",
+        "proficiency": "expert",
+        "endorsements": 26,
+        "duration_months": 81
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 53
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 8
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "expert",
+        "endorsements": 45,
+        "duration_months": 77
+      },
+      {
+        "name": "Semantic Search",
+        "proficiency": "expert",
+        "endorsements": 52,
+        "duration_months": 36
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 19
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 7,
+        "duration_months": 19
+      },
+      {
+        "name": "CNN",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 35
+      },
+      {
+        "name": "Python",
+        "proficiency": "expert",
+        "endorsements": 52,
+        "duration_months": 79
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "advanced",
+        "endorsements": 23,
+        "duration_months": 58
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 23
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 29
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "advanced",
+        "endorsements": 13,
+        "duration_months": 26
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Deep Learning Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2021
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 63.2,
+      "signup_date": "2025-11-29",
+      "last_active_date": "2026-03-18",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 252,
+      "applications_submitted_30d": 11,
+      "recruiter_response_rate": 0.55,
+      "avg_response_time_hours": 20.3,
+      "skill_assessment_scores": {
+        "Learning to Rank": 90.2,
+        "NLP": 50.9,
+        "Embeddings": 84.7
+      },
+      "connection_count": 1195,
+      "endorsements_received": 50,
+      "notice_period_days": 45,
+      "expected_salary_range_inr_lpa": {
+        "min": 31.8,
+        "max": 55.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": false,
+      "github_activity_score": 58.5,
+      "search_appearance_30d": 608,
+      "saved_by_recruiters_30d": 53,
+      "interview_completion_rate": 0.57,
+      "offer_acceptance_rate": 0.36,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": true,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": true,
+    "honeypot_score": 5,
+    "fabrication_bandwidth": 128,
+    "possible_fabrication": true
+  }
+]

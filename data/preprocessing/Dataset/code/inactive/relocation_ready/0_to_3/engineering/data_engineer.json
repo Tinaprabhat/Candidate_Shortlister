@@ -1,0 +1,559 @@
+[
+  {
+    "candidate_id": "CAND_0035212",
+    "profile": {
+      "anonymized_name": "Divya Mukherjee",
+      "headline": "Analytics Engineer | Data pipelines & analytics",
+      "summary": "Software / data professional with 3.0 years of experience building data pipelines, backend systems, and analytics infrastructure. I've been the engineer who makes ML possible by getting the data pipelines right; now I want to do more of the ML itself. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Bhubaneswar, Odisha",
+      "country": "India",
+      "years_of_experience": 3.0,
+      "current_title": "Analytics Engineer",
+      "current_company": "Nykaa",
+      "current_company_size": "1001-5000",
+      "current_industry": "E-commerce"
+    },
+    "career_history": [
+      {
+        "company": "Nykaa",
+        "title": "Analytics Engineer",
+        "start_date": "2023-06-12",
+        "end_date": null,
+        "duration_months": 36,
+        "is_current": true,
+        "industry": "E-commerce",
+        "company_size": "1001-5000",
+        "description": "Built and maintained data pipelines on Apache Airflow processing ~500GB of daily transactional data across 12 source systems. Worked extensively with Spark (PySpark) for batch processing and dbt for the transformation/modeling layer in our Snowflake warehouse. Owned the on-call rotation for data quality issues — wrote most of the data quality checks that detect schema drift and unusual volume changes. The pipeline supports the analytics team and a few internal ML models."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Bharati Vidyapeeth",
+        "degree": "M.S.",
+        "field_of_study": "Mathematics",
+        "start_year": 2012,
+        "end_year": 2016,
+        "grade": "9.17 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 26
+      },
+      {
+        "name": "Databricks",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 9
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "advanced",
+        "endorsements": 17,
+        "duration_months": 58
+      },
+      {
+        "name": "Rust",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 17
+      },
+      {
+        "name": "SQL",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 29
+      },
+      {
+        "name": "Tally",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 8
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 23
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 23
+      },
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 13
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 34,
+        "duration_months": 52
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 40
+      },
+      {
+        "name": "Azure",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 15
+      },
+      {
+        "name": "GANs",
+        "proficiency": "advanced",
+        "endorsements": 22,
+        "duration_months": 42
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 42.7,
+      "signup_date": "2025-12-10",
+      "last_active_date": "2026-02-06",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 131,
+      "applications_submitted_30d": 10,
+      "recruiter_response_rate": 0.59,
+      "avg_response_time_hours": 147.0,
+      "skill_assessment_scores": {},
+      "connection_count": 747,
+      "endorsements_received": 20,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 13.4,
+        "max": 43.6,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 56.1,
+      "search_appearance_30d": 132,
+      "saved_by_recruiters_30d": 15,
+      "interview_completion_rate": 0.95,
+      "offer_acceptance_rate": 0.84,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 7.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 1836,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0051771",
+    "profile": {
+      "anonymized_name": "Siya Pandey",
+      "headline": "Analytics Engineer | SQL, Spark, Cloud",
+      "summary": "Software / data professional with 2.9 years of experience building data pipelines, backend systems, and analytics infrastructure. I'm a backend/data hybrid — Spark, Airflow, SQL warehouses are home territory; I'm building competence on the ML side. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Chandigarh, Chandigarh",
+      "country": "India",
+      "years_of_experience": 2.9,
+      "current_title": "Analytics Engineer",
+      "current_company": "InMobi",
+      "current_company_size": "1001-5000",
+      "current_industry": "AdTech"
+    },
+    "career_history": [
+      {
+        "company": "InMobi",
+        "title": "Analytics Engineer",
+        "start_date": "2023-08-11",
+        "end_date": null,
+        "duration_months": 34,
+        "is_current": true,
+        "industry": "AdTech",
+        "company_size": "1001-5000",
+        "description": "Designed and maintained the analytical data warehouse on Snowflake supporting the BI team's ~50 dashboards. Wrote complex SQL — heavy on window functions, CTEs, and incremental modeling patterns via dbt. Worked on the data modeling side (dimensional modeling, slowly changing dimensions) as well as performance optimization (query tuning, cluster sizing, materialized views). Also built the lineage and documentation framework now in use across the data org."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Tier-3 Engineering College",
+        "degree": "M.E.",
+        "field_of_study": "Civil Engineering",
+        "start_year": 2011,
+        "end_year": 2014,
+        "grade": "9.00 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Amity University",
+        "degree": "M.Tech",
+        "field_of_study": "Information Technology",
+        "start_year": 2015,
+        "end_year": 2018,
+        "grade": "7.34 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "GraphQL",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 15
+      },
+      {
+        "name": "RAG",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 12
+      },
+      {
+        "name": "Django",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 15
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 27,
+        "duration_months": 40
+      },
+      {
+        "name": "TensorFlow",
+        "proficiency": "advanced",
+        "endorsements": 34,
+        "duration_months": 28
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 17
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 16
+      },
+      {
+        "name": "GANs",
+        "proficiency": "advanced",
+        "endorsements": 15,
+        "duration_months": 21
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 4
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Cloud Practitioner",
+        "issuer": "AWS",
+        "year": 2019
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 88.9,
+      "signup_date": "2024-09-26",
+      "last_active_date": "2026-03-03",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 21,
+      "applications_submitted_30d": 11,
+      "recruiter_response_rate": 0.45,
+      "avg_response_time_hours": 142.2,
+      "skill_assessment_scores": {
+        "Feature Engineering": 35.7,
+        "TensorFlow": 59.8,
+        "GANs": 49.9
+      },
+      "connection_count": 241,
+      "endorsements_received": 48,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 27.6,
+        "max": 40.1,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 300,
+      "saved_by_recruiters_30d": 11,
+      "interview_completion_rate": 0.8,
+      "offer_acceptance_rate": 0.51,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 5.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 1854,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0079701",
+    "profile": {
+      "anonymized_name": "Sanjay Sen",
+      "headline": "Analytics Engineer | 2.5+ yrs in data engineering",
+      "summary": "Software / data professional with 2.5 years of experience building data pipelines, backend systems, and analytics infrastructure. Started my career in backend engineering and gradually moved closer to data — first dashboards, then ETL, now some basic ML. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Ahmedabad, Gujarat",
+      "country": "India",
+      "years_of_experience": 2.5,
+      "current_title": "Analytics Engineer",
+      "current_company": "Infosys",
+      "current_company_size": "10001+",
+      "current_industry": "IT Services"
+    },
+    "career_history": [
+      {
+        "company": "Infosys",
+        "title": "Analytics Engineer",
+        "start_date": "2023-12-09",
+        "end_date": null,
+        "duration_months": 30,
+        "is_current": true,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Built and maintained data pipelines on Apache Airflow processing ~500GB of daily transactional data across 12 source systems. Worked extensively with Spark (PySpark) for batch processing and dbt for the transformation/modeling layer in our Snowflake warehouse. Owned the on-call rotation for data quality issues — wrote most of the data quality checks that detect schema drift and unusual volume changes. The pipeline supports the analytics team and a few internal ML models."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Delhi College of Engineering",
+        "degree": "M.Tech",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2006,
+        "end_year": 2009,
+        "grade": "7.60 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Thapar University",
+        "degree": "Ph.D",
+        "field_of_study": "Data Science",
+        "start_year": 2013,
+        "end_year": 2016,
+        "grade": "92%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "MLflow",
+        "proficiency": "advanced",
+        "endorsements": 53,
+        "duration_months": 49
+      },
+      {
+        "name": "Illustrator",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 8
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 11
+      },
+      {
+        "name": "Marketing",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 18
+      },
+      {
+        "name": "TypeScript",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 14
+      },
+      {
+        "name": "MongoDB",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 4
+      },
+      {
+        "name": "Kafka",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 15
+      },
+      {
+        "name": "React",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 23
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "advanced",
+        "endorsements": 26,
+        "duration_months": 19
+      },
+      {
+        "name": "CNN",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 15
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 21
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 33
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 8
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 73.5,
+      "signup_date": "2025-07-08",
+      "last_active_date": "2026-02-02",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 143,
+      "applications_submitted_30d": 8,
+      "recruiter_response_rate": 0.51,
+      "avg_response_time_hours": 118.7,
+      "skill_assessment_scores": {
+        "MLflow": 71.2
+      },
+      "connection_count": 453,
+      "endorsements_received": 14,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 15.1,
+        "max": 44.0,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 9.9,
+      "search_appearance_30d": 64,
+      "saved_by_recruiters_30d": 11,
+      "interview_completion_rate": 0.81,
+      "offer_acceptance_rate": 0.47,
+      "verified_email": true,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 7.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 1836,
+    "possible_fabrication": true
+  }
+]

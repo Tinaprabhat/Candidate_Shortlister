@@ -1,0 +1,253 @@
+[
+  {
+    "candidate_id": "CAND_0010770",
+    "profile": {
+      "anonymized_name": "Ved Mittal",
+      "headline": "Recommendation Systems Engineer | ML, NLP, Recommendation Systems",
+      "summary": "Machine learning engineer with 7.2 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I've been the de-facto ML lead on a small team, shipping models across NLP and recsys. I've spent enough time debugging production ranking issues to know which signals matter and which are noise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Kolkata, West Bengal",
+      "country": "India",
+      "years_of_experience": 15.2,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Aganitha",
+      "current_company_size": "51-200",
+      "current_industry": "AI/ML"
+    },
+    "career_history": [
+      {
+        "company": "Aganitha",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2022-06-17",
+        "end_date": null,
+        "duration_months": 48,
+        "is_current": true,
+        "industry": "AI/ML",
+        "company_size": "51-200",
+        "description": "Trained and shipped multiple ranking models for our product's discovery feed using XGBoost and LightGBM. Designed features across three families: content metadata, user behavior signals, and item engagement history. Owned the offline-online correlation analysis that determined which offline metrics actually predicted A/B test outcomes. Worked closely with PMs to define the optimization target (click-through vs. dwell time vs. downstream conversion) — that work was as important as the modeling itself."
+      },
+      {
+        "company": "Verloop.io",
+        "title": "AI Engineer",
+        "start_date": "2020-10-25",
+        "end_date": "2022-06-17",
+        "duration_months": 20,
+        "is_current": false,
+        "industry": "Conversational AI",
+        "company_size": "51-200",
+        "description": "Developed a semantic search feature for an internal knowledge base of ~500K documents. Used sentence-transformers (all-MiniLM-L6-v2 initially, later upgraded to bge-base) with FAISS for fast nearest-neighbor retrieval. Designed the query expansion module that handles vocabulary mismatch between user queries and document terms. Reported search-relevance improvement of 35% over the prior Elasticsearch BM25 setup, validated through human relevance judgments."
+      },
+      {
+        "company": "Observe.AI",
+        "title": "Senior Data Scientist",
+        "start_date": "2019-10-31",
+        "end_date": "2020-10-25",
+        "duration_months": 12,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Locobuzz",
+        "title": "Applied ML Engineer",
+        "start_date": "2019-04-04",
+        "end_date": "2019-10-01",
+        "duration_months": 6,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "51-200",
+        "description": "Developed a semantic search feature for an internal knowledge base of ~500K documents. Used sentence-transformers (all-MiniLM-L6-v2 initially, later upgraded to bge-base) with FAISS for fast nearest-neighbor retrieval. Designed the query expansion module that handles vocabulary mismatch between user queries and document terms. Reported search-relevance improvement of 35% over the prior Elasticsearch BM25 setup, validated through human relevance judgments."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IIT Delhi",
+        "degree": "M.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2007,
+        "end_year": 2012,
+        "grade": "8.67 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Haystack",
+        "proficiency": "expert",
+        "endorsements": 8,
+        "duration_months": 76
+      },
+      {
+        "name": "YOLO",
+        "proficiency": "advanced",
+        "endorsements": 11,
+        "duration_months": 34
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "expert",
+        "endorsements": 35,
+        "duration_months": 53
+      },
+      {
+        "name": "LlamaIndex",
+        "proficiency": "advanced",
+        "endorsements": 34,
+        "duration_months": 53
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 27
+      },
+      {
+        "name": "Deep Learning",
+        "proficiency": "advanced",
+        "endorsements": 1,
+        "duration_months": 45
+      },
+      {
+        "name": "Learning to Rank",
+        "proficiency": "expert",
+        "endorsements": 6,
+        "duration_months": 54
+      },
+      {
+        "name": "TensorFlow",
+        "proficiency": "expert",
+        "endorsements": 10,
+        "duration_months": 66
+      },
+      {
+        "name": "Java",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 11
+      },
+      {
+        "name": "REST APIs",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 8
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "advanced",
+        "endorsements": 28,
+        "duration_months": 27
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "advanced",
+        "endorsements": 11,
+        "duration_months": 52
+      },
+      {
+        "name": "Vue.js",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 26
+      },
+      {
+        "name": "TTS",
+        "proficiency": "advanced",
+        "endorsements": 50,
+        "duration_months": 27
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 5,
+        "duration_months": 27
+      },
+      {
+        "name": "BM25",
+        "proficiency": "advanced",
+        "endorsements": 54,
+        "duration_months": 24
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 33
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "expert",
+        "endorsements": 45,
+        "duration_months": 43
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 72.1,
+      "signup_date": "2026-02-23",
+      "last_active_date": "2026-05-05",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 84,
+      "applications_submitted_30d": 21,
+      "recruiter_response_rate": 0.73,
+      "avg_response_time_hours": 14.2,
+      "skill_assessment_scores": {},
+      "connection_count": 120,
+      "endorsements_received": 60,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 32.7,
+        "max": 40.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 814,
+      "saved_by_recruiters_30d": 12,
+      "interview_completion_rate": 0.82,
+      "offer_acceptance_rate": 0.84,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 7.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        1,
+        3
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 271,
+    "possible_fabrication": true
+  }
+]

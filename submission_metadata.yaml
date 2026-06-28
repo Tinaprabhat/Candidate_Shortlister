@@ -10,7 +10,7 @@ primary_contact:
 
 github_repository_url: "TODO_FILL_WHEN_PUBLIC"   # add after pushing to GitHub
 
-sandbox_demo_link: "TODO_FILL_AFTER_DEPLOY"       # add after Streamlit Cloud deploy
+sandbox_demo_link: "https://huggingface.co/spaces/abinmukherjee23/redrob-ranker"
 
 ai_tools_declared:
   - Claude (code generation)

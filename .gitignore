@@ -5,6 +5,7 @@ models/decompressed/
 data/job_description.pdf
 data/preprocessing/candidates.jsonl
 data/candidates.jsonl
+data/candidates.zip
 
 # Large generated outputs
 logs/

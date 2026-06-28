@@ -16,9 +16,8 @@ output/
 data/preprocessing/Dataset/
 Dataset/
 
-# Decompressed and compressed models
+# Decompressed models only (compressed archives are tracked via Git LFS)
 models/decompressed/
-models/compressed/
 
 # Secrets
 .env

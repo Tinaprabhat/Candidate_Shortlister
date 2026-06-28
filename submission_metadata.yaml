@@ -1,0 +1,48 @@
+# RedRob — Submission Metadata
+# Fill in the blanks before submitting via the portal.
+
+team_name: "RedRob"
+
+primary_contact:
+  name: "Abin Mukherjee"
+  email: "abinccu@gmail.com"
+  phone: "TODO_FILL_PHONE"           # fill your phone number before submitting
+
+github_repository_url: "TODO_FILL_WHEN_PUBLIC"   # add after pushing to GitHub
+
+sandbox_demo_link: "TODO_FILL_AFTER_DEPLOY"       # add after Streamlit Cloud deploy
+
+ai_tools_declared:
+  - Claude (code generation)
+  - Gemini API (JD parsing pre-step only, optional)
+  - Ollama Mistral (local, JD parsing fallback)
+
+compute_environment_summary: >
+  Lenovo ThinkBook, 16 GB RAM, CPU-only, Python 3.11, Windows 11.
+  Ranking step: CPU-only, no GPU, no network.
+
+team_members:
+  - name: "Abin Mukherjee"
+    role: "Integration & Deployment"
+    email: "abinccu@gmail.com"
+  - name: "Sreshtho"
+    role: "Frontend (redrob.html dashboard)"
+  - name: "Rishi"
+    role: "Data Handling (cleaning pipeline, dataset)"
+  - name: "Tina"
+    role: "AI Logic (cascade layers, FIS, JD parser)"
+
+methodology_summary: >
+  7-layer cascade: folder pruning (heuristic token overlap) → L1 fraud hard-reject
+  (SQLite KB) → L2 bi-encoder gate (MiniLM INT8, 55% pass) → L3 seniority soft
+  penalty → L4 semantic work-to-JD relevance → L6 behavioral signals → L7 Mamdani
+  FIS + FlashRank cross-encoder polish (top 50). JD parsing is a pre-computation
+  step using Gemini API or local Ollama Mistral; rank.py reads data/jd.json and
+  makes zero network calls. Fully offline, CPU-only, reproducible via single command.
+
+constraints_met:
+  runtime: "~51s measured on 100k candidates (budget: 300s)"
+  memory: "~350 MB peak (budget: 16 GB)"
+  disk: "~233 MB intermediate (budget: 5 GB)"
+  gpu: "none — CPU only"
+  network_during_ranking: "none — zero external calls in rank.py"

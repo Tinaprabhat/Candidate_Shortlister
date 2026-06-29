@@ -108,10 +108,11 @@ def _get_oldest_company_age(c: dict, fraud_kb, current_year: int) -> float:
             continue
         comp = str(e.get("company", "")).strip().lower()
         if fraud_kb is not None and comp:
-            row = fraud_kb.execute(
-                "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
-                (comp,),
-            ).fetchone()
+            with utils.FRAUD_KB_LOCK:
+                row = fraud_kb.execute(
+                    "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
+                    (comp,),
+                ).fetchone()
             if row and row["founding_year"]:
                 yr = int(row["founding_year"])
                 if oldest_year is None or yr < oldest_year:
@@ -213,10 +214,11 @@ def _tiebreak_key(c: dict, fraud_kb):
         if isinstance(e, dict):
             comp = str(e.get("company", "")).strip().lower()
             if fraud_kb is not None and comp:
-                row = fraud_kb.execute(
-                    "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
-                    (comp,),
-                ).fetchone()
+                with utils.FRAUD_KB_LOCK:
+                    row = fraud_kb.execute(
+                        "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
+                        (comp,),
+                    ).fetchone()
                 if row and row["founding_year"]:
                     oldest = min(oldest, int(row["founding_year"]))
     cid = str(c.get("candidate_id", c.get("id", "")))

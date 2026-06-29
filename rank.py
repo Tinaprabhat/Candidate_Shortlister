@@ -3,10 +3,10 @@
 rank.py — RedRob ranking entry point (OFFLINE, no API calls).
 
 Pipeline:
-  L1 hard-reject → L1b profile-integrity → L1c skill-match
+  L1 hard-reject → L1b profile-integrity → L1c skill-match → L1d bonus-match
   → L2 table-extract → L3 fuzzy-score → gate (top 50% + random 25% = 75%)
-  → L4 semantic-score → top 200 → donts penalty → top 100
-  → L5 FlashRank on top 50 (total_score = prev + flashrank) → final top 100
+  → L4 semantic-score + donts penalty (baked in) → top 100
+  → L5 FlashRank on top 50 (total_score = 0.4*l4_score + 0.3*l3 + 0.3*fr) → final top 100
 
 Single-command:
     python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
@@ -74,6 +74,19 @@ def run_early_cascade(
                                        / max(len(survivors), 1), 3
                                    ),
                                })
+    if not survivors:
+        return []
+
+    t = time.time()
+    survivors = layers.l1d_explicit_bonus(survivors, jd)
+    tracer.record_cascade_step("L1d_explicit_bonus", len(survivors), len(survivors),
+                               notes={
+                                   "elapsed_s": round(time.time() - t, 3),
+                                   "avg_bonus_match": round(
+                                       sum(c.get("l1d_bonus_match_ratio", 1.0) for c in survivors)
+                                       / max(len(survivors), 1), 3
+                                   ),
+                               })
     return survivors
 
 
@@ -130,21 +143,14 @@ def run_late_cascade(
                                    ),
                                })
 
-    # Top 200 by l4_combined_score (list already sorted)
-    top200 = candidates[:200]
-    logger.info(f"After L4: {len(candidates)} scored → top {len(top200)} forwarded to donts layer")
+    # Top 100 by l4_combined_score (sorted; donts penalty already baked into l4_score by L4)
+    top100 = candidates[:100]
+    n_penalised = sum(1 for c in top100 if c.get("l4_donts_penalty", 0.0) > 0)
+    logger.info(f"After L4+donts: {len(candidates)} scored → top {len(top100)} ({n_penalised} donts-penalised)")
+    tracer.record_cascade_step("L4_donts_baked", len(candidates), len(top100),
+                               notes={"donts_penalised": n_penalised})
 
-    # Donts penalty (high) → top 100
-    t = time.time()
-    top100 = layers.donts_penalty_layer(top200, jd)
-    n_penalised = sum(1 for c in top100 if c.get("l5_donts_mult", 1.0) < 1.0)
-    tracer.record_cascade_step("Donts_penalty", len(top200), len(top100),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "donts_penalised": n_penalised,
-                               })
-
-    # L5 — FlashRank on top 50; total_score = donts_score + flashrank
+    # L5 — FlashRank on top 50; total_score = 0.4*l4_score + 0.3*l3 + 0.3*flashrank
     t = time.time()
     top100 = layers.l5_flashrank_rerank(top100, jd)
     tracer.record_cascade_step("L5_flashrank", len(top100), len(top100),
@@ -161,7 +167,7 @@ def run_late_cascade(
 
 # ── Output helpers ────────────────────────────────────────────────────────────
 
-def _build_rows(top: List[dict], jd: dict) -> List[dict]:
+def _build_rows(top: List[dict]) -> List[dict]:
     rows = []
     prev = float("inf")
     for rank_pos, c in enumerate(top, start=1):
@@ -191,41 +197,82 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
     for c in top:
         cid = str(c.get("candidate_id", c.get("id", "")))
         row = score_map.get(cid, {})
+        profile = c.get("profile") or {}
+        name = (
+            c.get("name")
+            or profile.get("name")
+            or profile.get("full_name")
+            or cid
+        )
         records.append({
+            # ── Identity & rank ───────────────────────────────────────────
             "rank":         row.get("rank"),
             "candidate_id": cid,
+            "name":         name,
             "final_score":  row.get("score"),
-            "reasoning":    c.get("l3_reasoning", ""),
-            "score_breakdown": {
-                "l1c_skill_match":       round(c.get("l1c_score", 0.0), 4),
-                "l1c_matched_explicit":  c.get("l1c_matched_explicit", []),
-                "l1c_matched_required":  c.get("l1c_matched_required", []),
-                "l1c_missing_required":  c.get("l1c_missing_required", []),
-                "l1b_integrity_penalty": round(c.get("l1b_penalty", 1.0), 4),
-                "l1b_flags":            c.get("l1b_flags", []),
-                "l3_fuzzy_score":       round(c.get("l3_score", 0.0), 4),
-                "l3_class":             c.get("l3_class", ""),
-                "l4_work_relevance":    round(c.get("l4_work_relevance", 0.0), 4),
-                "l4_combined_score":    round(c.get("l4_combined_score", 0.0), 4),
-                "l5_donts_mult":        round(c.get("l5_donts_mult", 1.0), 4),
-                "l5_donts_score":       round(c.get("l5_donts_score", 0.0), 4),
-                "l5_flashrank_score":   round(c.get("l5_flashrank_score", 0.0), 4),
-                "l5_total_score":       round(c.get("l5_total_score", 0.0), 4),
+
+            # ── Full candidate profile ────────────────────────────────────
+            "profile":        profile,
+            "education":      c.get("education") or [],
+            "career_history": c.get("career_history") or c.get("work_experience") or [],
+            "skills":         c.get("skills") or [],
+            "certifications": c.get("certifications") or [],
+            "languages":      c.get("languages") or [],
+            "projects":       c.get("projects") or [],
+            "publications":   c.get("publications") or c.get("research_papers") or [],
+            "redrob_signals": c.get("redrob_signals") or {},
+
+            # ── Skill match detail ────────────────────────────────────────
+            "skill_match": {
+                "matched_explicit_required": c.get("l1c_matched_explicit", []),
+                "matched_all_required":      c.get("l1c_matched_required", []),
+                "missing_required":          c.get("l1c_missing_required", []),
+                "matched_explicit_bonus":    c.get("l1d_matched_bonus", []),
+                "unmatched_explicit_bonus":  c.get("l1d_unmatched_bonus", []),
+                "matched_all_bonus":         c.get("l1c_matched_bonus", []),
+                "jd_req_score":              round(c.get("jd_req_score", 0.0), 4),
+                "jd_req_results":            c.get("jd_req_results", {}),
             },
-            "experience_years": utils.get_total_experience_years(c),
-            "skills_snippet":   utils.get_skills_text(c)[:200],
+
+            # ── Per-layer scores ──────────────────────────────────────────
+            "layer_scores": {
+                "l1_score":              round(float(c.get("l1_score") or 0.5), 4),
+                "l1_flags":              c.get("l1_flags") or [],
+                "l1_status":             c.get("l1_status", "pass"),
+                "l1b_penalty":           round(float(c.get("l1b_penalty") or 1.0), 4),
+                "l1b_flags":             c.get("l1b_flags") or [],
+                "l1b_status":            c.get("l1b_status", "pass"),
+                "l1c_score":             round(float(c.get("l1c_score") or 0.0), 4),
+                "l1d_bonus_match_ratio": round(float(c.get("l1d_bonus_match_ratio") or 1.0), 4),
+                "l1d_bonus_penalty":     round(float(c.get("l1d_bonus_penalty") or 0.0), 4),
+                "l3_score":              round(float(c.get("l3_score") or 0.0), 4),
+                "l3_class":              c.get("l3_class", ""),
+                "l4_work_relevance":     round(float(c.get("l4_work_relevance") or 0.0), 4),
+                "l4_combined_score":     round(float(c.get("l4_combined_score") or 0.0), 4),
+                "l5_donts_mult":         round(float(c.get("l5_donts_mult") or 1.0), 4),
+                "l5_donts_score":        round(float(c.get("l5_donts_score") or 0.0), 4),
+                "l5_flashrank_score":    round(float(c.get("l5_flashrank_score") or 0.0), 4),
+                "l5_total_score":        round(float(c.get("l5_total_score") or 0.0), 4),
+            },
+
+            # ── L2 table — all computed columns ──────────────────────────
+            "l2_table": c.get("table_row") or {},
+
+            # ── Reasoning string from L3 ──────────────────────────────────
+            "reasoning": c.get("l3_reasoning", ""),
         })
+
     out = {
-        "run_id":        run_id,
-        "jd_title":      jd.get("job_title", ""),
-        "jd_location":   jd.get("location", ""),
-        "jd_industry":   jd.get("industry", ""),
-        "total_ranked":  len(records),
-        "candidates":    records,
+        "run_id":       run_id,
+        "jd_title":     jd.get("job_title", ""),
+        "jd_location":  jd.get("location", ""),
+        "jd_industry":  jd.get("industry", ""),
+        "total_ranked": len(records),
+        "candidates":   records,
     }
     path = _OUTPUT_DIR / f"ranked_{run_id}.json"
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(out, f, indent=2, ensure_ascii=False)
+        json.dump(out, f, indent=2, ensure_ascii=False, default=str)
     logger.info(f"Ranked JSON → {path}")
     return path
 
@@ -274,7 +321,7 @@ def main():
     all_early_scored: List[dict] = []
     lock = threading.Lock()
 
-    def process_fn(folder_name: str, cands: List[dict]):
+    def process_fn(_, cands: List[dict]):
         scored = run_early_cascade(cands, jd, models, tracer)
         with lock:
             all_early_scored.extend(scored)
@@ -286,7 +333,6 @@ def main():
         tracer.record_timing("zip_extract_discover", round(time.time() - t_zip, 3))
         discovered = list(folder_paths.keys())
 
-        import types
         original_prune = pruning.prune_folders
 
         def _traced_prune(names, jd_):
@@ -332,7 +378,7 @@ def main():
         return
 
     # Build output
-    rows = _build_rows(top100, jd)
+    rows = _build_rows(top100)
     t_write = time.time()
     json_path = _write_ranked_json(top100, rows, jd, tracer.run_id)
     _write_csv(args.out, rows)
@@ -355,7 +401,7 @@ def main():
 
 def _try_load_flashrank():
     try:
-        import flashrank  # noqa
+        __import__("flashrank")
         return utils.load_flashrank()
     except Exception as exc:
         logger.warning(f"FlashRank not available ({exc}); L5 will degrade gracefully")

@@ -13,6 +13,7 @@ No downloads, no network, no quantization at runtime.
 import json
 import logging
 import sqlite3
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List
@@ -79,6 +80,14 @@ def load_flashrank():
 # ──────────────────────────────────────────────────────────────────────────────
 # FRAUD KB — SQLite knowledge base (L1 verification)
 # ──────────────────────────────────────────────────────────────────────────────
+
+# Single global lock serialising all fraud-KB execute() calls across threads.
+# SQLite's check_same_thread=False only suppresses the thread-ID check; concurrent
+# execute() calls from multiple threads on the same connection still cause
+# InterfaceError without explicit serialisation.
+FRAUD_KB_LOCK = threading.Lock()
+
+
 def load_fraud_kb():
     def _load():
         if not C.FRAUD_KB_PATH.exists():

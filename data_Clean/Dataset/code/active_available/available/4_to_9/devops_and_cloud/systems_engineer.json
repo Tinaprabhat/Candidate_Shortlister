@@ -1,0 +1,1430 @@
+[
+  {
+    "candidate_id": "CAND_0000031",
+    "profile": {
+      "anonymized_name": "Ela Singh",
+      "headline": "Recommendation Systems Engineer | Search, Ranking & Retrieval",
+      "summary": "Machine learning engineer with 6.0 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I've learned that most retrieval problems are actually evaluation problems in disguise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Hyderabad, Telangana",
+      "country": "India",
+      "years_of_experience": 6.0,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Swiggy",
+      "current_company_size": "5001-10000",
+      "current_industry": "Food Delivery"
+    },
+    "career_history": [
+      {
+        "company": "Swiggy",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Trained and shipped multiple ranking models for our product's discovery feed using XGBoost and LightGBM. Designed features across three families: content metadata, user behavior signals, and item engagement history. Owned the offline-online correlation analysis that determined which offline metrics actually predicted A/B test outcomes. Worked closely with PMs to define the optimization target (click-through vs. dwell time vs. downstream conversion) — that work was as important as the modeling itself."
+      },
+      {
+        "company": "Mad Street Den",
+        "title": "Search Engineer",
+        "start_date": "2023-10-10",
+        "end_date": "2025-02-01",
+        "duration_months": 16,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Trained and shipped multiple ranking models for our product's discovery feed using XGBoost and LightGBM. Designed features across three families: content metadata, user behavior signals, and item engagement history. Owned the offline-online correlation analysis that determined which offline metrics actually predicted A/B test outcomes. Worked closely with PMs to define the optimization target (click-through vs. dwell time vs. downstream conversion) — that work was as important as the modeling itself."
+      },
+      {
+        "company": "Uber",
+        "title": "NLP Engineer",
+        "start_date": "2021-07-22",
+        "end_date": "2023-10-10",
+        "duration_months": 27,
+        "is_current": false,
+        "industry": "Transportation",
+        "company_size": "10001+",
+        "description": "Trained and shipped multiple ranking models for our product's discovery feed using XGBoost and LightGBM. Designed features across three families: content metadata, user behavior signals, and item engagement history. Owned the offline-online correlation analysis that determined which offline metrics actually predicted A/B test outcomes. Worked closely with PMs to define the optimization target (click-through vs. dwell time vs. downstream conversion) — that work was as important as the modeling itself."
+      },
+      {
+        "company": "Zomato",
+        "title": "Applied ML Engineer",
+        "start_date": "2020-06-27",
+        "end_date": "2021-07-22",
+        "duration_months": 13,
+        "is_current": false,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "SRM University",
+        "degree": "M.Tech",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2002,
+        "end_year": 2006,
+        "grade": "9.16 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Go",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 19
+      },
+      {
+        "name": "MLflow",
+        "proficiency": "advanced",
+        "endorsements": 59,
+        "duration_months": 21
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 35
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "expert",
+        "endorsements": 34,
+        "duration_months": 88
+      },
+      {
+        "name": "Angular",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 18
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "advanced",
+        "endorsements": 56,
+        "duration_months": 28
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "advanced",
+        "endorsements": 43,
+        "duration_months": 23
+      },
+      {
+        "name": "Speech Recognition",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 24
+      },
+      {
+        "name": "BentoML",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 14
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 36
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "expert",
+        "endorsements": 48,
+        "duration_months": 60
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "expert",
+        "endorsements": 2,
+        "duration_months": 84
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "expert",
+        "endorsements": 18,
+        "duration_months": 36
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 38,
+        "duration_months": 26
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "expert",
+        "endorsements": 16,
+        "duration_months": 69
+      },
+      {
+        "name": "scikit-learn",
+        "proficiency": "advanced",
+        "endorsements": 41,
+        "duration_months": 60
+      },
+      {
+        "name": "Marketing",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 36
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 83.4,
+      "signup_date": "2026-01-28",
+      "last_active_date": "2026-05-24",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 194,
+      "applications_submitted_30d": 2,
+      "recruiter_response_rate": 0.91,
+      "avg_response_time_hours": 76.1,
+      "skill_assessment_scores": {
+        "MLflow": 75.1,
+        "FAISS": 68.4,
+        "Pinecone": 53.6,
+        "Image Classification": 57.1
+      },
+      "connection_count": 832,
+      "endorsements_received": 177,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 27.3,
+        "max": 60.2,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": 32.6,
+      "search_appearance_30d": 778,
+      "saved_by_recruiters_30d": 13,
+      "interview_completion_rate": 0.6,
+      "offer_acceptance_rate": 0.38,
+      "verified_email": false,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 14.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 273,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0017960",
+    "profile": {
+      "anonymized_name": "Pari Shah",
+      "headline": "Recommendation Systems Engineer | ML, NLP, Recommendation Systems",
+      "summary": "Machine learning engineer with 7.7 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I built our semantic search infrastructure from scratch — sentence-transformers, FAISS, the works. Along the way I've gotten comfortable with the operational side — A/B testing, drift monitoring, retraining schedules. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Bangalore, Karnataka",
+      "country": "India",
+      "years_of_experience": 7.7,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Nykaa",
+      "current_company_size": "1001-5000",
+      "current_industry": "E-commerce"
+    },
+    "career_history": [
+      {
+        "company": "Nykaa",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2021-12-19",
+        "end_date": null,
+        "duration_months": 54,
+        "is_current": true,
+        "industry": "E-commerce",
+        "company_size": "1001-5000",
+        "description": "Trained and shipped multiple ranking models for our product's discovery feed using XGBoost and LightGBM. Designed features across three families: content metadata, user behavior signals, and item engagement history. Owned the offline-online correlation analysis that determined which offline metrics actually predicted A/B test outcomes. Worked closely with PMs to define the optimization target (click-through vs. dwell time vs. downstream conversion) — that work was as important as the modeling itself."
+      },
+      {
+        "company": "Wysa",
+        "title": "NLP Engineer",
+        "start_date": "2020-01-29",
+        "end_date": "2021-10-20",
+        "duration_months": 21,
+        "is_current": false,
+        "industry": "HealthTech AI",
+        "company_size": "51-200",
+        "description": "Trained and shipped multiple ranking models for our product's discovery feed using XGBoost and LightGBM. Designed features across three families: content metadata, user behavior signals, and item engagement history. Owned the offline-online correlation analysis that determined which offline metrics actually predicted A/B test outcomes. Worked closely with PMs to define the optimization target (click-through vs. dwell time vs. downstream conversion) — that work was as important as the modeling itself."
+      },
+      {
+        "company": "Sarvam AI",
+        "title": "Search Engineer",
+        "start_date": "2018-09-22",
+        "end_date": "2020-01-15",
+        "duration_months": 16,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "51-200",
+        "description": "Implemented a RAG-based customer support chatbot integrated with our existing ticketing system. Built the document ingestion pipeline (chunking, embedding via OpenAI embeddings, storing in Pinecone) and the answer-generation layer (initially GPT-4, then a fine-tuned smaller model for cost control). Designed the evaluation framework with both automatic metrics (BLEU, ROUGE) and human-in-the-loop quality scores. Deployment cut average ticket resolution time by 31% for the supported categories."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IIT Delhi",
+        "degree": "B.Sc",
+        "field_of_study": "Information Technology",
+        "start_year": 2015,
+        "end_year": 2018,
+        "grade": "9.17 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "LlamaIndex",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 34
+      },
+      {
+        "name": "QLoRA",
+        "proficiency": "expert",
+        "endorsements": 28,
+        "duration_months": 63
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "expert",
+        "endorsements": 15,
+        "duration_months": 36
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 12
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "advanced",
+        "endorsements": 6,
+        "duration_months": 28
+      },
+      {
+        "name": "Haystack",
+        "proficiency": "expert",
+        "endorsements": 10,
+        "duration_months": 75
+      },
+      {
+        "name": "YOLO",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 21
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 17
+      },
+      {
+        "name": "Speech Recognition",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 9
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "expert",
+        "endorsements": 7,
+        "duration_months": 45
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "expert",
+        "endorsements": 1,
+        "duration_months": 71
+      },
+      {
+        "name": "Python",
+        "proficiency": "advanced",
+        "endorsements": 51,
+        "duration_months": 27
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "expert",
+        "endorsements": 12,
+        "duration_months": 67
+      },
+      {
+        "name": "BentoML",
+        "proficiency": "advanced",
+        "endorsements": 49,
+        "duration_months": 58
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Deep Learning Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2018
+      },
+      {
+        "name": "AWS Certified Machine Learning Specialty",
+        "issuer": "AWS",
+        "year": 2020
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 71.1,
+      "signup_date": "2025-12-25",
+      "last_active_date": "2026-04-27",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 13,
+      "applications_submitted_30d": 6,
+      "recruiter_response_rate": 0.72,
+      "avg_response_time_hours": 35.2,
+      "skill_assessment_scores": {},
+      "connection_count": 924,
+      "endorsements_received": 150,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 35.2,
+        "max": 55.4,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 92.4,
+      "search_appearance_30d": 899,
+      "saved_by_recruiters_30d": 43,
+      "interview_completion_rate": 0.64,
+      "offer_acceptance_rate": 0.64,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 0.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 190,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0018549",
+    "profile": {
+      "anonymized_name": "Mira Verma",
+      "headline": "Recommendation Systems Engineer | ML, NLP, Recommendation Systems",
+      "summary": "Machine learning engineer with 6.8 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I've learned that most retrieval problems are actually evaluation problems in disguise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Coimbatore, Tamil Nadu",
+      "country": "India",
+      "years_of_experience": 6.8,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Uber",
+      "current_company_size": "10001+",
+      "current_industry": "Transportation"
+    },
+    "career_history": [
+      {
+        "company": "Uber",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2023-05-13",
+        "end_date": null,
+        "duration_months": 37,
+        "is_current": true,
+        "industry": "Transportation",
+        "company_size": "10001+",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Flipkart",
+        "title": "Machine Learning Engineer",
+        "start_date": "2019-10-01",
+        "end_date": "2023-05-13",
+        "duration_months": 44,
+        "is_current": false,
+        "industry": "E-commerce",
+        "company_size": "10001+",
+        "description": "Built a content recommendation system serving 10M+ users that combined collaborative filtering with content-based ranking. The system uses item-item similarity (via sentence-transformer embeddings) for cold starts and a gradient-boosted model trained on engagement signals for warm users. Most of my time went into the feature pipeline (~200 features) and the A/B testing infrastructure. The launch improved 7-day retention by 6% and time spent per session by 14%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Stanford University",
+        "degree": "M.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2012,
+        "end_year": 2017,
+        "grade": "7.81 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Computer Vision",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 27
+      },
+      {
+        "name": "Weaviate",
+        "proficiency": "expert",
+        "endorsements": 10,
+        "duration_months": 44
+      },
+      {
+        "name": "Kubernetes",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 30
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "expert",
+        "endorsements": 43,
+        "duration_months": 73
+      },
+      {
+        "name": "BigQuery",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 25
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "expert",
+        "endorsements": 28,
+        "duration_months": 81
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "expert",
+        "endorsements": 37,
+        "duration_months": 74
+      },
+      {
+        "name": "Milvus",
+        "proficiency": "expert",
+        "endorsements": 5,
+        "duration_months": 79
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "expert",
+        "endorsements": 10,
+        "duration_months": 40
+      },
+      {
+        "name": "Speech Recognition",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 11
+      },
+      {
+        "name": "scikit-learn",
+        "proficiency": "expert",
+        "endorsements": 43,
+        "duration_months": 78
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "advanced",
+        "endorsements": 38,
+        "duration_months": 57
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "expert",
+        "endorsements": 21,
+        "duration_months": 85
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "expert",
+        "endorsements": 54,
+        "duration_months": 41
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Google Cloud Professional ML Engineer",
+        "issuer": "Google Cloud",
+        "year": 2025
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 65.0,
+      "signup_date": "2024-09-03",
+      "last_active_date": "2026-04-28",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 250,
+      "applications_submitted_30d": 13,
+      "recruiter_response_rate": 0.73,
+      "avg_response_time_hours": 75.4,
+      "skill_assessment_scores": {
+        "Weaviate": 61.4,
+        "Elasticsearch": 90.0,
+        "LangChain": 64.9
+      },
+      "connection_count": 433,
+      "endorsements_received": 114,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 33.2,
+        "max": 58.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": 56.3,
+      "search_appearance_30d": 631,
+      "saved_by_recruiters_30d": 15,
+      "interview_completion_rate": 0.67,
+      "offer_acceptance_rate": 0.89,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 2.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 136,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0041610",
+    "profile": {
+      "anonymized_name": "Anil Subramanian",
+      "headline": "Recommendation Systems Engineer | Search, Ranking & Retrieval",
+      "summary": "Machine learning engineer with 6.7 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I care a lot about evaluation rigor — too many teams ship models without offline benchmarks they trust. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Indore, Madhya Pradesh",
+      "country": "India",
+      "years_of_experience": 6.7,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Zoho",
+      "current_company_size": "10001+",
+      "current_industry": "SaaS"
+    },
+    "career_history": [
+      {
+        "company": "Zoho",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2023-11-09",
+        "end_date": null,
+        "duration_months": 31,
+        "is_current": true,
+        "industry": "SaaS",
+        "company_size": "10001+",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Observe.AI",
+        "title": "Applied ML Engineer",
+        "start_date": "2021-09-20",
+        "end_date": "2023-11-09",
+        "duration_months": 26,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Built and operated production ML pipelines using MLflow for experiment tracking, Kubeflow for orchestration, and our internal feature store. My main project was a churn prediction model that's now used by the customer success team to prioritize outreach. Designed the model monitoring stack: data drift detection, prediction distribution checks, and alerting. Mentored a junior engineer through their first end-to-end ML project last year."
+      },
+      {
+        "company": "InMobi",
+        "title": "Search Engineer",
+        "start_date": "2020-05-28",
+        "end_date": "2021-08-21",
+        "duration_months": 15,
+        "is_current": false,
+        "industry": "AdTech",
+        "company_size": "1001-5000",
+        "description": "Implemented a RAG-based customer support chatbot integrated with our existing ticketing system. Built the document ingestion pipeline (chunking, embedding via OpenAI embeddings, storing in Pinecone) and the answer-generation layer (initially GPT-4, then a fine-tuned smaller model for cost control). Designed the evaluation framework with both automatic metrics (BLEU, ROUGE) and human-in-the-loop quality scores. Deployment cut average ticket resolution time by 31% for the supported categories."
+      },
+      {
+        "company": "Swiggy",
+        "title": "Machine Learning Engineer",
+        "start_date": "2019-09-01",
+        "end_date": "2020-03-29",
+        "duration_months": 7,
+        "is_current": false,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "SRM University",
+        "degree": "B.Tech",
+        "field_of_study": "Information Technology",
+        "start_year": 2008,
+        "end_year": 2011,
+        "grade": "8.92 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Lovely Professional University",
+        "degree": "M.Tech",
+        "field_of_study": "Computer Science",
+        "start_year": 2014,
+        "end_year": 2017,
+        "grade": "8.10 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "OpenCV",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 37
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "advanced",
+        "endorsements": 46,
+        "duration_months": 32
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 47
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 33
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "expert",
+        "endorsements": 28,
+        "duration_months": 94
+      },
+      {
+        "name": "GANs",
+        "proficiency": "advanced",
+        "endorsements": 48,
+        "duration_months": 34
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "expert",
+        "endorsements": 54,
+        "duration_months": 82
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 20
+      },
+      {
+        "name": "BM25",
+        "proficiency": "expert",
+        "endorsements": 5,
+        "duration_months": 75
+      },
+      {
+        "name": "scikit-learn",
+        "proficiency": "expert",
+        "endorsements": 19,
+        "duration_months": 85
+      },
+      {
+        "name": "Learning to Rank",
+        "proficiency": "expert",
+        "endorsements": 28,
+        "duration_months": 74
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "advanced",
+        "endorsements": 33,
+        "duration_months": 60
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "advanced",
+        "endorsements": 36,
+        "duration_months": 24
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "advanced",
+        "endorsements": 41,
+        "duration_months": 55
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "expert",
+        "endorsements": 43,
+        "duration_months": 39
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "expert",
+        "endorsements": 38,
+        "duration_months": 62
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 36,
+        "duration_months": 36
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Machine Learning Specialty",
+        "issuer": "AWS",
+        "year": 2020
+      },
+      {
+        "name": "Deep Learning Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2022
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 53.9,
+      "signup_date": "2025-10-19",
+      "last_active_date": "2026-05-14",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 44,
+      "applications_submitted_30d": 16,
+      "recruiter_response_rate": 0.52,
+      "avg_response_time_hours": 4.8,
+      "skill_assessment_scores": {
+        "OpenCV": 73.0,
+        "LoRA": 55.6
+      },
+      "connection_count": 728,
+      "endorsements_received": 11,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 35.4,
+        "max": 59.4,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 52.1,
+      "search_appearance_30d": 717,
+      "saved_by_recruiters_30d": 18,
+      "interview_completion_rate": 0.8,
+      "offer_acceptance_rate": 0.8,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 2.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [
+      [
+        0,
+        3
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 273,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0066999",
+    "profile": {
+      "anonymized_name": "Riya Dalal",
+      "headline": "Recommendation Systems Engineer | Applied ML | Building intelligent products",
+      "summary": "Machine learning engineer with 5.9 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I shipped our first RAG-based feature this year and now own the eval framework for it. I've spent enough time debugging production ranking issues to know which signals matter and which are noise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Delhi, Delhi",
+      "country": "India",
+      "years_of_experience": 5.9,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Microsoft",
+      "current_company_size": "10001+",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Microsoft",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2022-05-18",
+        "end_date": null,
+        "duration_months": 49,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "10001+",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Amazon",
+        "title": "Senior Data Scientist",
+        "start_date": "2020-07-27",
+        "end_date": "2022-04-18",
+        "duration_months": 21,
+        "is_current": false,
+        "industry": "Internet",
+        "company_size": "10001+",
+        "description": "Built and operated production ML pipelines using MLflow for experiment tracking, Kubeflow for orchestration, and our internal feature store. My main project was a churn prediction model that's now used by the customer success team to prioritize outreach. Designed the model monitoring stack: data drift detection, prediction distribution checks, and alerting. Mentored a junior engineer through their first end-to-end ML project last year."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IIIT Bangalore",
+        "degree": "M.S.",
+        "field_of_study": "Computer Science",
+        "start_year": 2003,
+        "end_year": 2007,
+        "grade": "8.50 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "IIT Roorkee",
+        "degree": "B.Tech",
+        "field_of_study": "Data Science",
+        "start_year": 2003,
+        "end_year": 2007,
+        "grade": "75%",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Image Classification",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 34
+      },
+      {
+        "name": "OpenSearch",
+        "proficiency": "expert",
+        "endorsements": 8,
+        "duration_months": 48
+      },
+      {
+        "name": "JavaScript",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 9
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "expert",
+        "endorsements": 44,
+        "duration_months": 54
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "expert",
+        "endorsements": 7,
+        "duration_months": 94
+      },
+      {
+        "name": "Statistical Modeling",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 25
+      },
+      {
+        "name": "ASR",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 21
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "advanced",
+        "endorsements": 29,
+        "duration_months": 31
+      },
+      {
+        "name": "Node.js",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 18
+      },
+      {
+        "name": "Machine Learning",
+        "proficiency": "advanced",
+        "endorsements": 53,
+        "duration_months": 58
+      },
+      {
+        "name": "CNN",
+        "proficiency": "advanced",
+        "endorsements": 23,
+        "duration_months": 55
+      },
+      {
+        "name": "Excel",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 14
+      },
+      {
+        "name": "BM25",
+        "proficiency": "expert",
+        "endorsements": 33,
+        "duration_months": 53
+      },
+      {
+        "name": "Information Retrieval",
+        "proficiency": "expert",
+        "endorsements": 18,
+        "duration_months": 46
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "advanced",
+        "endorsements": 6,
+        "duration_months": 32
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 73.2,
+      "signup_date": "2024-09-26",
+      "last_active_date": "2026-04-05",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 167,
+      "applications_submitted_30d": 17,
+      "recruiter_response_rate": 0.63,
+      "avg_response_time_hours": 11.2,
+      "skill_assessment_scores": {
+        "Image Classification": 50.5,
+        "OpenSearch": 63.0,
+        "FAISS": 69.5,
+        "LLMs": 74.4,
+        "Pinecone": 90.3
+      },
+      "connection_count": 330,
+      "endorsements_received": 124,
+      "notice_period_days": 15,
+      "expected_salary_range_inr_lpa": {
+        "min": 42.3,
+        "max": 43.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": 94.4,
+      "search_appearance_30d": 619,
+      "saved_by_recruiters_30d": 29,
+      "interview_completion_rate": 0.61,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 13.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "all_descriptions_identical": false,
+    "duplicate_description_indices": [],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 135,
+    "possible_fabrication": true
+  },
+  {
+    "candidate_id": "CAND_0078492",
+    "profile": {
+      "anonymized_name": "Aadhya Vora",
+      "headline": "Recommendation Systems Engineer | Applied ML | Building intelligent products",
+      "summary": "Machine learning engineer with 5.1 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I built our semantic search infrastructure from scratch — sentence-transformers, FAISS, the works. I've spent enough time debugging production ranking issues to know which signals matter and which are noise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Kochi, Kerala",
+      "country": "India",
+      "years_of_experience": 5.1,
+      "current_title": "Recommendation Systems Engineer",
+      "current_company": "Verloop.io",
+      "current_company_size": "51-200",
+      "current_industry": "Conversational AI"
+    },
+    "career_history": [
+      {
+        "company": "Verloop.io",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2025-06-01",
+        "end_date": null,
+        "duration_months": 12,
+        "is_current": true,
+        "industry": "Conversational AI",
+        "company_size": "51-200",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Adobe",
+        "title": "Senior Data Scientist",
+        "start_date": "2021-03-24",
+        "end_date": "2025-04-02",
+        "duration_months": 49,
+        "is_current": false,
+        "industry": "Software",
+        "company_size": "10001+",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IIT Delhi",
+        "degree": "B.E.",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2004,
+        "end_year": 2009,
+        "grade": "67%",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Machine Learning",
+        "proficiency": "expert",
+        "endorsements": 19,
+        "duration_months": 43
+      },
+      {
+        "name": "Haystack",
+        "proficiency": "expert",
+        "endorsements": 33,
+        "duration_months": 79
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "expert",
+        "endorsements": 55,
+        "duration_months": 66
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 18
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "advanced",
+        "endorsements": 28,
+        "duration_months": 40
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "advanced",
+        "endorsements": 16,
+        "duration_months": 48
+      },
+      {
+        "name": "BM25",
+        "proficiency": "advanced",
+        "endorsements": 35,
+        "duration_months": 48
+      },
+      {
+        "name": "GANs",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 17
+      },
+      {
+        "name": "Qdrant",
+        "proficiency": "expert",
+        "endorsements": 43,
+        "duration_months": 66
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "expert",
+        "endorsements": 0,
+        "duration_months": 92
+      },
+      {
+        "name": "ASR",
+        "proficiency": "advanced",
+        "endorsements": 5,
+        "duration_months": 54
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "intermediate",
+        "endorsements": 13,
+        "duration_months": 29
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "expert",
+        "endorsements": 33,
+        "duration_months": 46
+      },
+      {
+        "name": "Excel",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 7
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "expert",
+        "endorsements": 58,
+        "duration_months": 65
+      },
+      {
+        "name": "scikit-learn",
+        "proficiency": "expert",
+        "endorsements": 60,
+        "duration_months": 58
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "expert",
+        "endorsements": 24,
+        "duration_months": 51
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Machine Learning Specialty",
+        "issuer": "AWS",
+        "year": 2024
+      },
+      {
+        "name": "Google Cloud Professional ML Engineer",
+        "issuer": "Google Cloud",
+        "year": 2018
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 58.5,
+      "signup_date": "2024-10-23",
+      "last_active_date": "2026-04-01",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 299,
+      "applications_submitted_30d": 16,
+      "recruiter_response_rate": 0.7,
+      "avg_response_time_hours": 70.4,
+      "skill_assessment_scores": {
+        "Machine Learning": 66.4,
+        "Haystack": 51.3
+      },
+      "connection_count": 1363,
+      "endorsements_received": 69,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 34.0,
+        "max": 46.9,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": 35.4,
+      "search_appearance_30d": 1014,
+      "saved_by_recruiters_30d": 9,
+      "interview_completion_rate": 0.89,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "all_descriptions_identical": true,
+    "duplicate_description_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "possible_honeypot": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 156,
+    "possible_fabrication": true
+  }
+]

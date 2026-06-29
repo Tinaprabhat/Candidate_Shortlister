@@ -192,23 +192,17 @@ def _check_math_consistency(c: dict, fraud_kb, current_year: int):
         return ["honeypot_flag"], True
     if c.get("salary_was_inverted") is True:
         return ["salary_inverted"], True
-    # Opt-out hard-rejects: only fire on explicit False (None/missing = pass through)
-    if c.get("willing_to_relocate") is False:
-        return ["not_willing_to_relocate"], True
-    _signals_peek = c.get("redrob_signals") or {}
-    _otw = _signals_peek.get("open_to_work_flag")
-    if _otw is None:
-        _otw = c.get("open_to_work_flag") if c.get("open_to_work_flag") is not None else c.get("open_to_work")
-    if _otw is False:
-        return ["not_open_to_work"], True
-    sal = c.get("salary_expectation") or {}
-    smin, smax = sal.get("min"), sal.get("max")
-    if smin is not None and smax is not None:
-        try:
-            if float(smin) > float(smax):
-                return ["salary_range_inverted"], True
-        except (ValueError, TypeError):
-            pass
+
+    # Salary range inversion — read from actual data path (redrob_signals)
+    _sig = c.get("redrob_signals") or {}
+    _sal_rng = _sig.get("expected_salary_range_inr_lpa") or {}
+    try:
+        _smin = float(_sal_rng["min"]) if _sal_rng.get("min") is not None else None
+        _smax = float(_sal_rng["max"]) if _sal_rng.get("max") is not None else None
+        if _smin is not None and _smax is not None and _smin > _smax:
+            return ["salary_range_inverted"], True
+    except (ValueError, TypeError):
+        pass
 
     # ── Education timeline ─────────────────────────────────────────────────────
     edu = c.get("education") or []
@@ -234,6 +228,19 @@ def _check_math_consistency(c: dict, fraud_kb, current_year: int):
         return ["phd_before_bachelor"], True
     if edu_years.get("master") and edu_years.get("bachelor") and edu_years["master"] < edu_years["bachelor"]:
         return ["master_before_bachelor"], True
+
+    # Cert date sanity: LangChain cannot predate its public release (2022)
+    for cert in (c.get("certifications") or []):
+        if not isinstance(cert, dict):
+            continue
+        cname = str(cert.get("name") or cert.get("title") or "").lower()
+        if "langchain" in cname:
+            cert_year = _parse_year(
+                cert.get("year") or cert.get("date") or cert.get("issue_date")
+            )
+            if cert_year is not None and cert_year < 2022:
+                flags.append(f"cert_impossible:langchain_before_2022:{cert_year}")
+                return flags, True
 
     # ── Extract experience / birth year ───────────────────────────────────────
     total_exp = utils.get_total_experience_years(c)
@@ -417,23 +424,18 @@ def l1_hard_reject(candidates: List[dict], fraud_kb) -> List[dict]:
 # LAYER 1b — PROFILE INTEGRITY FLAGS
 # ──────────────────────────────────────────────────────────────────────────────
 
-_L1B_HARD_REJECT_FLAGS = [
-    "reverse_degree_order",
-    "all_descriptions_identical",
-    "invalid_degree_field_combination",
-    "willing_to_relocate = False",
-    "open_to_work = False"
-]
-
 def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
     """
     Layer 1b — Profile integrity: hard-reject gate only.
 
-    Hard-reject flags (removed from pool):
-      reverse_degree_order, all_descriptions_identical, invalid_degree_field_combination
+    Hard-reject conditions (any fires → remove from pool):
+      - reverse_degree_order or all_descriptions_identical (top-level ATS flags)
+      - invalid_degree_field_combination on any education entry (per-entry check)
+      - redrob_signals.willing_to_relocate is False
+      - redrob_signals.open_to_work_flag is False
 
-    Soft-penalty flags are NO LONGER applied here.  They are stored as boolean
-    columns in the L2 table (cols 29-31) and unified into condition 'h' by L3.
+    Soft-penalty flags are stored as boolean columns in the L2 table and unified
+    into condition 'h' by L3 — they are NOT applied here.
 
     All surviving candidates get l1b_penalty=1.0, l1b_flags=[], l1b_status='pass'.
     """
@@ -441,12 +443,31 @@ def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
     rejected = 0
 
     for c in candidates:
-        reject_flag = next(
-            (f for f in _L1B_HARD_REJECT_FLAGS if c.get(f) is True), None
-        )
-        if reject_flag:
+        flags = []
+        sig = c.get("redrob_signals") or {}
+
+        # Top-level ATS flags
+        if c.get("reverse_degree_order") is True:
+            flags.append("reverse_degree_order")
+        if c.get("all_descriptions_identical") is True:
+            flags.append("all_descriptions_identical")
+
+        # Per-entry degree+field combination check
+        if any(
+            isinstance(e, dict) and e.get("invalid_degree_field_combination") is True
+            for e in (c.get("education") or [])
+        ):
+            flags.append("invalid_degree_field_combination")
+
+        # Opt-out signals — explicit False only; None/missing = pass through
+        if sig.get("willing_to_relocate") is False:
+            flags.append("not_willing_to_relocate")
+        if sig.get("open_to_work_flag") is False:
+            flags.append("not_open_to_work")
+
+        if flags:
             c["l1b_penalty"] = 0.0
-            c["l1b_flags"]   = [reject_flag]
+            c["l1b_flags"]   = flags
             c["l1b_status"]  = "reject"
             rejected += 1
             continue
@@ -569,39 +590,49 @@ def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
     Attaches: l1c_score, l1c_matched_required, l1c_missing_required,
               l1c_matched_bonus, l1c_matched_explicit.
     """
-    explicit_req = jd.get("explicit_required", [])
-    inferred_req = jd.get("inferred_required", [])
-    required     = explicit_req + inferred_req
-    bonus        = jd.get("explicit_bonus", []) + jd.get("inferred_bonus", [])
-    n_req, n_bon = len(required), len(bonus)
-    n_explicit   = len(explicit_req)
+    explicit_req   = jd.get("explicit_required", [])
+    explicit_bon   = jd.get("explicit_bonus", [])
+    inferred_req   = jd.get("inferred_required", [])
+    inferred_bon   = jd.get("inferred_bonus", [])
+    n_explicit_req = len(explicit_req)
+    n_explicit_bon = len(explicit_bon)
+    n_explicit     = n_explicit_req  # hard-reject gate uses explicit required only
 
     for c in candidates:
         text = _candidate_search_text(c)
 
-        req_match    = {s: _skill_in_text(s, text) for s in required}
-        matched_req  = [s for s, m in req_match.items() if m]
-        missing_req  = [s for s, m in req_match.items() if not m]
-        matched_bon  = [s for s in bonus if _skill_in_text(s, text)]
-        matched_expl = [s for s in explicit_req if req_match.get(s)]
+        # Explicit required — score numerator and hard-reject gate
+        expl_req_match = {s: _skill_in_text(s, text) for s in explicit_req}
+        matched_req    = [s for s, m in expl_req_match.items() if m]
+        missing_req    = [s for s, m in expl_req_match.items() if not m]
 
-        req_ratio = len(matched_req) / n_req if n_req else 1.0
-        bon_ratio = len(matched_bon) / n_bon if n_bon else 0.0
+        # Explicit bonus — contributes to l1c_score (0.25 weight)
+        matched_bon    = [s for s in explicit_bon if _skill_in_text(s, text)]
 
-        if n_req > 0 and n_bon > 0:
+        # Inferred skills — stored here, matched and scored in L1d
+        matched_inferred = (
+            [s for s in inferred_req if _skill_in_text(s, text)]
+            + [s for s in inferred_bon if _skill_in_text(s, text)]
+        )
+
+        req_ratio = len(matched_req) / n_explicit_req if n_explicit_req else 1.0
+        bon_ratio = len(matched_bon) / n_explicit_bon if n_explicit_bon else 0.0
+
+        if n_explicit_req > 0 and n_explicit_bon > 0:
             score = 0.75 * req_ratio + 0.25 * bon_ratio
-        elif n_req > 0:
+        elif n_explicit_req > 0:
             score = req_ratio
-        elif n_bon > 0:
+        elif n_explicit_bon > 0:
             score = bon_ratio
         else:
             score = 1.0
 
-        c["l1c_score"]             = round(score, 4)
-        c["l1c_matched_required"]  = matched_req
-        c["l1c_missing_required"]  = missing_req
-        c["l1c_matched_bonus"]     = matched_bon
-        c["l1c_matched_explicit"]  = matched_expl
+        c["l1c_score"]            = round(score, 4)
+        c["l1c_matched_required"] = matched_req    # explicit required only
+        c["l1c_missing_required"] = missing_req
+        c["l1c_matched_bonus"]    = matched_bon    # explicit bonus only
+        c["l1c_matched_explicit"] = matched_req    # alias used by hard-reject gate
+        c["l1c_matched_inferred"] = matched_inferred  # forwarded to L1d
 
         jd_req_score, jd_req_results = compute_skill_match(c, JD_REQUIREMENTS)
         c["jd_req_score"]   = round(jd_req_score, 4)
@@ -632,50 +663,59 @@ def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
     avg = sum(c.get("l1c_score", 0.0) for c in candidates) / max(len(candidates), 1)
     logger.info(
         f"L1c: {before} in → {len(candidates)} pass "
-        f"(avg_score={avg:.3f}, explicit={n_explicit}, req_skills={n_req}, bonus_skills={n_bon})"
+        f"(avg_score={avg:.3f}, explicit_req={n_explicit_req}, explicit_bon={n_explicit_bon})"
     )
     return candidates
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# LAYER 1d — EXPLICIT BONUS SKILL MATCH (soft penalty, no rejections)
+# LAYER 1d — INFERRED SKILL MATCH + LEFTOVER PENALTY (soft, no rejections)
 # ──────────────────────────────────────────────────────────────────────────────
 
-def l1d_explicit_bonus(candidates: List[dict], jd: dict) -> List[dict]:
+def l1d_inferred_match(candidates: List[dict], jd: dict) -> List[dict]:
     """
-    Layer 1d — Explicit bonus skill match.
+    Layer 1d — Inferred skill match with leftover penalty.
 
-    Matches JD explicit_bonus skills against each candidate's full text using
-    the same synonym-aware _skill_in_text as L1c.  No candidates are rejected;
-    the layer attaches a soft penalty that grows with the fraction of bonus
-    skills unmatched.
+    Matches all inferred JD skills (inferred_required + inferred_bonus) against
+    each candidate's full text.  No candidates are rejected.
+
+    Score:
+      inferred_ratio  = matched_inferred / n_inferred   (1.0 when JD has none)
+      leftover_count  = n_inferred − matched_inferred   (unmatched inferred)
+      leftover_penalty = 0.01 × leftover_count
+      l1d_score       = max(0, inferred_ratio − leftover_penalty)
 
     Attaches per-candidate:
-      l1d_matched_bonus     list[str]  — bonus skills found
-      l1d_unmatched_bonus   list[str]  — bonus skills not found
-      l1d_bonus_match_ratio float[0,1] — matched / total (1.0 when JD has no bonus skills)
-      l1d_bonus_penalty     float[0,1] — 1 − match_ratio (0=all matched, 1=none matched)
+      l1d_matched_inferred  list[str]   — inferred skills found
+      l1d_unmatched_inferred list[str]  — inferred skills not found
+      l1d_inferred_ratio    float[0,1]  — matched / total
+      l1d_leftover_count    int         — count of unmatched inferred skills
+      l1d_score             float[0,1]  — net score forwarded to L2
 
-    l1d_bonus_match_ratio is forwarded to the L2 table as explicit_bonus_score.
+    l1d_score is forwarded to the L2 table as l1d_inferred_score.
     """
-    explicit_bonus = jd.get("explicit_bonus", [])
-    n_bon = len(explicit_bonus)
+    inferred = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
+    n_inferred = len(inferred)
 
     for c in candidates:
         text = _candidate_search_text(c)
-        matched   = [s for s in explicit_bonus if _skill_in_text(s, text)]
-        unmatched = [s for s in explicit_bonus if not _skill_in_text(s, text)]
-        ratio   = len(matched) / n_bon if n_bon > 0 else 1.0
-        penalty = 1.0 - ratio
-        c["l1d_matched_bonus"]     = matched
-        c["l1d_unmatched_bonus"]   = unmatched
-        c["l1d_bonus_match_ratio"] = round(ratio, 4)
-        c["l1d_bonus_penalty"]     = round(penalty, 4)
+        matched   = [s for s in inferred if _skill_in_text(s, text)]
+        unmatched = [s for s in inferred if not _skill_in_text(s, text)]
+        ratio     = len(matched) / n_inferred if n_inferred > 0 else 1.0
+        leftover  = len(unmatched)
+        penalty   = 0.01 * leftover
+        score     = max(0.0, ratio - penalty)
 
-    avg = sum(c.get("l1d_bonus_match_ratio", 1.0) for c in candidates) / max(len(candidates), 1)
+        c["l1d_matched_inferred"]   = matched
+        c["l1d_unmatched_inferred"] = unmatched
+        c["l1d_inferred_ratio"]     = round(ratio, 4)
+        c["l1d_leftover_count"]     = leftover
+        c["l1d_score"]              = round(score, 4)
+
+    avg = sum(c.get("l1d_inferred_ratio", 1.0) for c in candidates) / max(len(candidates), 1)
     logger.info(
-        f"L1d: {len(candidates)} candidates — {n_bon} explicit bonus skills "
-        f"(avg_bonus_match={avg:.3f})"
+        f"L1d: {len(candidates)} candidates — {n_inferred} inferred skills "
+        f"(avg_inferred_match={avg:.3f})"
     )
     return candidates
 
@@ -908,8 +948,9 @@ _JD_REQ_TITLES: frozenset = frozenset({
     "nlp engineer", "nlp scientist", "natural language processing engineer",
     "search engineer", "senior search engineer", "search scientist",
     "ranking engineer", "relevance engineer", "information retrieval engineer",
-    # Research Engineering (AI/ML-focused, not domain-locked)
-    "research engineer", "senior research engineer", "ai research engineer",
+    # Research Engineering (AI/ML-focused, not domain-locked; "ai research engineer"
+    # excluded — too broad, fires on CV/speech candidates)
+    "research engineer", "senior research engineer",
     "ml research engineer",
     # AI / ML leadership
     "ai tech lead", "ml tech lead", "ai lead", "ml lead",
@@ -1180,8 +1221,8 @@ def _build_table_row(
         education_overlap    = latest_edu_end > first_career_start
         gap                  = first_career_start - latest_edu_end
         edu_career_gap_flag  = gap > 1.5
-    # Merge with upstream ATS flag so either source can set it
-    edu_career_gap_flag = edu_career_gap_flag or bool(c.get("edu_career_gap_flag"))
+    # Merge with upstream ATS flag (field is education_career_gap_flag in the data)
+    edu_career_gap_flag = edu_career_gap_flag or bool(c.get("education_career_gap_flag"))
 
     # 26 — low_engagement_flag
     apps_30d      = _safe_float(signals.get("applications_submitted_30d"))
@@ -1208,10 +1249,16 @@ def _build_table_row(
     # 29 — possible_fabrication
     possible_fabrication = bool(c.get("possible_fabrication"))
 
-    # notice_period_days — direct field from candidate profile input
-    notice_period_days = c.get("notice_period_days") or c.get("notice_period")
-    # explicit_bonus_score — forwarded from L1d (1.0 if L1d hasn't run yet)
-    explicit_bonus_score = round(float(c.get("l1d_bonus_match_ratio", 1.0)), 4)
+    # notice_period_days — read from redrob_signals (actual data path)
+    notice_period_days = (
+        signals.get("notice_period_days")
+        or c.get("notice_period_days")
+        or c.get("notice_period")
+    )
+    # l1d_inferred_score — forwarded from L1d (1.0 if L1d hasn't run yet)
+    l1d_inferred_score = round(float(c.get("l1d_score", 1.0)), 4)
+    # l1c_score — forwarded from L1c
+    l1c_fwd_score = round(float(c.get("l1c_score", 0.0)), 4)
 
     # title — current job title, lowercased for L3 matching against _JD_REQ_TITLES
     title = (
@@ -1254,10 +1301,11 @@ def _build_table_row(
         # Soft-penalty flags (read from ATS/upstream; feed L3 condition h)
         "skill_career_domain_mismatch": bool(c.get("skill_career_domain_mismatch")), # 29
         "second_undergrad_after_first": bool(c.get("second_undergrad_after_first")), # 30
-        # L1d + notice period + title (new cols)
-        "explicit_bonus_score":  explicit_bonus_score,  # fraction of JD bonus skills matched
-        "notice_period_days":    notice_period_days,    # raw field from candidate; None if absent
-        "title":                 title,                 # current job title (lowercased)
+        # Layer scores forwarded + notice period + title
+        "l1c_score":         l1c_fwd_score,        # explicit skill match score from L1c
+        "l1d_inferred_score": l1d_inferred_score,  # inferred skill match score from L1d
+        "notice_period_days": notice_period_days,  # from redrob_signals; None if absent
+        "title":              title,               # current job title (lowercased)
     }
 
 def l2_table_extract(
@@ -1273,13 +1321,13 @@ def l2_table_extract(
     they are used by L3 to compute condition 'h' (soft-penalty union).
     """
 
-    jd_required  = jd.get("explicit_required", []) + jd.get("explicit_bonus", []) 
-    jd_inferred  = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
-    n_req        = len(jd_required)
+    # denominator for skill_match_score = explicit required only (not bonus)
+    n_explicit_req = len(jd.get("explicit_required", []))
+    jd_inferred    = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
 
     for c in candidates:
         c["table_row"] = _build_table_row(
-            c, jd_inferred, n_req
+            c, jd_inferred, n_explicit_req
         )
 
     logger.info(f"L2 table extract: {len(candidates)} rows built (31 cols each)")
@@ -1651,18 +1699,18 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
         if notice_bonus:
             score = min(1.0, score + 0.05)
 
-        # Title bonus: candidate's current title matches a JD-aligned AI/NLP/IR title → +0.02
+        # Title bonus: candidate's current title matches a JD-aligned AI/NLP/IR title → +0.01
         cand_title = str(row.get("title") or "")
         title_bonus = bool(cand_title) and any(kw in cand_title for kw in _JD_REQ_TITLES)
         if title_bonus:
-            score = min(1.0, score + 0.02)
+            score = min(1.0, score + 0.01)
 
         cls   = _fuzzy_class(score)
         rsn   = _build_fuzzy_reasoning(row, conds, score)
         if notice_bonus:
             rsn += " [notice_bonus+0.05]"
         if title_bonus:
-            rsn += f" [title_bonus+0.02:{cand_title}]"
+            rsn += f" [title_bonus+0.01:{cand_title}]"
 
         c["l3_score"]     = round(score, 4)                        # Step 9
         c["l3_class"]     = cls
@@ -1687,6 +1735,56 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
 # ══════════════════════════════════════════════════════════════════════════════
 # LAYER 4 — SEMANTIC WORK RELEVANCE
 # ══════════════════════════════════════════════════════════════════════════════
+
+# CV / Speech domain skills and title keywords — candidates whose profile is
+# dominated by these are hard-penalized by the donts layer regardless of
+# embedding similarity, which is too noisy at 384-dim to resolve domains.
+_CV_SPEECH_SKILLS: frozenset = frozenset({
+    "asr", "tts", "speech recognition", "automatic speech recognition",
+    "text to speech", "text-to-speech", "computer vision", "opencv",
+    "yolo", "object detection", "image classification", "image segmentation",
+    "detectron", "torchvision", "face recognition", "face detection",
+    "optical character recognition", "ocr",
+})
+_CV_SPEECH_TITLE_KW: frozenset = frozenset({
+    "computer vision", "cv engineer", "vision scientist", "vision engineer",
+    "speech recognition", "asr engineer", "tts engineer", "speech engineer",
+    "image processing", "visual recognition",
+})
+_CATEGORICAL_DONTS_PENALTY = 0.50  # hard penalty for confirmed CV/speech domain
+
+
+def _is_cv_speech_candidate(c: dict) -> bool:
+    """Return True when ≥2 CV/speech skills OR a CV/speech title is present."""
+    profile = c.get("profile") or {}
+    title   = str(profile.get("current_title") or profile.get("title") or "").lower()
+    if any(kw in title for kw in _CV_SPEECH_TITLE_KW):
+        return True
+    skills_raw  = c.get("skills") or []
+    skills_text = " ".join(
+        str(s.get("name") if isinstance(s, dict) else s).lower() for s in skills_raw
+    )
+    return sum(1 for kw in _CV_SPEECH_SKILLS if kw in skills_text) >= 2
+
+
+def _candidate_title_work_text(c: dict) -> str:
+    """Title + work titles/descriptions — sharper donts signal than full-profile blob."""
+    profile = c.get("profile") or {}
+    parts   = []
+    t = str(
+        profile.get("current_title") or profile.get("title") or profile.get("headline") or ""
+    ).strip()
+    if t:
+        parts.append(t)
+    for exp in utils._iter_work_history(c):
+        if not isinstance(exp, dict):
+            continue
+        for field in ("title", "description"):
+            v = exp.get(field, "")
+            if v:
+                parts.append(str(v))
+    return " ".join(parts)
+
 
 def _jd_responsibilities_text(jd: dict) -> str:
     """Extract the JD 'what you'll do' / responsibilities text."""
@@ -1789,17 +1887,17 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
         for pos, idx in enumerate(non_empty_work):
             work_relevances[idx] = max(0.0, float(sims[pos]))
 
-    # ── Candidate full-profile texts → donts similarity ──────────────────────
+    # ── Candidate title+work texts → donts similarity ────────────────────────
+    # Narrower text (title + work only) gives sharper domain signal than full blob.
     donts_sims = [0.0] * n
 
     if jd_donts_vec is not None:
-        # Full profile text: skills + summary + work descriptions — widest signal for donts
-        profile_texts    = [utils.get_work_profile_text(c)[:_L4_CHAR_LIMIT] for c in candidates]
-        non_empty_prof   = [i for i, t in enumerate(profile_texts) if t.strip()]
+        title_work_texts = [_candidate_title_work_text(c)[:_L4_CHAR_LIMIT] for c in candidates]
+        non_empty_prof   = [i for i, t in enumerate(title_work_texts) if t.strip()]
 
         if non_empty_prof:
             prof_mat: np.ndarray = model.encode(
-                [profile_texts[i] for i in non_empty_prof],
+                [title_work_texts[i] for i in non_empty_prof],
                 batch_size=C.L4_BATCH_SIZE,
                 convert_to_numpy=True,
                 show_progress_bar=False,
@@ -1809,12 +1907,20 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
             for pos, idx in enumerate(non_empty_prof):
                 donts_sims[idx] = max(0.0, float(sims[pos]))
 
+    # Pre-compute categorical CV/speech flags (one pass, no repeated calls)
+    is_cv_speech = [_is_cv_speech_candidate(c) for c in candidates]
+
     # ── Combine: work relevance − donts penalty → l4_score ───────────────────
     for i, c in enumerate(candidates):
         wr  = round(work_relevances[i], 4)
         ds  = round(donts_sims[i], 4)
 
-        raw_pen = max(0.0, ds - _DONTS_SIM_THRESHOLD) * _DONTS_PENALTY_SCALE
+        if is_cv_speech[i]:
+            # Categorical hard penalty for confirmed CV/speech domain specialists
+            raw_pen = _CATEGORICAL_DONTS_PENALTY
+        else:
+            # Embedding similarity as weak secondary (raised threshold to avoid good-candidate fireback)
+            raw_pen = max(0.0, ds - _DONTS_SIM_THRESHOLD) * _DONTS_PENALTY_SCALE
         penalty = round(min(raw_pen, wr), 4)   # floor l4_score at 0
         l4s     = round(wr - penalty, 4)
 
@@ -1892,8 +1998,9 @@ def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
     ]
     results = ranker.rerank(RerankRequest(query=jd_text, passages=passages))
 
+    # ms-marco returns raw logits; apply sigmoid so the 0.3 weight contributes meaningfully
     id_to_score: Dict[int, float] = {
-        r["id"]: max(0.0, min(1.0, float(r.get("score", 0.0))))
+        r["id"]: max(0.0, min(1.0, 1.0 / (1.0 + math.exp(-float(r.get("score", 0.0))))))
         for r in results
     }
 

@@ -183,14 +183,14 @@ def _run_early_cascade(cands, jd, models, tracer=None):
         return []
 
     t = time.time()
-    survivors = layers.l1d_explicit_bonus(survivors, jd)
+    survivors = layers.l1d_inferred_match(survivors, jd)
     _logger.info(f"L1d elapsed: {time.time()-t:.3f}s")
     if tracer:
-        tracer.record_cascade_step("L1d_explicit_bonus", len(survivors), len(survivors),
+        tracer.record_cascade_step("L1d_inferred_match", len(survivors), len(survivors),
                                    notes={
                                        "elapsed_s": round(time.time()-t, 3),
-                                       "avg_bonus_match": round(
-                                           sum(c.get("l1d_bonus_match_ratio", 1.0) for c in survivors)
+                                       "avg_inferred_match": round(
+                                           sum(c.get("l1d_inferred_ratio", 1.0) for c in survivors)
                                            / max(len(survivors), 1), 3
                                        ),
                                    })
@@ -314,8 +314,8 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
                 "l1b_flags":             c.get("l1b_flags") or [],
                 "l1b_status":            c.get("l1b_status", "pass"),
                 "l1c_score":             round(float(c.get("l1c_score") or 0.0), 4),
-                "l1d_bonus_match_ratio": round(float(c.get("l1d_bonus_match_ratio") or 1.0), 4),
-                "l1d_bonus_penalty":     round(float(c.get("l1d_bonus_penalty") or 0.0), 4),
+                "l1d_inferred_ratio":    round(float(c.get("l1d_inferred_ratio") or 1.0), 4),
+                "l1d_score":             round(float(c.get("l1d_score") or 0.0), 4),
                 "l3_score":              round(float(c.get("l3_score") or 0.0), 4),
                 "l3_class":              c.get("l3_class", ""),
                 "l4_work_relevance":     round(float(c.get("l4_work_relevance") or 0.0), 4),
@@ -530,7 +530,7 @@ if run_btn:
             "L3 Class":      c.get("l3_class", ""),
             "H Penalty":     int(c.get("table_row", {}).get("l3_h_penalty", False)),
             "L4 Relevance":  round(c.get("l4_work_relevance", 0.0), 3),
-            "Donts Mult":    round(c.get("l5_donts_mult", 1.0), 3),
+            "Donts Pen":     round(c.get("l4_donts_penalty", 0.0), 3),
             "L5 FlashRank":  round(c.get("l5_flashrank_score", 0.0), 3),
             "Reasoning":     c.get("l3_reasoning", "")[:120],
         })

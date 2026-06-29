@@ -78,12 +78,12 @@ def run_early_cascade(
         return []
 
     t = time.time()
-    survivors = layers.l1d_explicit_bonus(survivors, jd)
-    tracer.record_cascade_step("L1d_explicit_bonus", len(survivors), len(survivors),
+    survivors = layers.l1d_inferred_match(survivors, jd)
+    tracer.record_cascade_step("L1d_inferred_match", len(survivors), len(survivors),
                                notes={
                                    "elapsed_s": round(time.time() - t, 3),
-                                   "avg_bonus_match": round(
-                                       sum(c.get("l1d_bonus_match_ratio", 1.0) for c in survivors)
+                                   "avg_inferred_match": round(
+                                       sum(c.get("l1d_inferred_ratio", 1.0) for c in survivors)
                                        / max(len(survivors), 1), 3
                                    ),
                                })
@@ -130,6 +130,10 @@ def run_late_cascade(
                                    "random_pct": C.GATE_RANDOM_FRACTION,
                                })
     logger.info(f"L3 gate: {before_gate} → {len(candidates)} passed (75%)")
+
+    # Slice to top 200 by l3_score BEFORE expensive L4 embedding (D23)
+    candidates = sorted(candidates, key=lambda c: c.get("l3_score", 0.0), reverse=True)[:200]
+    logger.info(f"Top-200 slice before L4: {len(candidates)} forwarded to semantic encoding")
 
     # L4 — semantic work relevance (returns all sorted by l4_combined_score)
     t = time.time()
@@ -243,14 +247,14 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
                 "l1b_flags":             c.get("l1b_flags") or [],
                 "l1b_status":            c.get("l1b_status", "pass"),
                 "l1c_score":             round(float(c.get("l1c_score") or 0.0), 4),
-                "l1d_bonus_match_ratio": round(float(c.get("l1d_bonus_match_ratio") or 1.0), 4),
-                "l1d_bonus_penalty":     round(float(c.get("l1d_bonus_penalty") or 0.0), 4),
+                "l1d_inferred_ratio":    round(float(c.get("l1d_inferred_ratio") or 1.0), 4),
+                "l1d_score":             round(float(c.get("l1d_score") or 0.0), 4),
                 "l3_score":              round(float(c.get("l3_score") or 0.0), 4),
                 "l3_class":              c.get("l3_class", ""),
                 "l4_work_relevance":     round(float(c.get("l4_work_relevance") or 0.0), 4),
+                "l4_donts_sim":          round(float(c.get("l4_donts_sim") or 0.0), 4),
+                "l4_donts_penalty":      round(float(c.get("l4_donts_penalty") or 0.0), 4),
                 "l4_combined_score":     round(float(c.get("l4_combined_score") or 0.0), 4),
-                "l5_donts_mult":         round(float(c.get("l5_donts_mult") or 1.0), 4),
-                "l5_donts_score":        round(float(c.get("l5_donts_score") or 0.0), 4),
                 "l5_flashrank_score":    round(float(c.get("l5_flashrank_score") or 0.0), 4),
                 "l5_total_score":        round(float(c.get("l5_total_score") or 0.0), 4),
             },

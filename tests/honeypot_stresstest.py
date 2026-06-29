@@ -65,7 +65,7 @@ def test_honeypot_fictional_company():
 def test_honeypot_salary_inverted():
     kb = mock_kb()
     hp = {"candidate_id": "HP2", "skills": ["Python"],
-          "salary_expectation": {"min": 200000, "max": 50000},
+          "redrob_signals": {"expected_salary_range_inr_lpa": {"min": 200000, "max": 50000}},
           "work_experience": [{"title": "Dev", "company": "realtech",
                                "start_year": 2017, "description": "x"}],
           "education": [{"degree": "Bachelor", "end_year": 2016}]}
@@ -124,7 +124,7 @@ def test_honeypot_mixed_batch():
                               "start_year": 2015, "description": "x"}],
          "education": [{"degree": "Bachelor", "end_year": 2014}]},
         {"candidate_id": "MIX_HP2", "skills": ["Python"],
-         "salary_expectation": {"min": 300000, "max": 10000},
+         "redrob_signals": {"expected_salary_range_inr_lpa": {"min": 300000, "max": 10000}},
          "work_experience": [{"title": "Dev", "company": "realtech",
                               "start_year": 2018, "description": "x"}],
          "education": [{"degree": "Bachelor", "end_year": 2016}]},
@@ -175,7 +175,7 @@ def test_honeypot_salary_equal_is_valid():
     """min == max salary is unusual but not fraudulent — candidate should survive L1."""
     kb = mock_kb()
     c = good_candidate("SALARY_EQ")
-    c["salary_expectation"] = {"min": 100000, "max": 100000}
+    c.setdefault("redrob_signals", {})["expected_salary_range_inr_lpa"] = {"min": 100000, "max": 100000}
     assert len(layers.l1_hard_reject([c], kb)) == 1, \
         "min == max salary incorrectly flagged as honeypot"
     print("  ✅ min == max salary correctly passes L1")
@@ -210,7 +210,7 @@ def test_honeypot_multiple_violations_rejected_once():
     kb = mock_kb()
     hp = {
         "candidate_id": "MULTI_VIO", "skills": ["Python"],
-        "salary_expectation": {"min": 500000, "max": 10000},
+        "redrob_signals": {"expected_salary_range_inr_lpa": {"min": 500000, "max": 10000}},
         "work_experience": [{"title": "Eng", "company": "Hooli",
                              "start_year": 2015, "description": "x"}],
         "education": [{"degree": "PhD", "end_year": 2008},
@@ -226,7 +226,7 @@ def test_honeypot_inverted_salary_extreme():
     kb = mock_kb()
     hp = {
         "candidate_id": "SAL_EXTREME", "skills": ["Python"],
-        "salary_expectation": {"min": 1_000_000, "max": 1},
+        "redrob_signals": {"expected_salary_range_inr_lpa": {"min": 1_000_000, "max": 1}},
         "work_experience": [{"title": "Dev", "company": "realtech",
                              "start_year": 2018, "description": "x"}],
         "education": [{"degree": "Bachelor", "end_year": 2017}],

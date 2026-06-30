@@ -55,7 +55,12 @@ role
 
 industry
   The industry/vertical the company operates in.
-  Examples: "HR Tech", "Fintech", "E-commerce", "HealthTech", "EdTech", "SaaS B2B".
+  Examples: "Tech / AI / Software", "Fintech", "E-commerce", "HealthTech", "EdTech", "SaaS B2B".
+  CRITICAL DISTINCTION: A company that BUILDS AI, software, or data products is
+  "Tech / AI / Software" — regardless of WHAT that product does (hiring, HR, logistics, etc.).
+  Only classify as "HR Tech" if the company's core business IS delivering HR services or
+  managing human resources as a direct offering (e.g. an HRMS/payroll/ATS vendor).
+  A recruiting-AI or talent-intelligence platform is "Tech / AI / Software", not "HR Tech".
   Derive from the company description if not stated explicitly.
 
 location

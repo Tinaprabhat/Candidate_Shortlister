@@ -3,10 +3,13 @@
 rank.py — RedRob ranking entry point (OFFLINE, no API calls).
 
 Pipeline:
-  L1 hard-reject → L1b profile-integrity → L1c skill-match → L1d bonus-match
-  → L2 table-extract → L3 fuzzy-score → gate (top 50% + random 25% = 75%)
-  → L4 semantic-score + donts penalty (baked in) → top 100
-  → L5 FlashRank on top 50 (total_score = 0.4*l4_score + 0.3*l3 + 0.3*fr) → final top 100
+  L1a hard-reject → L1b profile-integrity → L1c skill-match → L1d bonus-match
+  → L2 table-extract → L3 fuzzy-score
+    (streamed continuously per candidate, concurrently across candidates —
+     no batch wait between stages; see layers.run_streaming_cascade)
+  → gate (top 50% + random 25% = 75%)            ← the only compilation point
+  → L4 semantic-score + donts penalty (baked in) → top 100 [l3_score + l4_score]
+  → L5 FlashRank on top 50 (min-max normalised; total = (l3+l4+fr)/3) → final top 100
 
 Single-command:
     python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
@@ -37,89 +40,42 @@ logger = logging.getLogger("rank")
 _OUTPUT_DIR = Path(__file__).parent / "output"
 
 
-# ── Early cascade (per-folder) ────────────────────────────────────────────────
+# ── Streaming cascade (L1a→L1b→L1c→L1d→L2→L3, continuous & concurrent) ───────
 
-def run_early_cascade(
+def run_streaming_cascade(
     candidates: List[dict], jd: dict, models: dict, tracer: RunTracer
 ) -> List[dict]:
     """
-    L1 hard-reject → L1b profile-integrity → L1c skill-match.
-    Returns scored survivors; the global 75% gate is applied in main() afterwards.
+    Every candidate streams continuously through L1a→L1b→L1c→L1d→L2→L3 with no
+    batch wait in between, and candidates run concurrently against each other
+    (a worker pool, not one-at-a-time). The gather below is the ONLY
+    compilation point before the 75% FIS gate.
     """
     before = len(candidates)
-
     t = time.time()
-    survivors = layers.l1_hard_reject(candidates, models["fraud_kb"])
-    tracer.record_cascade_step("L1_hard_reject", before, len(survivors),
-                               notes={"elapsed_s": round(time.time() - t, 3)})
-    if not survivors:
-        return []
-
-    before = len(survivors)
-    t = time.time()
-    survivors = layers.l1b_profile_integrity(survivors)
-    tracer.record_cascade_step("L1b_profile_integrity", before, len(survivors),
-                               notes={"elapsed_s": round(time.time() - t, 3)})
-    if not survivors:
-        return []
-
-    before = len(survivors)
-    t = time.time()
-    survivors = layers.l1c_skill_match(survivors, jd)
-    tracer.record_cascade_step("L1c_skill_match", before, len(survivors),
+    survivors = layers.run_streaming_cascade(candidates, jd, models["fraud_kb"])
+    tracer.record_cascade_step("L1a-L3_streaming_pipeline", before, len(survivors),
                                notes={
                                    "elapsed_s": round(time.time() - t, 3),
-                                   "avg_score": round(
-                                       sum(c.get("l1c_score", 0) for c in survivors)
+                                   "avg_l3_score": round(
+                                       sum(c.get("l3_score", 0) for c in survivors)
                                        / max(len(survivors), 1), 3
                                    ),
-                               })
-    if not survivors:
-        return []
-
-    t = time.time()
-    survivors = layers.l1d_inferred_match(survivors, jd)
-    tracer.record_cascade_step("L1d_inferred_match", len(survivors), len(survivors),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "avg_inferred_match": round(
-                                       sum(c.get("l1d_inferred_ratio", 1.0) for c in survivors)
-                                       / max(len(survivors), 1), 3
-                                   ),
+                                   "workers": C.PIPELINE_MAX_WORKERS,
                                })
     return survivors
 
 
-# ── Late cascade (global, after early cascade) ───────────────────────────────
+# ── Post-gate cascade (global, after the streaming cascade) ─────────────────
 
-def run_late_cascade(
+def run_post_gate_cascade(
     candidates: List[dict], jd: dict, tracer: RunTracer
 ) -> List[dict]:
     """
-    L2 table-extract → L3 fuzzy-score → gate (75%)
-    → L4 semantic-score → top 200
-    → donts penalty → top 100
-    → L5 FlashRank top 50 (total_score = donts_score + flashrank) → top 100
+    gate (75%) → L4 semantic-score → top 200 → top 100 [l3_score + l4_score]
+    → L5 FlashRank top 50 (total_score = (l3 + l4 + flashrank) / 3) → top 100
     """
-    # L2 — build 28-column table_row per candidate
-    t = time.time()
-    candidates = layers.l2_table_extract(candidates, jd)
-    tracer.record_cascade_step("L2_table_extract", len(candidates), len(candidates),
-                               notes={"elapsed_s": round(time.time() - t, 3)})
-
-    # L3 — Sugeno fuzzy score (no knockouts — all candidates scored)
-    t = time.time()
-    candidates = layers.l3_fuzzy_score(candidates, jd)
-    tracer.record_cascade_step("L3_fuzzy_score", len(candidates), len(candidates),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "avg_score": round(
-                                       sum(c.get("l3_score", 0) for c in candidates)
-                                       / max(len(candidates), 1), 3
-                                   ),
-                               })
-
-    # Gate — top 50% + random 25% by l3_score = 75%
+    # Gate — top 50% + random 25% by l3_score = 75% (the one compilation point)
     before_gate = len(candidates)
     t = time.time()
     candidates = layers.l3_gate(candidates)
@@ -154,17 +110,18 @@ def run_late_cascade(
     tracer.record_cascade_step("L4_donts_baked", len(candidates), len(top100),
                                notes={"donts_penalised": n_penalised})
 
-    # L5 — FlashRank on top 50; total_score = 0.4*l4_score + 0.3*l3 + 0.3*flashrank
-    t = time.time()
-    top100 = layers.l5_flashrank_rerank(top100, jd)
-    tracer.record_cascade_step("L5_flashrank", len(top100), len(top100),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "avg_total": round(
-                                       sum(c.get("l5_total_score", 0) for c in top100)
-                                       / max(len(top100), 1), 3
-                                   ),
-                               })
+    # L5 DISABLED — top-100 from L4 is the final ranking; no FlashRank reshuffling.
+    # # L5 — FlashRank on top 50 (min-max normalised); total_score = (l3 + l4 + flashrank) / 3
+    # t = time.time()
+    # top100 = layers.l5_flashrank_rerank(top100, jd)
+    # tracer.record_cascade_step("L5_flashrank", len(top100), len(top100),
+    #                            notes={
+    #                                "elapsed_s": round(time.time() - t, 3),
+    #                                "avg_total": round(
+    #                                    sum(c.get("l5_total_score", 0) for c in top100)
+    #                                    / max(len(top100), 1), 3
+    #                                ),
+    #                            })
 
     return top100
 
@@ -175,7 +132,7 @@ def _build_rows(top: List[dict]) -> List[dict]:
     rows = []
     prev = float("inf")
     for rank_pos, c in enumerate(top, start=1):
-        score = min(float(c.get("l5_total_score", 0.0)), prev)
+        score = min(float(c.get("candidate_final_score", 0.0)), prev)
         prev  = score
         rows.append({
             "candidate_id": str(c.get("candidate_id", c.get("id", f"UNKNOWN_{rank_pos}"))),
@@ -321,14 +278,15 @@ def main():
     }
     tracer.record_timing("models_load", round(time.time() - t_models, 3))
 
-    # Gather candidates — early cascade (L1 → L1b → L1c) per folder
-    all_early_scored: List[dict] = []
+    # Gather raw candidates from every kept folder (pure I/O — no scoring yet;
+    # scoring happens once, globally, in the streaming cascade below so that
+    # candidates from different folders can pipeline concurrently together).
+    all_raw: List[dict] = []
     lock = threading.Lock()
 
     def process_fn(_, cands: List[dict]):
-        scored = run_early_cascade(cands, jd, models, tracer)
         with lock:
-            all_early_scored.extend(scored)
+            all_raw.extend(cands)
 
     if args.zip:
         t_zip = time.time()
@@ -358,25 +316,36 @@ def main():
         tracer.record_folder_load("flat", len(cands), len(cands))
         process_fn("flat", cands)
 
-    if not all_early_scored:
-        logger.error("No candidates survived early cascade (L1/L1b/L1c).")
-        tracer.record_error("cascade", "No candidates survived early cascade")
+    if not all_raw:
+        logger.error("No candidates loaded.")
+        tracer.record_error("cascade", "No candidates loaded")
         _write_csv(args.out, [])
         tracer.finish(args.out, rows_written=0, elapsed=time.time() - t0)
         return
 
-    # Hard pool cap before expensive L2/L3 layers (sort by l1c_score as proxy)
-    if len(all_early_scored) > C.HARD_POOL_CAP:
-        all_early_scored.sort(key=lambda c: c.get("l1c_score", 0), reverse=True)
-        all_early_scored = all_early_scored[:C.HARD_POOL_CAP]
+    # Hard pool cap before the streaming cascade — applied pre-scoring since
+    # the cascade no longer pauses between L1 and L2/L3 to compute a proxy sort key.
+    if len(all_raw) > C.HARD_POOL_CAP:
+        all_raw = all_raw[:C.HARD_POOL_CAP]
         logger.info(f"Capped pool to {C.HARD_POOL_CAP}")
 
-    # Late cascade — L2 → L3 → gate → L4 → top200 → donts → top100 → L5
-    top100 = run_late_cascade(all_early_scored, jd, tracer)
+    # Streaming cascade — L1a→L1b→L1c→L1d→L2→L3, continuous per candidate,
+    # concurrent across candidates. This is where every candidate gets l3_score.
+    all_scored = run_streaming_cascade(all_raw, jd, models, tracer)
+
+    if not all_scored:
+        logger.error("No candidates survived the streaming cascade (L1a→L3).")
+        tracer.record_error("cascade", "No candidates survived streaming cascade")
+        _write_csv(args.out, [])
+        tracer.finish(args.out, rows_written=0, elapsed=time.time() - t0)
+        return
+
+    # Post-gate cascade — gate (75%) → L4 → top200 → top100 → L5
+    top100 = run_post_gate_cascade(all_scored, jd, tracer)
 
     if not top100:
-        logger.error("Late cascade produced no candidates.")
-        tracer.record_error("cascade", "Late cascade returned empty")
+        logger.error("Post-gate cascade produced no candidates.")
+        tracer.record_error("cascade", "Post-gate cascade returned empty")
         _write_csv(args.out, [])
         tracer.finish(args.out, rows_written=0, elapsed=time.time() - t0)
         return

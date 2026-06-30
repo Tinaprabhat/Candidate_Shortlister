@@ -138,16 +138,36 @@ def _path_parts_normalized(path_str: str) -> List[str]:
     ]
 
 
+# All engineering sub-family names — used to distinguish engineering from "other"
+# without hard-coding the string "engineering" everywhere.
+_ENGINEERING_FAMILIES: frozenset = frozenset({
+    "ai_ml", "cloud_devops", "qa", "mobile", "java_net", "swe_general",
+})
+
+
 def _classify_jd_role(jd: dict) -> str:
-    """Return 'engineering' if the JD role belongs to the engineering family, else 'other'."""
+    """
+    Return the JD's role family:
+      'ai_ml' | 'cloud_devops' | 'qa' | 'mobile' | 'java_net' | 'swe_general' | 'other'
+
+    Fine-grained families are checked first (C.ROLE_FAMILY_KEYWORDS, insertion
+    order).  If none match but a broad engineering keyword (C.ENGINEERING_ROLE_KEYWORDS)
+    does, returns 'swe_general'.  Non-engineering JDs return 'other'.
+    """
     title = jd.get("job_title", "").lower()
     skills = " ".join(
         jd.get("explicit_required", []) + jd.get("inferred_required", [])
     ).lower()
     combined = title + " " + skills
+
+    for family, keywords in C.ROLE_FAMILY_KEYWORDS.items():
+        if any(kw in combined for kw in keywords):
+            return family
+
     for keyword in C.ENGINEERING_ROLE_KEYWORDS:
         if keyword in combined:
-            return "engineering"
+            return "swe_general"
+
     return "other"
 
 
@@ -175,24 +195,60 @@ def _classify_jd_coding(jd: dict) -> str:
             if token in job_type:
                 return "code"
 
-    return "code" if _classify_jd_role(jd) == "engineering" else "no_code"
+    return "code" if _classify_jd_role(jd) in _ENGINEERING_FAMILIES else "no_code"
+
+
+# Defensive floor: literal root-bucket tokens verified present on disk in the
+# current tree (Dataset_updated). _path_parts_normalized() replaces "_"/"-"
+# with spaces, which silently breaks an exact-match against constants written
+# with underscores (e.g. C.NO_CODE_FOLDER_ROOTS = {"no_code"} never matches the
+# normalized "no code"). These are unioned with whatever's configured in
+# constants.py (in BOTH raw and space-normalized form) so Phase 1a is correct
+# regardless of which convention constants.py uses.
+_NO_CODE_ROOT_FLOOR: frozenset = frozenset({"no_code", "nocode", "no-code"})
+_CODE_ROOT_FLOOR: frozenset = frozenset({"code"})
+
+
+def _root_token_set(configured: set, floor: frozenset) -> set:
+    """Union configured tokens (both raw and space-normalized) with the floor set."""
+    out = set(floor)
+    for t in configured:
+        t = str(t).lower().strip()
+        out.add(t)
+        out.add(t.replace("_", " ").replace("-", " "))
+    return out
 
 
 def _is_coding_type_excluded(path_str: str, coding_type: str) -> bool:
     """
-    Return True if the folder's root-level bucket contradicts the JD coding type.
+    Return True if the folder's code/no-code bucket contradicts the JD coding type.
 
-    The new tree root is either 'code/' or 'no_code/' (and variants).
-    If the JD wants coding candidates ('code'), drop any no_code root branch.
-    If the JD wants non-coding candidates ('no_code'), drop any code root branch.
-    If the root is not a recognised code/no-code token, return False (pass through).
+    Scans ALL path components (not just index 0) for the first component that is
+    a recognised code/no-code bucket token. This handles paths that have a leading
+    wrapper directory (e.g. "Dataset/no_code/available/…") without requiring the
+    bucket discriminator to sit at position 0.
+
+    Checks both the raw form (e.g. "no_code") and the space-normalised form
+    (e.g. "no code") against the configured + floor token sets.
     """
-    parts = _path_parts_normalized(path_str)
-    root = parts[0] if parts else ""
-    if coding_type == "code":
-        return root in C.NO_CODE_FOLDER_ROOTS
-    if coding_type == "no_code":
-        return root in C.CODE_FOLDER_ROOTS
+    raw_parts = [p.strip().lower() for p in path_str.replace("\\", "/").split("/") if p.strip()]
+
+    no_code_tokens = _root_token_set(getattr(C, "NO_CODE_FOLDER_ROOTS", set()), _NO_CODE_ROOT_FLOOR)
+    code_tokens    = _root_token_set(getattr(C, "CODE_FOLDER_ROOTS", set()), _CODE_ROOT_FLOOR)
+
+    for part in raw_parts:
+        norm      = part.replace("_", " ").replace("-", " ")
+        is_no_code = part in no_code_tokens or norm in no_code_tokens
+        is_code    = part in code_tokens    or norm in code_tokens
+
+        if is_no_code or is_code:
+            # First recognised bucket discriminator wins
+            if coding_type == "code":
+                return is_no_code
+            if coding_type == "no_code":
+                return is_code
+            return False
+
     return False
 
 
@@ -273,41 +329,62 @@ def _is_experience_excluded(path_str: str, exp_min: int) -> bool:
     return exp_range[1] < exp_min
 
 
-def _is_role_excluded(path_str: str, role_category: str) -> bool:
+def _is_role_excluded(path_str: str, jd_role_family: str) -> bool:
     """
-    Return True if this folder explicitly represents a role family that doesn't
-    match the JD (e.g. "other_role" or standalone "other" folder when JD is
-    engineering).
+    Return True if this folder represents a role incompatible with the JD.
 
-    The standalone "other" path component (normalised exactly to the string
-    "other") identifies the bucket that groups non-engineering/non-specific
-    roles in the tree, distinct from "india_other" (which normalises to
-    "india other" and is NOT excluded).
+    Phase 1e-i  — drop non-engineering folders (other_role, sales, HR, …)
+                   for any engineering JD.
+    Phase 1e-ii — drop cross-engineering mismatches: e.g. cloud/QA/mobile/
+                   java/.net buckets when the JD is an AI/ML role.
     """
-    if role_category != "engineering":
+    if jd_role_family not in _ENGINEERING_FAMILIES:
         return False
     parts = _path_parts_normalized(path_str)
+
+    # 1e-i: non-engineering patterns + standalone "other" bucket
     for part in parts:
-        # Substring match against known non-engineering patterns
         for pattern in C.OTHER_ROLE_FOLDER_PATTERNS:
             if pattern in part:
                 return True
-        # Exact match for a standalone "other" role bucket
         if part == "other":
             return True
+
+    # 1e-ii: incompatible engineering sub-family
+    exclusions = C.ROLE_FAMILY_EXCLUSIONS.get(jd_role_family, frozenset())
+    for part in parts:
+        for pattern in exclusions:
+            if pattern in part:
+                return True
+
     return False
+
+
+# Defensive floor for the inactive/unavailable bucket — the dataset's
+# availability folder was renamed inactive/active_available -> unavailable/
+# available at some point. If C.INACTIVE_FOLDER_NAMES was written against the
+# old naming, "unavailable" silently never matches. Union the floor with
+# whatever's configured (both raw and space-normalized) so this is correct
+# either way.
+_INACTIVE_FLOOR: frozenset = frozenset({"unavailable", "inactive", "rejected", "closed"})
 
 
 def _is_inactive_folder(path_str: str) -> bool:
     """
     Return True if ANY component of this folder path is a known inactive-bucket
-    name (e.g. a folder literally named "inactive", "rejected", "closed").
-    This hard-drops the entire branch without loading any candidates.
+    name (e.g. a folder literally named "inactive", "unavailable", "rejected",
+    "closed"). This hard-drops the entire branch without loading any candidates.
+
+    Checks BOTH the raw (underscore) and space-normalized form of each path
+    component against the configured + floor token sets.
     """
-    parts = _path_parts_normalized(path_str)
-    for part in parts:
-        # Exact match against normalised inactive names
-        if part in C.INACTIVE_FOLDER_NAMES:
+    raw_parts = [p.lower().strip() for p in path_str.replace("\\", "/").split("/")]
+    norm_parts = _path_parts_normalized(path_str)
+
+    inactive_tokens = _root_token_set(getattr(C, "INACTIVE_FOLDER_NAMES", set()), _INACTIVE_FLOOR)
+
+    for part in raw_parts + norm_parts:
+        if part in inactive_tokens:
             return True
     return False
 

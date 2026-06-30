@@ -9,7 +9,7 @@ Tiers (assigned in run_fis, enforced in rank_candidates):
   "very_good"  — meets ALL excellence criteria → guaranteed top-10 placement
   "eligible"   — clean candidate (no flags, no L3 penalty), ranked by FIS score
   "penalized"  — has L1b flags OR L3 penalty → excluded from top 100 if 100 clean exist
-"""
+
 
 import logging
 from typing import List, Dict
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 # FUZZY MEMBERSHIP FUNCTIONS
 # ──────────────────────────────────────────────────────────────────────────────
 def _tri(x, a, b, c):
-    """Triangular membership."""
+    Triangular membership.
     if x <= a or x >= c:
         return 0.0
     if x == b:
@@ -51,7 +51,7 @@ def _fuzzy_score(
     exp_years: float = 0.0,
     company_age_years: float = 0.0,
 ) -> float:
-    """
+    
     Mamdani inference. Inputs already in [0,1] except exp_years and company_age_years.
     Rules:
       R1: l1c HIGH & l4 HIGH                                       → fit HIGH
@@ -63,7 +63,7 @@ def _fuzzy_score(
       R7: composite HIGH & l6 HIGH & L3 ok & l1c HIGH & l4 HIGH
           & exp HIGH & company >10yrs                               → fit VERY_HIGH
     Defuzzify via weighted centroid of {LOW=0.2, MED=0.55, HIGH=0.9, VERY_HIGH=0.97}.
-    """
+    
     l1cL, l1cM, l1cH = _low(l1c), _med(l1c), _high(l1c)
     l4L, l4M, l4H = _low(l4), _med(l4), _high(l4)
     l6H = _high(l6)
@@ -101,7 +101,7 @@ def _fuzzy_score(
 
 
 def _get_oldest_company_age(c: dict, fraud_kb, current_year: int) -> float:
-    """Return age in years of the oldest company in the candidate's work history."""
+    Return age in years of the oldest company in the candidate's work history.
     oldest_year = None
     for e in utils._iter_work_history(c):
         if not isinstance(e, dict):
@@ -124,7 +124,7 @@ def _get_oldest_company_age(c: dict, fraud_kb, current_year: int) -> float:
 
 def _is_very_good(l1c: float, l4: float, l6: float,
                   exp_years: float, company_age: float, c: dict) -> bool:
-    """
+    
     Return True if a candidate meets ALL excellence criteria:
       - l1c_score >= L7_VERY_GOOD_L1C_MIN  (skill match high)
       - l4_score  >= L7_VERY_GOOD_L4_MIN   (semantic work relevance high)
@@ -133,7 +133,7 @@ def _is_very_good(l1c: float, l4: float, l6: float,
       - company_age >= L7_VERY_GOOD_COMPANY_AGE_MIN OR no company data (age == 0)
       - no L1b flags (profile integrity clean)
       - no L3 penalty (seniority fit)
-    """
+    
     company_ok = (company_age == 0.0) or (company_age >= C.L7_VERY_GOOD_COMPANY_AGE_MIN)
     return (
         l1c >= C.L7_VERY_GOOD_L1C_MIN
@@ -147,7 +147,7 @@ def _is_very_good(l1c: float, l4: float, l6: float,
 
 
 def run_fis(candidates: List[dict], fraud_kb=None) -> List[dict]:
-    """
+    
     Compute composite_score, fis_score, and l7_tier for each candidate.
 
     l7_tier values:
@@ -155,7 +155,7 @@ def run_fis(candidates: List[dict], fraud_kb=None) -> List[dict]:
       "eligible"   — clean candidate, ranked by FIS score (→ top 100)
       "penalized"  — has L1b flags OR L3 penalty (→ excluded from top 100 if
                      100 clean candidates exist; fills remaining slots if not)
-    """
+    "
     import datetime
     current_year = datetime.datetime.now().year
 
@@ -200,11 +200,11 @@ def run_fis(candidates: List[dict], fraud_kb=None) -> List[dict]:
 # TIE-BREAKING
 # ──────────────────────────────────────────────────────────────────────────────
 def _tiebreak_key(c: dict, fraud_kb):
-    """
+    
     Sort key: higher fis_score, then higher experience,
     then OLDER company (smaller founding year), then candidate_id asc.
     Returned tuple is for DESC sort on score/exp, ASC on founding & id.
-    """
+    
     score = c.get("fis_score", 0.0)
     exp = utils.get_total_experience_years(c)
 
@@ -230,7 +230,7 @@ _TIER_ORDER = {"very_good": 0, "eligible": 1, "penalized": 2}
 
 
 def rank_candidates(candidates: List[dict], fraud_kb) -> List[dict]:
-    """
+    
     Tiered sort:
       Tier 0 — very_good   (all excellence criteria met, no penalties)
       Tier 1 — eligible    (clean, no flags/penalties, ranked by FIS score)
@@ -242,7 +242,7 @@ def rank_candidates(candidates: List[dict], fraud_kb) -> List[dict]:
       • very_good candidates occupy the first slots → guaranteed top 10 if ≥10 exist.
       • eligible candidates fill the rest of the top 100.
       • penalized candidates appear only if fewer than 100 clean candidates exist.
-    """
+    
     def _sort_key(c: dict):
         tier = _TIER_ORDER.get(c.get("l7_tier", "eligible"), 1)
         return (tier,) + _tiebreak_key(c, fraud_kb)
@@ -254,7 +254,7 @@ def rank_candidates(candidates: List[dict], fraud_kb) -> List[dict]:
 # FLASHRANK POLISH (top 50)
 # ──────────────────────────────────────────────────────────────────────────────
 def flashrank_polish(ranked: List[dict], jd: dict, ranker, fraud_kb) -> List[dict]:
-    """
+    
     Re-rank the top FLASHRANK_TOP_N candidates using a blend of FlashRank
     cross-encoder score and the L7 FIS score.
 
@@ -264,7 +264,7 @@ def flashrank_polish(ranked: List[dict], jd: dict, ranker, fraud_kb) -> List[dic
 
     The original FIS score is preserved as 'l7_fis_raw'; 'fis_score' is updated
     to the blended value so downstream CSV output reflects the combined ranking.
-    """
+    
     if ranker is None or len(ranked) == 0:
         logger.warning("FlashRank unavailable; skipping polish")
         return ranked
@@ -332,7 +332,7 @@ def flashrank_polish(ranked: List[dict], jd: dict, ranker, fraud_kb) -> List[dic
 # REASONING GENERATION
 # ──────────────────────────────────────────────────────────────────────────────
 def generate_reasoning(c: dict, jd: dict) -> str:
-    """Build a specific, honest 1-2 sentence reasoning string."""
+    ""Build a specific, honest 1-2 sentence reasoning string.
     bits = []
     years = utils.get_total_experience_years(c)
     title = ""
@@ -382,3 +382,4 @@ def generate_reasoning(c: dict, jd: dict) -> str:
 
     text = "; ".join(bits)
     return text[0].upper() + text[1:] if text else "Candidate evaluated across all layers."
+"""

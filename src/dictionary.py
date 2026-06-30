@@ -396,7 +396,9 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
     ],
     "text to speech": ["tts", "speech synthesis", "voice synthesis"],
     "a/b testing": [
-        "ab testing", "split testing", "experimentation",
+        "ab testing", "a/b test", "ab test",
+        "a/b test interpretation", "ab test interpretation",
+        "split testing", "experimentation",
         "hypothesis testing", "online experimentation",
         "interleaving test", "bandit algorithms",
     ],

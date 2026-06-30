@@ -169,8 +169,8 @@ def _kb_paper_status(conn, title: str, claimed_author: str) -> str:
     return "verified"
 
 
-def _check_math_consistency(c: dict, fraud_kb, current_year: int):
-    """
+"""def _check_math_consistency(c: dict, fraud_kb, current_year: int):
+    
     Part 1: Pure arithmetic. Returns (flags: list[str], reject: bool).
     If ANY check fails → reject=True (hard reject, no further layers run).
 
@@ -184,7 +184,7 @@ def _check_math_consistency(c: dict, fraud_kb, current_year: int):
       - Overlapping full-time jobs (same date range)
       - Age vs experience: claimed_exp <= current_year - (birth_year + 18)
       - Total exp vs career span: total_exp <= years_since_graduation
-    """
+    
     flags = []
 
     # ── Pre-computed flags ─────────────────────────────────────────────────────
@@ -323,7 +323,7 @@ def _check_math_consistency(c: dict, fraud_kb, current_year: int):
             flags.append(f"exp_exceeds_age_limit:{total_exp:.0f}yr>max_{max_exp}yr")
             return flags, True
 
-    return flags, False
+    return flags, False """
 
 
 def _run_kb_verification(c: dict, fraud_kb, current_year: int):
@@ -396,19 +396,10 @@ def l1_hard_reject(candidates: List[dict], fraud_kb) -> List[dict]:
     rejected = 0
 
     for c in candidates:
-        # Part 1: math consistency
-        math_flags, is_reject = _check_math_consistency(c, fraud_kb, current_year)
-        if is_reject:
-            c["l1_score"] = 0.0
-            c["l1_flags"] = math_flags
-            c["l1_status"] = "reject"
-            rejected += 1
-            continue
-
-        # Part 2: KB verification (only if Part 1 passes)
+        # KB verification
         l1_score, kb_flags, status = _run_kb_verification(c, fraud_kb, current_year)
         c["l1_score"] = l1_score
-        c["l1_flags"] = math_flags + kb_flags
+        c["l1_flags"] = kb_flags
         c["l1_status"] = status
 
         if status == "reject":
@@ -449,8 +440,8 @@ def l1b_profile_integrity(candidates: List[dict]) -> List[dict]:
         # Top-level ATS flags
         if c.get("reverse_degree_order") is True:
             flags.append("reverse_degree_order")
-        if c.get("all_descriptions_identical") is True:
-            flags.append("all_descriptions_identical")
+        if c.get("duplicate_job_descriptions") is True:
+            flags.append("duplicate_job_descriptions")
 
         # Per-entry degree+field combination check
         if any(
@@ -531,6 +522,65 @@ def _skill_in_text(skill: str, text: str) -> bool:
         if re.search(pattern, text):
             return True
     return False
+
+
+_PROFICIENCY_MAP: Dict[str, float] = {
+    "beginner": 0.1, "intermediate": 0.2, "advanced": 0.3, "expert": 0.4
+}
+
+
+def _proficiency_score_for_skills(
+    c: dict, jd_skills: List[str], assessment_scores: dict
+) -> float:
+    """
+    proficiency_score = 0.3 * skills_assessment_score + 0.7 * skill_proficiency
+
+    skills_assessment_score: avg of assessment_scores entries matching any jd_skill / 100
+                             (0 if no matches or field absent)
+    skill_proficiency: avg proficiency of candidate skills[] entries matching any jd_skill
+                       beginner=0.1, intermediate=0.2, advanced=0.3, expert=0.4
+                       (0 if no matches or proficiency field absent)
+    """
+    if not jd_skills:
+        return 0.0
+
+    jd_expanded: set = set()
+    for skill in jd_skills:
+        jd_expanded.update(expand_skill(skill))
+
+    # skills_assessment_score filtered to JD skills
+    relevant_assessments = []
+    for skill_name, score in (assessment_scores or {}).items():
+        if set(expand_skill(skill_name)) & jd_expanded:
+            try:
+                relevant_assessments.append(min(float(score), 100.0) / 100.0)
+            except (ValueError, TypeError):
+                pass
+    skills_assessment_score = (
+        sum(relevant_assessments) / len(relevant_assessments)
+        if relevant_assessments else 0.0
+    )
+
+    # skill_proficiency from candidate skills[] section
+    skills_raw = c.get("skills") or []
+    proficiency_values = []
+    seen: set = set()
+    for s in skills_raw:
+        if not isinstance(s, dict):
+            continue
+        name = str(s.get("name") or "").lower().strip()
+        prof = str(s.get("proficiency") or "").lower().strip()
+        if not name or name in seen:
+            continue
+        if set(expand_skill(name)) & jd_expanded and prof in _PROFICIENCY_MAP:
+            proficiency_values.append(_PROFICIENCY_MAP[prof])
+            seen.add(name)
+    skill_proficiency = (
+        sum(proficiency_values) / len(proficiency_values)
+        if proficiency_values else 0.0
+    )
+
+    return round(0.3 * skills_assessment_score + 0.7 * skill_proficiency, 4)
 
 
 def compute_skill_match(candidate: dict, requirements: dict) -> tuple:
@@ -634,6 +684,11 @@ def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
         c["l1c_matched_explicit"] = matched_req    # alias used by hard-reject gate
         c["l1c_matched_inferred"] = matched_inferred  # forwarded to L1d
 
+        _signals = c.get("redrob_signals") or {}
+        c["l1c_explicit_proficiency_score"] = _proficiency_score_for_skills(
+            c, explicit_req + explicit_bon, _signals.get("skill_assessment_scores") or {}
+        )
+
         jd_req_score, jd_req_results = compute_skill_match(c, JD_REQUIREMENTS)
         c["jd_req_score"]   = round(jd_req_score, 4)
         c["jd_req_results"] = jd_req_results
@@ -711,6 +766,11 @@ def l1d_inferred_match(candidates: List[dict], jd: dict) -> List[dict]:
         c["l1d_inferred_ratio"]     = round(ratio, 4)
         c["l1d_leftover_count"]     = leftover
         c["l1d_score"]              = round(score, 4)
+
+        _signals = c.get("redrob_signals") or {}
+        c["l1d_inferred_proficiency_score"] = _proficiency_score_for_skills(
+            c, inferred, _signals.get("skill_assessment_scores") or {}
+        )
 
     avg = sum(c.get("l1d_inferred_ratio", 1.0) for c in candidates) / max(len(candidates), 1)
     logger.info(
@@ -969,12 +1029,6 @@ def _safe_float(val, default=None) -> Optional[float]:
         return default
 
 
-def _norm(val: Optional[float], cap: float) -> float:
-    """Clamp val/cap to [0, 1]; negative or None → 0.0."""
-    if val is None or val < 0:
-        return 0.0
-    return min(val, cap) / cap
-
 
 def _kw_accumulate(text: str, kw_dict: Dict[str, float]) -> float:
     """Weighted keyword accumulation over lowercased text, capped at 1.0."""
@@ -1019,58 +1073,33 @@ def _parse_date_to_dt(val) -> Optional[datetime]:
 
 def _redrob_cumulative(signals: dict) -> float:
     """
-    Weighted composite of redrob_signals sub-signals, each → [0,1].
-    Weights sum to 1.0.  github=-1 and offer_rate=-1 → neutral (0.5 each).
+    Direct weighted composite from redrob_signals fields (all expected [0,1]).
+    Weights sum to 1.0.
+    -1 sentinel → subtract that field's weight (bad signal).
+    Missing field → contributes 0 (neutral).
     """
-    def _bool(key: str) -> float:
-        v = signals.get(key)
-        return 1.0 if v is True or str(v).lower() in ("1", "true", "yes") else 0.0
-
-    github_raw = _safe_float(signals.get("github_activity_score"))
-    github_val = 0.5 if github_raw == -1.0 else _norm(github_raw, 100.0)
-
-    offer_raw = _safe_float(signals.get("offer_acceptance_rate"))
-    offer_val = 0.5 if offer_raw == -1.0 else _norm(offer_raw, 1.0)
-
-    # Response speed: lower hours = better; missing → neutral 0.5
-    speed_h = _safe_float(signals.get("avg_response_time_hours"))
-    if speed_h is None or speed_h < 0:
-        speed_val = 0.5
-    else:
-        speed_val = max(0.0, 1.0 - _norm(speed_h, 48.0))
-
-    # Profile recency: days since last_active_date → [0,1] (1.0 = active today, 0.0 = ≥1 yr ago)
-    last_active = signals.get("last_active_date")
-    if last_active:
-        try:
-            last_dt = datetime.strptime(str(last_active)[:10], "%Y-%m-%d")
-            days_since = (datetime.now() - last_dt).days
-            recency_val = max(0.0, 1.0 - days_since / 365.0)
-        except (ValueError, TypeError):
-            recency_val = 0.5
-    else:
-        recency_val = 0.5
-
-    # verified: any of verified_email or verified_phone counts
-    is_verified_val = 1.0 if (signals.get("verified_email") or signals.get("verified_phone")) else 0.0
-
-    return round(min(max((
-        _norm(_safe_float(signals.get("profile_completeness_score")), 100.0)  * 0.12  # +0.04 absorbed from dropped linkedin_profile_score
-        + recency_val                                                           * 0.12
-        + _bool("open_to_work_flag")                                           * 0.08
-        + _norm(_safe_float(signals.get("applications_submitted_30d")), 30.0) * 0.06
-        + _norm(_safe_float(signals.get("recruiter_response_rate")), 1.0)     * 0.07
-        + speed_val                                                             * 0.05
-        + _norm(_safe_float(signals.get("connection_count")), 500.0)          * 0.04
-        + _norm(_safe_float(signals.get("endorsements_received")), 100.0)     * 0.04
-        + github_val                                                            * 0.10
-        + _norm(_safe_float(signals.get("search_appearance_30d")), 50.0)      * 0.05
-        + _norm(_safe_float(signals.get("saved_by_recruiters_30d")), 20.0)    * 0.05
-        + _norm(_safe_float(signals.get("profile_views_received_30d")), 100.0) * 0.04
-        + _norm(_safe_float(signals.get("interview_completion_rate")), 1.0)   * 0.07
-        + offer_val                                                             * 0.06
-        + is_verified_val                                                       * 0.05
-    ), 0.0), 1.0), 4)
+    _FIELDS = [
+        ("applications_submitted_30d",  0.01),
+        ("avg_response_time_hours",     0.01),
+        ("connection_count",            0.05),
+        ("endorsements_received",       0.03),
+        ("github_activity_score",       0.30),
+        ("interview_completion_rate",   0.05),
+        ("offer_acceptance_rate",       0.05),
+        ("profile_completeness_score",  0.10),
+        ("profile_views_received_30d",  0.05),
+        ("recruiter_response_rate",     0.20),
+        ("saved_by_recruiters_30d",     0.10),
+        ("search_appearance_30d",       0.05),
+    ]
+    score = 0.0
+    for field, weight in _FIELDS:
+        v = signals.get(field)
+        if v is None:
+            continue
+        fv = float(v)
+        score += (-1.0 if fv == -1.0 else fv) * weight
+    return round(score, 4)
 
 
 def _build_table_row(
@@ -1131,7 +1160,7 @@ def _build_table_row(
 
     # 10 — is_phd
     is_phd = any(
-        any(kw in str(e.get("degree", "")).lower() for kw in ("phd", "doctor", "d.phil"))
+        any(kw in str(e.get("degree", "")).lower() for kw in ("phd", "ph.d", "ph. d", "doctor", "d.phil"))
         for e in edu_list if isinstance(e, dict)
     )
 
@@ -1236,15 +1265,13 @@ def _build_table_row(
     """fab = 0.0
     if _sal_inverted:
         fab += 0.30
-    if active_before_signup:
-        fab += 0.40
     cur_title  = str(profile.get("current_title") or profile.get("title") or "").strip().lower()
     job_title  = str((current_job or {}).get("title") or "").strip().lower()
     if cur_title and job_title and cur_title != job_title:
         fab += 0.20
     if "marketing manager" in summary:
         fab += 0.10"""
-    fabrication_bandwidth = float(c.get("fabrication_bandwidth_score") or 0.0)/100.0
+    fabrication_bandwidth = float(c.get("fabrication_bandwidth") or 0.0)
 
     # 29 — possible_fabrication
     possible_fabrication = bool(c.get("possible_fabrication"))
@@ -1259,6 +1286,9 @@ def _build_table_row(
     l1d_inferred_score = round(float(c.get("l1d_score", 1.0)), 4)
     # l1c_score — forwarded from L1c
     l1c_fwd_score = round(float(c.get("l1c_score", 0.0)), 4)
+    # proficiency scores — computed at L1c / L1d respectively
+    explicit_proficiency_score = round(float(c.get("l1c_explicit_proficiency_score", 0.0)), 4)
+    inferred_proficiency_score = round(float(c.get("l1d_inferred_proficiency_score", 0.0)), 4)
 
     # title — current job title, lowercased for L3 matching against _JD_REQ_TITLES
     title = (
@@ -1267,6 +1297,14 @@ def _build_table_row(
     )
     if not title and current_job:
         title = str(current_job.get("title") or "").strip().lower()
+
+    soft_penalty_score = round(
+        (0.03 if low_engagement_flag else 0.0)
+        + (0.04 if edu_career_gap_flag else 0.0)
+        + (0.01 if education_overlap else 0.0)
+        + (0.02 if bool(c.get("skill_career_domain_mismatch")) else 0.0),
+        4,
+    )
 
     return {
         "candidate_id":               candidate_id,              # 01
@@ -1301,9 +1339,12 @@ def _build_table_row(
         # Soft-penalty flags (read from ATS/upstream; feed L3 condition h)
         "skill_career_domain_mismatch": bool(c.get("skill_career_domain_mismatch")), # 29
         "second_undergrad_after_first": bool(c.get("second_undergrad_after_first")), # 30
+        "soft_penalty_score":           soft_penalty_score,         # weighted sum [0, 0.10]; feeds L3 h
         # Layer scores forwarded + notice period + title
-        "l1c_score":         l1c_fwd_score,        # explicit skill match score from L1c
-        "l1d_inferred_score": l1d_inferred_score,  # inferred skill match score from L1d
+        "l1c_score":                 l1c_fwd_score,               # explicit skill match score from L1c
+        "l1d_inferred_score":        l1d_inferred_score,          # inferred skill match score from L1d
+        "explicit_proficiency_score": explicit_proficiency_score, # 0.3*assessment + 0.7*proficiency for explicit skills
+        "inferred_proficiency_score": inferred_proficiency_score, # 0.3*assessment + 0.7*proficiency for inferred skills
         "notice_period_days": notice_period_days,  # from redrob_signals; None if absent
         "title":              title,               # current job title (lowercased)
     }
@@ -1338,108 +1379,30 @@ def l2_table_extract(
 # LAYER 3 — SUGENO FUZZY INFERENCE SYSTEM  (reads table_row from L2)
 # ──────────────────────────────────────────────────────────────────────────────
 
-# 32-rule Sugeno table — (a, b, c, d, e, f, g, h, output_value)
-# Condition levels: H=HIGH  M=MED  L=LOW  P=PARTIAL (g only)  W=WARNING (f only)
-# h is the soft-penalty flag (L=no penalty, M/H=penalty present); not fuzzified in Sugeno.
-_FUZZY_RULES = [
-    #  a    b    c    d    e    f    g    h    out
-    ("H", "H", "H", "H", "H", "H", "H", "L", 1.00),  # R01
-    ("H", "H", "H", "L", "H", "H", "H", "L", 0.95),  # R02
-    ("H", "H", "H", "H", "H", "H", "P", "L", 0.91),  # R03
-    ("H", "H", "H", "H", "H", "W", "H", "L", 0.82),  # R04  ★ f=W ceiling
-    ("H", "H", "M", "H", "H", "H", "H", "L", 0.95),  # R05
-    ("H", "M", "H", "H", "H", "H", "H", "L", 0.95),  # R06
-    ("M", "H", "H", "H", "H", "H", "H", "L", 0.97),  # R07
-    ("H", "H", "H", "H", "H", "H", "P", "L", 0.91),  # R08
-    ("H", "H", "H", "H", "M", "H", "H", "L", 0.95),  # R09
-    ("H", "H", "H", "H", "H", "H", "L", "L", 0.55),  # R10  ★ g=L ceiling
-    ("H", "H", "H", "H", "H", "L", "H", "L", 0.75),  # R11  ★ f=L ceiling
-    ("H", "H", "M", "L", "H", "H", "P", "L", 0.78),  # R12
-    ("L", "H", "H", "H", "H", "H", "M", "L", 0.85),  # R13
-    ("H", "M", "M", "H", "H", "H", "M", "L", 0.77),  # R14
-    ("H", "H", "L", "H", "H", "H", "M", "L", 0.77),  # R15
-    ("H", "H", "H", "H", "L", "H", "M", "M", 0.77),  # R16
-    ("H", "M", "M", "H", "H", "H", "L", "M", 0.45),  # R17  ★
-    ("H", "H", "M", "L", "L", "H", "L", "M", 0.42),  # R18  ★
-    ("H", "M", "H", "H", "L", "W", "M", "M", 0.62),  # R19  ★
-    ("L", "M", "M", "L", "H", "H", "M", "M", 0.68),  # R20
-    ("H", "L", "M", "H", "H", "H", "M", "M", 0.72),  # R21
-    ("H", "H", "L", "H", "L", "W", "L", "M", 0.35),  # R22  ★
-    ("H", "L", "L", "H", "L", "H", "M", "M", 0.53),  # R23
-    ("L", "M", "L", "L", "L", "H", "L", "M", 0.27),  # R24  ★
-    ("H", "M", "L", "L", "L", "W", "L", "M", 0.24),  # R25  ★
-    ("H", "L", "L", "H", "H", "W", "L", "H", 0.27),  # R26  ★
-    ("L", "L", "M", "L", "L", "H", "L", "H", 0.22),  # R27  ★
-    ("H", "L", "L", "H", "L", "L", "L", "H", 0.16),  # R28  ★
-    ("H", "M", "L", "L", "L", "L", "L", "H", 0.17),  # R29  ★
-    ("L", "L", "L", "L", "L", "H", "L", "H", 0.20),  # R30  ★
-    ("H", "L", "L", "H", "L", "L", "L", "H", 0.16),  # R31  ★
-    ("L", "L", "L", "L", "L", "L", "L", "H", 0.04),  # R32  ★
-]
-
-# Weights for linear fallback (matches the formula: score=0.4g+0.2b+0.1f+0.1e+0.05a+0.05d+0.1c)
-_FIS_WEIGHTS = {"g": 0.40, "b": 0.20, "f": 0.05, "e": 0.10, "a": 0.05, "c": 0.10, "d": 0.05, "h": 0.05}
-
-
-# ── MF helpers ────────────────────────────────────────────────────────────────
-
-def _bell_mf(x: float, center: float, width: float, slope: float = 2.0) -> float:
-    """Generalized bell MF: 1 / (1 + |(x − center) / width| ^ (2 × slope))"""
-    if width <= 0:
-        return 1.0 if abs(x - center) < 1e-9 else 0.0
-    return 1.0 / (1.0 + abs((x - center) / width) ** (2.0 * slope))
-
-
-def _pct(sv: list, p: float) -> float:
-    """Linear-interpolated percentile. p in [0,100]. sv must be sorted."""
-    n = len(sv)
-    if n == 0:
-        return 0.0
-    if n == 1:
-        return sv[0]
-    idx = (p / 100.0) * (n - 1)
-    lo = int(idx)
-    hi = min(lo + 1, n - 1)
-    return sv[lo] + (idx - lo) * (sv[hi] - sv[lo])
-
-
-# ── Soft-penalty flag names (cols 23,24,29-31 of table_row) ─────────────────
-# These are passed from the ATS upstream.  L3 unifies them into condition 'h'.
-_SOFT_PENALTY_COLS: tuple = (
-    "skill_career_domain_mismatch",  # col 29
-    "education_overlap",             # col 23
-    "second_undergrad_after_first",  # col 30
-    "edu_career_gap_flag",           # col 24  (local computation OR ATS flag)
-    # fabrication_bandwidth is NOT here — already deducted continuously in condition f
-)
-
 
 # ── Condition computation (Step 3) ───────────────────────────────────────────
 
-def _compute_conditions(row: dict, n_inferred: int) -> Dict[str, float]:
+def _compute_conditions(row: dict) -> Dict[str, float]:
     """
     Derive 8 crisp conditions a–h from a L2 table_row. All outputs in [0, 1].
 
     a — experience in JD sweet spot
-    b — explicit skill signal (skill_match + skill_assessment)
-    c — inferred signal + platform engagement
+    b — explicit skill signal: 0.8*l1c_score + 0.2*explicit_proficiency_score
+    c — inferred skill signal: 0.8*l1d_inferred_score + 0.2*inferred_proficiency_score
     d — IR domain signal (0.0/0.5/1.0 based on retrieval-specific term hits in work+skills)
     e — absence of disqualifying traits (phd-only, consulting, stagnant, pure-researcher); −0.25 if framework-heavy with no production
-    f — profile integrity (deductions for anomaly flags)
+    f — redrob cumulative platform signal (redrob_cumulative from L2)
     g — technical breadth (production + arch + testing + tools + open-source/research)
     h — soft-penalty union (1.0 = any flag fires; ideal candidate has h=0.0)
     """
     exp = float(row.get("total_exp") or 0.0)
     a = 1.0 if 5.0 <= exp <= 9.0 else (0.5 if 3.0 <= exp <= 12.0 else 0.0)
 
-    b = (0.8 * float(row.get("skill_match_score") or 0.0)
-         + 0.2 * float(row.get("skill_assessment_score") or 0.0))
+    b = (0.8 * float(row.get("l1c_score") or 0.0)
+         + 0.2 * float(row.get("explicit_proficiency_score") or 0.0))
 
-    inf_norm = (
-        min(float(row.get("inferred_skill_match_score") or 0.0) / n_inferred, 1.0)
-        if n_inferred > 0 else 0.0
-    )
-    c = (inf_norm + float(row.get("redrob_cumulative") or 0.0)) / 2.0
+    c = (0.8 * float(row.get("l1d_inferred_score") or 0.0)
+         + 0.2 * float(row.get("inferred_proficiency_score") or 0.0))
 
     ir_hits = float(row.get("ir_domain_score") or 0.0)
     d = 1.0 if ir_hits >= 3 else (0.5 if ir_hits >= 1 else 0.0)
@@ -1464,11 +1427,7 @@ def _compute_conditions(row: dict, n_inferred: int) -> Dict[str, float]:
     if framework_ratio > 0.6 and float(row.get("production_score") or 0.0) < 0.15:
         e = max(0.0, e - 0.25)
 
-    f = 1.0
-    if row.get("low_engagement_flag"):         f -= 0.20
-    if row.get("active_before_signup"):        f -= 0.20
-    f -= float(row.get("fabrication_bandwidth") or 0.0) * 0.20
-    f = max(0.0, f)
+    f = max(0.0, min(1.0, float(row.get("redrob_cumulative") or 0.0)))
 
     tools_norm      = min(float(row.get("tools_score") or 0.0) / 3.0, 1.0)
     open_or_research = max(
@@ -1476,134 +1435,18 @@ def _compute_conditions(row: dict, n_inferred: int) -> Dict[str, float]:
         1.0 if row.get("research_published") is True else 0.0,
     )
     g = (
-        float(row.get("production_score") or 0.0)*0.35
-        + float(row.get("architecture_score") or 0.0)*0.25
-        + float(row.get("testing_evaluation_score") or 0.0)*0.25
+        float(row.get("production_score") or 0.0)*0.3
+        + float(row.get("architecture_score") or 0.0)*0.3
+        + float(row.get("testing_evaluation_score") or 0.0)*0.3
         + tools_norm*0.05
-        + open_or_research*0.10
+        + open_or_research*0.05
     )
 
-    h = 1.0 if any(row.get(flag) for flag in _SOFT_PENALTY_COLS) else 0.0
+    h = (0.06 * float(row.get("fabrication_bandwidth") or 0.0)
+         + 0.04 * float(row.get("soft_penalty_score") or 0.0))
 
     return {"a": a, "b": b, "c": c, "d": d, "e": e, "f": f, "g": g, "h": h}
 
-
-# ── Self-calibration (Step 4) ─────────────────────────────────────────────────
-
-def _calibrate_mf_params(all_conds: List[Dict[str, float]]) -> Dict[str, dict]:
-    """
-    Compute bell-MF (center, width, slope=2) for each condition level.
-    Centers are derived from run percentiles.
-      g → 4 levels: L, M, P, H
-      f → 3 levels: L, W, H
-      a, b, c, d, e → 3 levels: L, M, H
-    a and d use fixed geometry (discrete/binary values).
-    """
-    MIN_W = 0.05
-    params: Dict[str, dict] = {}
-
-    for var in ("b", "c", "e", "f", "g"):
-        sv = sorted(c[var] for c in all_conds)
-        p10 = _pct(sv, 10); p25 = _pct(sv, 25); p50 = _pct(sv, 50)
-        p65 = _pct(sv, 65); p75 = _pct(sv, 75); p90 = _pct(sv, 90)
-
-        w_lo = max((p25 - p10) / 2.0, MIN_W)
-        w_md = max((p75 - p25) / 2.0, MIN_W)
-        w_hi = max((p90 - p75) / 2.0, MIN_W)
-
-        if var == "g":
-            params[var] = {
-                "L": (p10, w_lo, 2.0),
-                "M": (p50, w_md, 2.0),
-                "P": (p65, max((p90 - p50) / 3.0, MIN_W), 2.0),
-                "H": (p90, w_hi, 2.0),
-            }
-        elif var == "f":
-            params[var] = {
-                "L": (p10, w_lo, 2.0),
-                "W": (p25, max((p65 - p10) / 3.0, MIN_W), 2.0),
-                "H": (p90, w_hi, 2.0),
-            }
-        else:
-            params[var] = {
-                "L": (p10, w_lo, 2.0),
-                "M": (p50, w_md, 2.0),
-                "H": (p90, w_hi, 2.0),
-            }
-
-    # Fixed geometry for discrete variables (a ∈ {0, 0.5, 1}; d ∈ {0, 1})
-    params["a"] = {"L": (0.0, 0.15, 2.0), "M": (0.5, 0.15, 2.0), "H": (1.0, 0.15, 2.0)}
-    params["d"] = {"L": (0.0, 0.15, 2.0), "M": (0.5, 0.20, 2.0), "H": (1.0, 0.15, 2.0)}
-
-    return params
-
-
-# ── Fuzzification ─────────────────────────────────────────────────────────────
-
-def _fuzzify(conds: Dict[str, float], params: Dict[str, dict]) -> Dict[str, dict]:
-    """Map each crisp value to membership degrees at every defined level."""
-    return {
-        var: {
-            lvl: _bell_mf(val, center, width, slope)
-            for lvl, (center, width, slope) in params[var].items()
-        }
-        for var, val in conds.items()
-    }
-
-
-# ── Sugeno inference (Steps 5–6) ─────────────────────────────────────────────
-
-def _sugeno_infer(mf_vals: Dict[str, dict]):
-    """
-    Evaluate all 32 rules with AND = min().
-    Returns (raw_score | None, total_fire_strength).
-    None means degenerate (all rules near-zero → use linear fallback).
-    """
-    ws = 0.0
-    ts = 0.0
-    for a_l, b_l, c_l, d_l, e_l, f_l, g_l, _, out in _FUZZY_RULES:
-        s = min(
-            mf_vals["a"][a_l], mf_vals["b"][b_l], mf_vals["c"][c_l],
-            mf_vals["d"][d_l], mf_vals["e"][e_l], mf_vals["f"][f_l],
-            mf_vals["g"][g_l],
-        )
-        ws += s * out
-        ts += s
-    return (ws / ts if ts > 1e-9 else None), ts
-
-
-def _linear_fallback(conds: Dict[str, float]) -> float:
-    """Linear weighted score — used when all fire strengths are near zero."""
-    return sum(_FIS_WEIGHTS[k] * v for k, v in conds.items())
-
-
-# ── Ceiling constraints (Step 7) ─────────────────────────────────────────────
-
-def _apply_ceilings(mf_vals: Dict[str, dict], raw_score: float) -> float:
-    """
-    g=L dominant          → cap score at 0.55 (never shipped → not top-50)
-    (f=W or f=L) dominant AND (g=H or g=P) dominant → cap at 0.82 (integrity concern)
-    """
-    gv = mf_vals["g"]
-    fv = mf_vals["f"]
-    g_lo = gv["L"];      g_hi = gv["H"];  g_pa = gv.get("P", 0.0);  g_md = gv.get("M", 0.0)
-    f_hi = fv["H"];      f_wa = fv.get("W", 0.0);  f_lo = fv["L"]
-
-    if g_lo > max(g_hi, g_pa, g_md):
-        raw_score = min(raw_score, 0.55)
-    elif max(f_wa, f_lo) > f_hi and max(g_hi, g_pa) > 0.4:
-        raw_score = min(raw_score, 0.82)
-    return raw_score
-
-
-# ── Post-FIS adjustments (Step 8) ────────────────────────────────────────────
-
-def _post_fis_adjust(raw_score: float, row: dict, h: float = 0.0) -> float:
-    """Multipliers applied after FIS.  h=1 means ≥1 soft-penalty flag fired."""
-    if h > 0.5:                                          raw_score *= 0.90
-    if row.get("research_published") is True:            raw_score *= 1.05
-    if 5.0 <= float(row.get("total_exp") or 0) <= 9.0:  raw_score *= 1.08
-    return max(0.0, min(1.0, raw_score))
 
 
 def _fuzzy_class(score: float) -> str:
@@ -1618,15 +1461,14 @@ def _build_fuzzy_reasoning(row: dict, conds: Dict[str, float], score: float) -> 
     if row.get("possible_fabrication"):                  flags.append("fabrication")
     if row.get("consulting_only"):                        flags.append("consulting_only")
     if row.get("low_engagement_flag"):                    flags.append("low_engagement")
-    if row.get("active_before_signup"):                   flags.append("active_before_signup")
-    if conds.get("h", 0.0) > 0.5:                        flags.append("soft_penalty")
+    if conds.get("h", 0.0) > 0.0:                        flags.append("soft_penalty")
     if 5.0 <= float(row.get("total_exp") or 0) <= 9.0:  flags.append("ideal_exp")
     if row.get("research_published"):                     flags.append("research")
     tag = f"[{', '.join(flags)}]" if flags else "clean"
     a, b, c, d, e, f, g, h = (conds.get(k, 0.0) for k in "abcdefgh")
     return (
         f"score={score:.3f} "
-        f"a={a:.2f} b={b:.2f} c={c:.2f} d={d:.2f} e={e:.2f} f={f:.2f} g={g:.2f} h={h:.0f} "
+        f"a={a:.2f} b={b:.2f} c={c:.2f} d={d:.2f} e={e:.2f} f={f:.2f} g={g:.2f} h={h:.3f} "
         f"{tag}"
     )
 
@@ -1642,12 +1484,10 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
             into each candidate's table_row.
 
     No pre-FIS knockouts — all candidates with a valid table_row are scored.
-    Conditions a–g feed the 32-rule Sugeno table; condition h (soft-penalty union)
-    is applied as a ×0.90 multiplier in _post_fis_adjust.
+    Conditions a–g feed the 32-rule Sugeno table; condition h (weighted soft-penalty
+    score [0, 0.10]) is subtracted directly from the FIS output in _post_fis_adjust.
     No candidates are removed; every candidate exits with l3_score set.
     """
-    n_inferred  = len(jd.get("inferred_required", []) + jd.get("inferred_bonus", []))
-
     # All candidates enter FIS — only L1 hard-rejects are knockouts
     active: List[dict] = []
     for c in candidates:
@@ -1667,31 +1507,26 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
 
     # ── Step 3: compute a–g for every active candidate ─────────────────────
     all_conds: List[Dict[str, float]] = [
-        _compute_conditions(c["table_row"], n_inferred) for c in active
+        _compute_conditions(c["table_row"]) for c in active
     ]
 
-    # ── Step 4: self-calibrate MF params from run percentiles ──────────────
-    mf_params = _calibrate_mf_params(all_conds)
-
-    # ── Steps 4–9: fuzzify → infer → ceiling → post-adjust → write-back ───
+    # ── Score: weighted composite ───────────────────────────────────────────
     scored: List[float] = []
     for c, conds in zip(active, all_conds):
         row = c["table_row"]
+        h   = conds["h"]
 
-        # h is binary (0/1) and not fuzzified through the Sugeno rule table.
-        # Strip it before fuzzification so the MF lookup doesn't KeyError.
-        h         = conds["h"]
-        fis_conds = {k: v for k, v in conds.items() if k != "h"}
-
-        mf_vals = _fuzzify(fis_conds, mf_params)                  # Step 4
-        raw, _  = _sugeno_infer(mf_vals)                           # Steps 5–6
-
-        if raw is None:
-            raw = _linear_fallback(fis_conds)                      # degenerate fallback
-        else:
-            raw = _apply_ceilings(mf_vals, raw)                    # Step 7
-
-        score = _post_fis_adjust(raw, row, h)                      # Step 8
+        score = (
+            0.40 * conds["g"]
+            + 0.20 * conds["b"]
+            - 0.05 * conds["e"]
+            + 0.10 * conds["c"]
+            + 0.05 * conds["a"]
+            + 0.05 * conds["d"]
+            + 0.10 * conds["f"]
+            - 0.05 * h
+        )
+        score = max(0.0, min(1.0, score))
 
         # Notice period bonus: ≤ 30 days available → +0.05 (immediate or short notice)
         notice_days = row.get("notice_period_days")
@@ -1718,8 +1553,8 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
         row.update(
             l7_fis_score    = round(score, 4),
             fuzzy_class     = cls,
-            fuzzy_penalty   = round(fis_conds["f"], 4),
-            l3_h_penalty    = bool(h > 0.5),
+            fuzzy_penalty   = round(conds["f"], 4),
+            l3_h_penalty    = round(h, 4),
             reasoning       = rsn,
         )
         scored.append(score)

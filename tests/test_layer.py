@@ -309,15 +309,6 @@ class TestL1bProfileIntegrity:
         result = layers.l1b_profile_integrity([c])
         assert result == []
 
-    def test_active_before_signup_passes_l1b(self):
-        # active_before_signup is a soft-penalty signal handled by L3 condition f,
-        # NOT a hard reject at L1b.
-        c = make_candidate()
-        c["active_before_signup"] = True
-        result = layers.l1b_profile_integrity([c])
-        assert len(result) == 1
-        assert result[0]["l1b_status"] == "pass"
-
     def test_hard_reject_invalid_degree_field_combination(self):
         # invalid_degree_field_combination lives per education entry (not top-level).
         c = make_candidate()

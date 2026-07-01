@@ -48,6 +48,10 @@ from . import utils
 
 logger = logging.getLogger(__name__)
 
+# Populated by the most recent prune_folders() call.
+# Callers (e.g. test_pruning.py) can read pruning.last_prune_timing after the call.
+last_prune_timing: Dict = {}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # INTERNAL REGEX (experience range parsing)
 # ──────────────────────────────────────────────────────────────────────────────
@@ -327,10 +331,15 @@ def prune_folders(
     Returns kept buckets sorted by token-overlap score descending:
       [(bucket_key, score), ...]
     """
-    jd_location  = jd.get("location", "").strip()
-    exp_min      = int(jd.get("experience_min") or 0)
+    t_total_start = time.time()
+
+    # ── JD classification ─────────────────────────────────────────────────────
+    t = time.time()
+    jd_location   = jd.get("location", "").strip()
+    exp_min       = int(jd.get("experience_min") or 0)
     role_category = _classify_jd_role(jd)
-    coding_type  = _classify_jd_coding(jd)
+    coding_type   = _classify_jd_coding(jd)
+    t_jd_classify = time.time() - t
 
     logger.info(
         f"Pruning meta — coding='{coding_type}', location='{jd_location}', "
@@ -342,30 +351,71 @@ def prune_folders(
     remaining: List[str] = []
     decisions: Dict[str, str] = {}
 
+    # Per-phase accumulated time (seconds) and drop counts
+    t_phase = {"1a": 0.0, "1b": 0.0, "1c": 0.0, "1d": 0.0, "1e": 0.0}
+    n_drop  = {"1a": 0,   "1b": 0,   "1c": 0,   "1d": 0,   "1e": 0}
+
+    t_phase1_start = time.time()
     for name in folder_names:
-        if _is_coding_type_excluded(name, coding_type):
+        t = time.time()
+        is_1a = _is_coding_type_excluded(name, coding_type)
+        t_phase["1a"] += time.time() - t
+
+        if is_1a:
+            n_drop["1a"] += 1
             phase1a_excluded.add(name)
             reason = f"coding-type mismatch (JD wants '{coding_type}')"
             logger.info(f"  '{name}': hard-DROP [1a] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_inactive_folder(name):
+            continue
+
+        t = time.time()
+        is_1b = _is_inactive_folder(name)
+        t_phase["1b"] += time.time() - t
+
+        if is_1b:
+            n_drop["1b"] += 1
             reason = "inactive/unavailable folder"
             logger.info(f"  '{name}': hard-DROP [1b] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_location_excluded(name, jd_location):
+            continue
+
+        t = time.time()
+        is_1c = _is_location_excluded(name, jd_location)
+        t_phase["1c"] += time.time() - t
+
+        if is_1c:
+            n_drop["1c"] += 1
             reason = f"location outside '{jd_location}'"
             logger.info(f"  '{name}': hard-DROP [1c] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_experience_excluded(name, exp_min):
+            continue
+
+        t = time.time()
+        is_1d = _is_experience_excluded(name, exp_min)
+        t_phase["1d"] += time.time() - t
+
+        if is_1d:
+            n_drop["1d"] += 1
             reason = f"experience ceiling below {exp_min}yrs"
             logger.info(f"  '{name}': hard-DROP [1d] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        elif _is_role_excluded(name, role_category):
+            continue
+
+        t = time.time()
+        is_1e = _is_role_excluded(name, role_category)
+        t_phase["1e"] += time.time() - t
+
+        if is_1e:
+            n_drop["1e"] += 1
             reason = f"role mismatch (not {role_category})"
             logger.info(f"  '{name}': hard-DROP [1e] → {reason}")
             decisions[name] = f"DROP:{reason}"
-        else:
-            remaining.append(name)
+            continue
+
+        remaining.append(name)
+
+    t_phase1_total = time.time() - t_phase1_start
 
     if not remaining:
         eligible = [n for n in folder_names if n not in phase1a_excluded]
@@ -385,18 +435,90 @@ def prune_folders(
             remaining = []
 
     # ── Phase 2: token-overlap ranking ────────────────────────────────────────
+    t_phase2_start = time.time()
+    t = time.time()
     jd_signal = build_jd_signal(jd)
+    t_signal = time.time() - t
     logger.info(f"JD signal tokens: {jd_signal}")
 
+    t = time.time()
     scored = [(name, score_folder(name, jd_signal)) for name in remaining]
-    scored.sort(key=lambda x: x[1], reverse=True)
-    kept = scored
+    t_score = time.time() - t
 
-    for name, score in kept:
-        decisions[name] = f"KEEP (score={score:.3f})"
-        logger.info(f"  '{name}': score={score:.3f} → KEEP")
+    t = time.time()
+    scored.sort(key=lambda x: x[1], reverse=True)
+    t_sort = time.time() - t
+
+    # Drop folders with zero token-overlap — they share no terms with the JD
+    # and L1c will hard-reject all their candidates anyway.
+    # Safety: if everything scores 0.0 (unrecognised JD), keep all to avoid
+    # dispatching nothing.
+    nonzero = [(name, score) for name, score in scored if score > 0.0]
+    kept = nonzero if nonzero else scored
+    n_zero_dropped = len(scored) - len(kept)
+
+    t_phase2_total = time.time() - t_phase2_start
+
+    for name, score in scored:
+        if score > 0.0 or not nonzero:
+            decisions[name] = f"KEEP (score={score:.3f})"
+            logger.info(f"  '{name}': score={score:.3f} → KEEP")
+        else:
+            decisions[name] = "DROP:score=0.0 (no JD token overlap)"
+            logger.info(f"  '{name}': score=0.000 → DROP (no JD token overlap)")
+
+    if n_zero_dropped:
+        logger.info(
+            f"Phase 2 zero-score drop: {n_zero_dropped} folder(s) removed "
+            f"(score=0.0, no JD token overlap)"
+        )
 
     logger.info("\n" + _render_folder_tree(folder_names, decisions))
+
+    # ── Timing report ─────────────────────────────────────────────────────────
+    t_total = time.time() - t_total_start
+    timing = {
+        "jd_classify_ms":   round(t_jd_classify * 1000, 3),
+        "phase1_total_ms":  round(t_phase1_total * 1000, 3),
+        "phase1a_ms":       round(t_phase["1a"] * 1000, 3),
+        "phase1b_ms":       round(t_phase["1b"] * 1000, 3),
+        "phase1c_ms":       round(t_phase["1c"] * 1000, 3),
+        "phase1d_ms":       round(t_phase["1d"] * 1000, 3),
+        "phase1e_ms":       round(t_phase["1e"] * 1000, 3),
+        "phase2_total_ms":  round(t_phase2_total * 1000, 3),
+        "phase2_signal_ms": round(t_signal * 1000, 3),
+        "phase2_score_ms":  round(t_score * 1000, 3),
+        "phase2_sort_ms":   round(t_sort * 1000, 3),
+        "total_ms":         round(t_total * 1000, 3),
+    }
+    drops = {f"phase{k}_drops": v for k, v in n_drop.items()}
+    drops["phase2_zero_drops"] = n_zero_dropped
+
+    lines = [
+        "─" * 52,
+        f"  prune_folders() timing ({len(folder_names)} folders)",
+        "─" * 52,
+        f"  JD classify              : {timing['jd_classify_ms']:>8.3f} ms",
+        f"  Phase 1 total            : {timing['phase1_total_ms']:>8.3f} ms",
+        f"    1a  coding-type check  : {timing['phase1a_ms']:>8.3f} ms  ({n_drop['1a']} dropped)",
+        f"    1b  inactive check     : {timing['phase1b_ms']:>8.3f} ms  ({n_drop['1b']} dropped)",
+        f"    1c  location check     : {timing['phase1c_ms']:>8.3f} ms  ({n_drop['1c']} dropped)",
+        f"    1d  experience check   : {timing['phase1d_ms']:>8.3f} ms  ({n_drop['1d']} dropped)",
+        f"    1e  role check         : {timing['phase1e_ms']:>8.3f} ms  ({n_drop['1e']} dropped)",
+        f"  Phase 2 total            : {timing['phase2_total_ms']:>8.3f} ms",
+        f"    2a  build JD signal    : {timing['phase2_signal_ms']:>8.3f} ms",
+        f"    2b  score_folder×{len(remaining)}    : {timing['phase2_score_ms']:>8.3f} ms",
+        f"    2c  sort               : {timing['phase2_sort_ms']:>8.3f} ms",
+        f"    2d  zero-score drop    :            {n_zero_dropped} folder(s) removed",
+        f"  ─────────────────────────────────────────────────────",
+        f"  TOTAL                    : {timing['total_ms']:>8.3f} ms",
+        "─" * 52,
+    ]
+    logger.info("\n" + "\n".join(lines))
+
+    # Expose timing to callers without changing the return signature
+    global last_prune_timing
+    last_prune_timing = {**timing, **drops}
 
     return kept
 

@@ -13,6 +13,8 @@ No downloads, no network, no quantization at runtime.
 import json
 import logging
 import sqlite3
+import tarfile
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List
@@ -20,6 +22,34 @@ from typing import Any, Dict, List
 from . import constants as C
 
 logger = logging.getLogger(__name__)
+
+FRAUD_KB_LOCK = threading.Lock()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# MODEL DECOMPRESSION — runs once per machine; decompressed/ persists after that
+# ──────────────────────────────────────────────────────────────────────────────
+def ensure_models_decompressed() -> None:
+    """
+    Decompress models/compressed/*.tar.gz into models/decompressed/ if not
+    already present. No-op (just a directory-exists check) once decompressed —
+    models/decompressed/ is meant to persist between runs, not be rebuilt.
+    """
+    comp_dir = C.MODELS_COMPRESSED_DIR
+    decomp_dir = C.MODELS_DIR
+
+    if not comp_dir.exists():
+        return  # nothing to decompress from (e.g. dev box without LFS archives)
+
+    decomp_dir.mkdir(parents=True, exist_ok=True)
+
+    for archive in sorted(comp_dir.glob("*.tar.gz")):
+        target = decomp_dir / archive.stem.removesuffix(".tar")
+        if target.exists():
+            continue  # already decompressed (some archives, e.g. flashrank_onnx, are legitimately empty)
+        logger.info(f"[model-setup] Decompressing {archive.name} → {decomp_dir}")
+        with tarfile.open(archive, "r:gz") as tar:
+            tar.extractall(decomp_dir)
 
 
 class _Cache:

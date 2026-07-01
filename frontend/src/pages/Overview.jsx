@@ -88,18 +88,6 @@ export default function Overview() {
             <blockquote>"Low entropy detected in candidate responses; increasing prompt complexity."</blockquote>
           </section>
 
-          <section className="cta-panel">
-            <h3>Ready to ingest new data?</h3>
-            <button
-              className="primary-action wide"
-              type="button"
-              onClick={handleNewPipeline}
-              disabled={startPipeline.isPending}
-            >
-              {startPipeline.isPending ? 'Starting Pipeline...' : 'New Pipeline'}
-            </button>
-            {startPipeline.isError ? <p className="error-copy">Pipeline launch failed. Check backend logs.</p> : null}
-          </section>
         </aside>
       </div>
 

@@ -5,6 +5,7 @@ Early cascade (per-folder):
   L1   Hard reject (fraud / impossibilities)           → knockout
   L1b  Profile integrity (ATS pre-computed flags)      → hard reject only; soft flags → L2 cols
   L1c  Skill match (NLP + synonym)                     → score [0–1]; explicit-skill hard-reject gate
+  L1d  Inferred skill match + leftover penalty         → l1d_score; soft, no rejections
 
 Late cascade (global):
   L2   Table extract (31 cols)                         → feeds L3 FIS
@@ -26,6 +27,14 @@ from . import constants as C
 from . import utils
 
 logger = logging.getLogger(__name__)
+
+# Per-run caches for fraud KB lookups.
+# Keyed by normalised (lowercased, stripped) name → result.
+# Thread-safe: values are deterministic (read-only DB), so a double-write from
+# two racing threads is harmless — both write the same value.
+_company_status_cache: dict = {}   # company_name → 'fictional'|'verified'|'unknown'
+_founding_year_cache: dict = {}    # company_name → int|None
+_university_status_cache: dict = {}  # institution_name → 'verified'|'unknown'
 
 # In-code fictional company blacklist (backup to SQLite KB)
 FICTIONAL_COMPANIES = {
@@ -54,11 +63,17 @@ def _parse_year(val):
 def _company_founding_year(conn, company: str):
     if conn is None or not company:
         return None
-    row = conn.execute(
-        "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
-        (company.strip().lower(),),
-    ).fetchone()
-    return row["founding_year"] if row else None
+    key = company.strip().lower()
+    if key in _founding_year_cache:
+        return _founding_year_cache[key]
+    with utils.FRAUD_KB_LOCK:
+        row = conn.execute(
+            "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
+            (key,),
+        ).fetchone()
+    result = row["founding_year"] if row else None
+    _founding_year_cache[key] = result
+    return result
 
 
 def _fuzzy_kb_lookup(conn, table: str, name_col: str, query: str, threshold: int = 85):
@@ -74,9 +89,10 @@ def _fuzzy_kb_lookup(conn, table: str, name_col: str, query: str, threshold: int
         return None
     # Fast path: exact match
     try:
-        row = conn.execute(
-            f"SELECT * FROM {table} WHERE LOWER({name_col})=?", (q,)
-        ).fetchone()
+        with utils.FRAUD_KB_LOCK:
+            row = conn.execute(
+                f"SELECT * FROM {table} WHERE LOWER({name_col})=?", (q,)
+            ).fetchone()
         if row:
             return row
     except Exception:
@@ -88,9 +104,10 @@ def _fuzzy_kb_lookup(conn, table: str, name_col: str, query: str, threshold: int
         return None
     prefix = q[:3] + "%"
     try:
-        rows = conn.execute(
-            f"SELECT * FROM {table} WHERE LOWER({name_col}) LIKE ?", (prefix,)
-        ).fetchall()
+        with utils.FRAUD_KB_LOCK:
+            rows = conn.execute(
+                f"SELECT * FROM {table} WHERE LOWER({name_col}) LIKE ?", (prefix,)
+            ).fetchall()
     except Exception:
         return None
     best_score, best_row = 0, None
@@ -115,19 +132,26 @@ def _kb_company_status(conn, company: str) -> str:
     """
     if not company or conn is None:
         return "unknown"
+    key = company.strip().lower()
+    if key in _company_status_cache:
+        return _company_status_cache[key]
     # In-code fictional list (fast, no DB round-trip)
-    if company.strip().lower() in FICTIONAL_COMPANIES:
+    if key in FICTIONAL_COMPANIES:
+        _company_status_cache[key] = "fictional"
         return "fictional"
     # KB fictional table
     if _fuzzy_kb_lookup(conn, "fictional_companies", "company_name", company):
+        _company_status_cache[key] = "fictional"
         return "fictional"
     # Legitimate-company tables: MCA (indian_companies), DPIIT (indian_startups), PDL (global_companies)
     for tbl in ("indian_companies", "indian_startups", "global_companies"):
         try:
             if _fuzzy_kb_lookup(conn, tbl, "company_name", company):
+                _company_status_cache[key] = "verified"
                 return "verified"
         except Exception:
             pass
+    _company_status_cache[key] = "unknown"
     return "unknown"
 
 
@@ -135,12 +159,17 @@ def _kb_university_status(conn, institution: str) -> str:
     """Returns 'verified' (1.0) | 'unknown' (0.5)."""
     if not institution or conn is None:
         return "unknown"
+    key = institution.strip().lower()
+    if key in _university_status_cache:
+        return _university_status_cache[key]
     for tbl in ("universities", "indian_universities", "global_universities"):
         try:
             if _fuzzy_kb_lookup(conn, tbl, "institution_name", institution):
+                _university_status_cache[key] = "verified"
                 return "verified"
         except Exception:
             pass
+    _university_status_cache[key] = "unknown"
     return "unknown"
 
 
@@ -603,6 +632,56 @@ def l1c_skill_match(candidates: List[dict], jd: dict) -> List[dict]:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# LAYER 1d — INFERRED SKILL MATCH + LEFTOVER PENALTY (soft, no rejections)
+# ──────────────────────────────────────────────────────────────────────────────
+
+def l1d_inferred_match(candidates: List[dict], jd: dict) -> List[dict]:
+    """
+    Layer 1d — Inferred skill match with leftover penalty.
+
+    Matches all inferred JD skills (inferred_required + inferred_bonus) against
+    each candidate's full text.  No candidates are rejected.
+
+    Score:
+      inferred_ratio  = matched_inferred / n_inferred   (1.0 when JD has none)
+      leftover_count  = n_inferred − matched_inferred   (unmatched inferred)
+      leftover_penalty = 0.01 × leftover_count
+      l1d_score       = max(0, inferred_ratio − leftover_penalty)
+
+    Attaches per-candidate:
+      l1d_matched_inferred   list[str]  — inferred skills found
+      l1d_unmatched_inferred list[str]  — inferred skills not found
+      l1d_inferred_ratio     float[0,1] — matched / total
+      l1d_leftover_count     int        — count of unmatched inferred skills
+      l1d_score              float[0,1] — net score forwarded to L2
+    """
+    inferred = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
+    n_inferred = len(inferred)
+
+    for c in candidates:
+        text = _candidate_search_text(c)
+        matched   = [s for s in inferred if _skill_in_text(s, text)]
+        unmatched = [s for s in inferred if not _skill_in_text(s, text)]
+        ratio     = len(matched) / n_inferred if n_inferred > 0 else 1.0
+        leftover  = len(unmatched)
+        penalty   = 0.01 * leftover
+        score     = max(0.0, ratio - penalty)
+
+        c["l1d_matched_inferred"]   = matched
+        c["l1d_unmatched_inferred"] = unmatched
+        c["l1d_inferred_ratio"]     = round(ratio, 4)
+        c["l1d_leftover_count"]     = leftover
+        c["l1d_score"]              = round(score, 4)
+
+    avg = sum(c.get("l1d_inferred_ratio", 1.0) for c in candidates) / max(len(candidates), 1)
+    logger.info(
+        f"L1d: {len(candidates)} candidates — {n_inferred} inferred skills "
+        f"(avg_inferred_match={avg:.3f})"
+    )
+    return candidates
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # L3 GLOBAL GATE — 75% (top 50% + random 25%)
 # Applied after L3 fuzzy scoring, before expensive L4 semantic encoding.
 # ──────────────────────────────────────────────────────────────────────────────
@@ -644,6 +723,13 @@ _PRODUCTION_KW: Dict[str, float] = {
     "a/b test": 0.15, "ab test": 0.15, "ab testing": 0.15,
     "rollout": 0.12, "launched": 0.15, "launch": 0.12,
     "serving": 0.12,
+    "qps": 0.20,
+    "p95 latency": 0.22,
+    "p99 latency": 0.22,
+    "ranking pipeline": 0.22,
+    "retrieval system": 0.22,
+    "search at scale": 0.25,
+    "online serving": 0.20,
 }
 
 _ARCHITECTURE_KW: Dict[str, float] = {
@@ -659,7 +745,7 @@ _ARCHITECTURE_KW: Dict[str, float] = {
 
 _TESTING_EVAL_KW: Dict[str, float] = {
     "ndcg": 0.25, "mrr": 0.25,
-    "mean average precision": 0.20, "map": 0.20,
+    "mean average precision": 0.25, "map": 0.20,
     "a/b test": 0.20, "ab test": 0.20, "ab testing": 0.20,
     "recall@k": 0.20, "recall@": 0.18,
     "benchmark": 0.15,
@@ -752,6 +838,25 @@ _TOOLS_WEIGHTED: Dict[str, float] = {
     **_ORCHESTRATION_TOOLS,
     **_CLOUD_TOOLS,
 }
+
+_IR_DOMAIN_TERMS: frozenset = frozenset({
+    "bm25", "faiss", "rerank", "retrieval", "ranking",
+    "vector search", "embedding",
+})
+
+_JD_REQ_TITLES: frozenset = frozenset({
+    "ai engineer", "senior ai engineer", "staff ai engineer", "principal ai engineer",
+    "ml engineer", "machine learning engineer", "senior ml engineer",
+    "principal ml engineer", "staff ml engineer",
+    "applied scientist", "applied ai engineer", "applied ai",
+    "applied machine learning engineer", "applied research scientist",
+    "nlp engineer", "nlp scientist", "natural language processing engineer",
+    "search engineer", "senior search engineer", "search scientist",
+    "ranking engineer", "relevance engineer", "information retrieval engineer",
+    "research engineer", "senior research engineer", "ml research engineer",
+    "ai tech lead", "ml tech lead", "ai lead", "ml lead",
+    "ai architect", "ml architect",
+})
 
 _CONSULTING_FIRMS: frozenset = frozenset({
     "tcs", "tata consultancy services", "infosys", "wipro", "accenture",
@@ -941,6 +1046,8 @@ def _build_table_row(
     )
     full_text = skills_text + " " + wtext
     tools_score = sum(w for t, w in _TOOLS_WEIGHTED.items() if t in full_text)
+    ir_domain_score = sum(1 for t in _IR_DOMAIN_TERMS if t in full_text)
+    orchestration_score = sum(w for t, w in _ORCHESTRATION_TOOLS.items() if t in full_text)
 
     consulting_only = bool(work_hist) and all(
         (
@@ -998,6 +1105,20 @@ def _build_table_row(
     fabrication_bandwidth = float(c.get("fabrication_bandwidth_score") or 0.0) / 100.0
     possible_fabrication = bool(c.get("possible_fabrication"))
 
+    notice_period_days = (
+        signals.get("notice_period_days")
+        or c.get("notice_period_days")
+        or c.get("notice_period")
+    )
+    l1d_inferred_score = round(float(c.get("l1d_score", 1.0)), 4)
+    l1c_fwd_score = round(float(c.get("l1c_score", 0.0)), 4)
+    title = (
+        str(profile.get("current_title") or profile.get("title") or profile.get("headline") or "")
+        .strip().lower()
+    )
+    if not title and current_job:
+        title = str(current_job.get("title") or "").strip().lower()
+
     return {
         "candidate_id":               candidate_id,
         "total_exp":                  total_exp,
@@ -1017,6 +1138,8 @@ def _build_table_row(
         "open_source_score":          open_source_score,
         "research_published":         research_published,
         "tools_score":                tools_score,
+        "ir_domain_score":            ir_domain_score,
+        "orchestration_score":        orchestration_score,
         "consulting_only":            consulting_only,
         "last_career_tenure":         last_career_tenure,
         "last_career_company":        last_career_company,
@@ -1028,6 +1151,10 @@ def _build_table_row(
         "possible_fabrication":       possible_fabrication,
         "skill_career_domain_mismatch": bool(c.get("skill_career_domain_mismatch")),
         "second_undergrad_after_first": bool(c.get("second_undergrad_after_first")),
+        "l1c_score":                  l1c_fwd_score,
+        "l1d_inferred_score":         l1d_inferred_score,
+        "notice_period_days":         notice_period_days,
+        "title":                      title,
     }
 
 
@@ -1040,12 +1167,11 @@ def l2_table_extract(
     Builds a 31-column `table_row` dict on every candidate and attaches it as
     c['table_row'].  No candidates are filtered; the full list passes through.
     """
-    jd_required  = jd.get("explicit_required", []) + jd.get("explicit_bonus", [])
-    jd_inferred  = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
-    n_req        = len(jd_required)
+    n_explicit_req = len(jd.get("explicit_required", []))
+    jd_inferred    = jd.get("inferred_required", []) + jd.get("inferred_bonus", [])
 
     for c in candidates:
-        c["table_row"] = _build_table_row(c, jd_inferred, n_req)
+        c["table_row"] = _build_table_row(c, jd_inferred, n_explicit_req)
 
     logger.info(f"L2 table extract: {len(candidates)} rows built (31 cols each)")
     return candidates
@@ -1119,7 +1245,19 @@ def _pct(sv: list, p: float) -> float:
     return sv[lo] + (idx - lo) * (sv[hi] - sv[lo])
 
 
-def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[str, float]:
+def _compute_conditions(row: dict, n_inferred: int) -> Dict[str, float]:
+    """
+    Derive 8 crisp conditions a–h from a L2 table_row. All outputs in [0, 1].
+
+    a — experience in JD sweet spot (5–9 yr = 1.0, 3–12 yr = 0.5, else 0.0)
+    b — explicit skill signal (skill_match + skill_assessment)
+    c — inferred signal + platform engagement
+    d — IR domain signal (0.0 / 0.5 / 1.0 based on retrieval-specific term hits)
+    e — absence of disqualifying traits; −0.25 if framework-heavy with no production
+    f — profile integrity (deductions for anomaly flags)
+    g — technical breadth (production + arch + testing + tools + open-source/research)
+    h — soft-penalty union (1.0 = any flag fires; ideal candidate has h=0.0)
+    """
     exp = float(row.get("total_exp") or 0.0)
     a = 1.0 if 5.0 <= exp <= 9.0 else (0.5 if 3.0 <= exp <= 12.0 else 0.0)
 
@@ -1132,8 +1270,8 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
     )
     c = (inf_norm + float(row.get("redrob_cumulative") or 0.0)) / 2.0
 
-    cand_ind = str(row.get("industry") or "").strip().lower()
-    d = 1.0 if (jd_industry and cand_ind and jd_industry in cand_ind) else 0.0
+    ir_hits = float(row.get("ir_domain_score") or 0.0)
+    d = 1.0 if ir_hits >= 3 else (0.5 if ir_hits >= 1 else 0.0)
 
     stagnant_lead = (
         float(row.get("last_career_tenure") or 0.0) > 60.0
@@ -1149,6 +1287,11 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
         + (0.0 if stagnant_lead else 1.0)
         + (0.0 if pure_researcher else 1.0)
     ) / 4.0
+    total_tool = float(row.get("tools_score") or 0.0)
+    orch_score = float(row.get("orchestration_score") or 0.0)
+    framework_ratio = orch_score / total_tool if total_tool > 0.0 else 0.0
+    if framework_ratio > 0.6 and float(row.get("production_score") or 0.0) < 0.15:
+        e = max(0.0, e - 0.25)
 
     f = 1.0
     if row.get("low_engagement_flag"):         f -= 0.20
@@ -1162,11 +1305,11 @@ def _compute_conditions(row: dict, jd_industry: str, n_inferred: int) -> Dict[st
         1.0 if row.get("research_published") is True else 0.0,
     )
     g = (
-        float(row.get("production_score") or 0.0)*0.3
-        + float(row.get("architecture_score") or 0.0)*0.3
-        + float(row.get("testing_evaluation_score") or 0.0)*0.2
-        + tools_norm*0.1
-        + open_or_research*0.1
+        float(row.get("production_score") or 0.0)*0.35
+        + float(row.get("architecture_score") or 0.0)*0.25
+        + float(row.get("testing_evaluation_score") or 0.0)*0.25
+        + tools_norm*0.05
+        + open_or_research*0.10
     )
 
     h = 1.0 if any(row.get(flag) for flag in _SOFT_PENALTY_COLS) else 0.0
@@ -1291,8 +1434,8 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
     Layer 3 — Sugeno Fuzzy Inference System.
     Input:  candidates with table_row from L2.
     Output: same list with l3_score, l3_class, l3_reasoning attached.
+            Notice period bonus (+0.05) and title-match bonus (+0.01) applied post-FIS.
     """
-    jd_industry = str(jd.get("industry") or jd.get("job_industry") or "").strip().lower()
     n_inferred  = len(jd.get("inferred_required", []) + jd.get("inferred_bonus", []))
 
     active: List[dict] = []
@@ -1312,7 +1455,7 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
         return candidates
 
     all_conds: List[Dict[str, float]] = [
-        _compute_conditions(c["table_row"], jd_industry, n_inferred) for c in active
+        _compute_conditions(c["table_row"], n_inferred) for c in active
     ]
 
     mf_params = _calibrate_mf_params(all_conds)
@@ -1333,8 +1476,25 @@ def l3_fuzzy_score(candidates: List[dict], jd: dict) -> List[dict]:
             raw = _apply_ceilings(mf_vals, raw)
 
         score = _post_fis_adjust(raw, row, h)
+
+        # Notice period bonus: ≤30 days available → +0.05
+        notice_days = row.get("notice_period_days")
+        notice_bonus = notice_days is not None and notice_days <= 30
+        if notice_bonus:
+            score = min(1.0, score + 0.05)
+
+        # Title bonus: candidate's current title matches a JD-aligned AI/NLP/IR title → +0.01
+        cand_title = str(row.get("title") or "")
+        title_bonus = bool(cand_title) and any(kw in cand_title for kw in _JD_REQ_TITLES)
+        if title_bonus:
+            score = min(1.0, score + 0.01)
+
         cls   = _fuzzy_class(score)
         rsn   = _build_fuzzy_reasoning(row, conds, score)
+        if notice_bonus:
+            rsn += " [notice_bonus+0.05]"
+        if title_bonus:
+            rsn += f" [title_bonus+0.01:{cand_title}]"
 
         c["l3_score"]     = round(score, 4)
         c["l3_class"]     = cls
@@ -1534,10 +1694,16 @@ def l5_flashrank_rerank(candidates: List[dict], jd: dict) -> List[dict]:
     ]
     results = ranker.rerank(RerankRequest(query=jd_text, passages=passages))
 
-    id_to_score: Dict[int, float] = {
-        r["id"]: max(0.0, min(1.0, float(r.get("score", 0.0))))
-        for r in results
-    }
+    # min-max normalize within the batch so the best candidate always gets 1.0
+    # and worst gets 0.0 — sigmoid was collapsing near-zero logits to uniform 0.5
+    raw_scores = {r["id"]: float(r.get("score", 0.0)) for r in results}
+    if raw_scores:
+        lo = min(raw_scores.values())
+        hi = max(raw_scores.values())
+        span = (hi - lo) or 1.0
+        id_to_score: Dict[int, float] = {k: (v - lo) / span for k, v in raw_scores.items()}
+    else:
+        id_to_score = {}
 
     for i, c in enumerate(top_pool):
         fr_score = id_to_score.get(i, 0.0)

@@ -108,10 +108,11 @@ def _get_oldest_company_age(c: dict, fraud_kb, current_year: int) -> float:
             continue
         comp = str(e.get("company", "")).strip().lower()
         if fraud_kb is not None and comp:
-            row = fraud_kb.execute(
-                "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
-                (comp,),
-            ).fetchone()
+            with utils.FRAUD_KB_LOCK:
+                row = fraud_kb.execute(
+                    "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
+                    (comp,),
+                ).fetchone()
             if row and row["founding_year"]:
                 yr = int(row["founding_year"])
                 if oldest_year is None or yr < oldest_year:
@@ -124,7 +125,14 @@ def _get_oldest_company_age(c: dict, fraud_kb, current_year: int) -> float:
 def _is_very_good(l1c: float, l4: float, l6: float,
                   exp_years: float, company_age: float, c: dict) -> bool:
     """
-    Return True if a candidate meets ALL excellence criteria.
+    Return True if a candidate meets ALL excellence criteria:
+      - l1c_score >= L7_VERY_GOOD_L1C_MIN  (skill match high)
+      - l4_score  >= L7_VERY_GOOD_L4_MIN   (semantic work relevance high)
+      - l6_score  >= L7_VERY_GOOD_L6_MIN   (behavioral signals high)
+      - exp_years >= L7_VERY_GOOD_EXP_MIN  (experience high)
+      - company_age >= L7_VERY_GOOD_COMPANY_AGE_MIN OR no company data (age == 0)
+      - no L1b flags (profile integrity clean)
+      - no L3 penalty (seniority fit)
     """
     company_ok = (company_age == 0.0) or (company_age >= C.L7_VERY_GOOD_COMPANY_AGE_MIN)
     return (
@@ -186,6 +194,11 @@ def run_fis(candidates: List[dict], fraud_kb=None) -> List[dict]:
 # TIE-BREAKING
 # ──────────────────────────────────────────────────────────────────────────────
 def _tiebreak_key(c: dict, fraud_kb):
+    """
+    Sort key: higher fis_score, then higher experience,
+    then OLDER company (smaller founding year), then candidate_id asc.
+    Returned tuple is for DESC sort on score/exp, ASC on founding & id.
+    """
     score = c.get("fis_score", 0.0)
     exp = utils.get_total_experience_years(c)
 
@@ -194,10 +207,11 @@ def _tiebreak_key(c: dict, fraud_kb):
         if isinstance(e, dict):
             comp = str(e.get("company", "")).strip().lower()
             if fraud_kb is not None and comp:
-                row = fraud_kb.execute(
-                    "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
-                    (comp,),
-                ).fetchone()
+                with utils.FRAUD_KB_LOCK:
+                    row = fraud_kb.execute(
+                        "SELECT founding_year FROM company_founding_dates WHERE LOWER(company_name)=?",
+                        (comp,),
+                    ).fetchone()
                 if row and row["founding_year"]:
                     oldest = min(oldest, int(row["founding_year"]))
     cid = str(c.get("candidate_id", c.get("id", "")))

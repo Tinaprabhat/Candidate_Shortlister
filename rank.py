@@ -119,6 +119,10 @@ def run_late_cascade(
     logger.info(f"L3 gate: {before_gate} → {len(candidates)} passed (75%)")
 
     # L4 — semantic work relevance (returns all sorted by l4_combined_score)
+    # Cap input to top-N by L3 score; evidence shows all final candidates have L3 >> rescue pool
+    if len(candidates) > C.L4_INPUT_CAP:
+        candidates = candidates[:C.L4_INPUT_CAP]
+        logger.info(f"L4 input capped at {C.L4_INPUT_CAP} (sorted by L3 score)")
     t = time.time()
     candidates = layers.l4_semantic_work(candidates, jd)
     tracer.record_cascade_step("L4_semantic_work", len(candidates), len(candidates),
@@ -260,6 +264,11 @@ def main():
     )
     tracer.set_jd(jd)
 
+    # Decompress models on first run only — no-op once models/decompressed/ is populated
+    t_decomp = time.time()
+    utils.ensure_models_decompressed()
+    tracer.record_timing("models_decompress", round(time.time() - t_decomp, 3))
+
     # Load models
     logger.info("Loading models...")
     t_models = time.time()
@@ -296,10 +305,14 @@ def main():
             tracer.record_pruning(names, decisions, kept_)
             return kept_
 
+        t_prune = time.time()
         kept = _traced_prune(discovered, jd)
+        tracer.record_timing("prune_folders", round(time.time() - t_prune, 3))
+        t_dispatch = time.time()
         pruning.dispatch_folders_staggered(
             kept, folder_paths, process_fn, stagger_sec=args.stagger, tracer=tracer
         )
+        tracer.record_timing("early_cascade_dispatch", round(time.time() - t_dispatch, 3))
     else:
         # Step 1: Always run preprocessing — clean + fabrication flags + build Dataset/ tree
         import importlib.util as _ilu
@@ -335,10 +348,15 @@ def main():
             tracer.record_pruning(names, decisions, kept_)
             return kept_
 
+        t_prune = time.time()
         kept = _traced_prune(discovered, jd)
+        tracer.record_timing("prune_folders", round(time.time() - t_prune, 3))
+
+        t_dispatch = time.time()
         pruning.dispatch_folders_staggered(
             kept, folder_paths, process_fn, stagger_sec=args.stagger, tracer=tracer
         )
+        tracer.record_timing("early_cascade_dispatch", round(time.time() - t_dispatch, 3))
 
     if not all_early_scored:
         logger.error("No candidates survived early cascade (L1/L1b/L1c).")
@@ -348,13 +366,17 @@ def main():
         return
 
     # Hard pool cap before expensive L2/L3 layers (sort by l1c_score as proxy)
+    t_cap = time.time()
     if len(all_early_scored) > C.HARD_POOL_CAP:
         all_early_scored.sort(key=lambda c: c.get("l1c_score", 0), reverse=True)
         all_early_scored = all_early_scored[:C.HARD_POOL_CAP]
         logger.info(f"Capped pool to {C.HARD_POOL_CAP}")
+    tracer.record_timing("pool_cap_sort", round(time.time() - t_cap, 3))
 
     # Late cascade — L2 → L3 → gate → L4 → top200 → donts → top100 → L5
+    t_late = time.time()
     top100 = run_late_cascade(all_early_scored, jd, tracer)
+    tracer.record_timing("late_cascade_total", round(time.time() - t_late, 3))
 
     if not top100:
         logger.error("Late cascade produced no candidates.")
@@ -379,10 +401,95 @@ def main():
         top_scores=[r["score"] for r in rows[:10]],
         elapsed=elapsed,
     )
+    _print_timing_summary(tracer, elapsed)
     logger.info(f"Wrote {len(rows)} ranked candidates → {args.out}")
     logger.info(f"Ranked JSON → {json_path}")
     logger.info(f"Run trace   → {trace_path}")
     logger.info(f"Total runtime: {elapsed:.1f}s ({elapsed/60:.2f} min)")
+
+
+def _print_timing_summary(tracer: RunTracer, total_elapsed: float) -> None:
+    """Print a human-readable timing breakdown to stdout."""
+    trace = tracer.as_dict()
+
+    timings: dict = {t["name"]: t["elapsed_s"] for t in trace.get("setup_timings", [])}
+
+    cascade_steps: dict = {}
+    for step in trace.get("cascade", {}).get("steps", []):
+        name = step["layer"]
+        elapsed = step.get("notes", {}).get("elapsed_s", 0.0)
+        cascade_steps[name] = cascade_steps.get(name, 0.0) + elapsed
+
+    def _fmt(s: float) -> str:
+        if s >= 60:
+            return f"{s/60:.2f}min"
+        if s >= 1:
+            return f"{s:.3f}s"
+        return f"{s*1000:.1f}ms"
+
+    def _bar(s: float, total: float, width: int = 28) -> str:
+        frac = min(s / total, 1.0) if total > 0 else 0
+        filled = max(1, round(frac * width))
+        return "█" * filled
+
+    W = 76
+    print("\n" + "=" * W)
+    print("  RANK.PY TIMING SUMMARY")
+    print("=" * W)
+
+    sections = [
+        ("── Setup", [
+            ("JD load",               timings.get("jd_load", 0)),
+            ("Models load",            timings.get("models_load", 0)),
+        ]),
+        ("── Preprocessing & pruning", [
+            ("Preprocessing (3-pass)", timings.get("preprocessing", 0)),
+            ("Folder discover",        timings.get("folder_discover", 0)),
+            ("prune_folders()",        timings.get("prune_folders", 0)),
+        ]),
+        ("── Early cascade (L1/L1b/L1c) per folder", [
+            ("Dispatch + early cascade", timings.get("early_cascade_dispatch", 0)),
+            ("  L1  hard reject",         cascade_steps.get("L1_hard_reject", 0)),
+            ("  L1b profile integrity",   cascade_steps.get("L1b_profile_integrity", 0)),
+            ("  L1c skill match",         cascade_steps.get("L1c_skill_match", 0)),
+        ]),
+        ("── Late cascade (global)", [
+            ("Late cascade total",     timings.get("late_cascade_total", 0)),
+            ("  L2  table extract",    cascade_steps.get("L2_table_extract", 0)),
+            ("  L3  fuzzy score",      cascade_steps.get("L3_fuzzy_score", 0)),
+            ("  L3  gate",             cascade_steps.get("L3_gate", 0)),
+            ("  L4  semantic work",    cascade_steps.get("L4_semantic_work", 0)),
+            ("  Donts penalty",        cascade_steps.get("Donts_penalty", 0)),
+            ("  L5  flashrank",        cascade_steps.get("L5_flashrank", 0)),
+        ]),
+        ("── Output", [
+            ("Pool cap sort",          timings.get("pool_cap_sort", 0)),
+            ("Output write",           timings.get("output_write", 0)),
+        ]),
+    ]
+
+    for section_title, rows in sections:
+        print(f"\n  {section_title}")
+        for label, secs in rows:
+            indent = "  " if label.startswith("  ") else ""
+            bar = _bar(secs, total_elapsed)
+            print(f"  {indent}{label:<34}  {_fmt(secs):>10}   {bar}")
+
+    print()
+    print(f"  {'TOTAL':<34}  {_fmt(total_elapsed):>10}")
+
+    cascade_totals = trace.get("cascade", {})
+    print()
+    print(f"  Candidates in  : {cascade_totals.get('total_input', '?')}")
+    print(f"  Candidates out : {cascade_totals.get('total_output', '?')}")
+    print(f"  Final ranked   : {trace.get('output', {}).get('candidates_ranked', '?')}")
+
+    top_scores = trace.get("output", {}).get("top_scores", [])
+    if top_scores:
+        scores_str = "  ".join(f"{s:.4f}" for s in top_scores[:5])
+        print(f"  Top-5 scores   : {scores_str}")
+
+    print("=" * W + "\n")
 
 
 def _try_load_flashrank():

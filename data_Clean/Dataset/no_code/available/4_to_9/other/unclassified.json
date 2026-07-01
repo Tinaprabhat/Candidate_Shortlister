@@ -1,0 +1,226 @@
+[
+  {
+    "candidate_id": "CAND_0076251",
+    "profile": {
+      "anonymized_name": "Atharv Pandey",
+      "headline": "Search Engineer | Search, Ranking & Retrieval",
+      "summary": "Machine learning engineer with 7.6 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I care a lot about evaluation rigor — too many teams ship models without offline benchmarks they trust. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Bhubaneswar, Odisha",
+      "country": "India",
+      "years_of_experience": 7.6,
+      "current_title": "Search Engineer",
+      "current_company": "Haptik",
+      "current_company_size": "201-500",
+      "current_industry": "Conversational AI"
+    },
+    "career_history": [
+      {
+        "company": "Haptik",
+        "title": "Search Engineer",
+        "start_date": "2023-12-09",
+        "end_date": null,
+        "duration_months": 30,
+        "is_current": true,
+        "industry": "Conversational AI",
+        "company_size": "201-500",
+        "description": "Developed a semantic search feature for an internal knowledge base of ~500K documents. Used sentence-transformers (all-MiniLM-L6-v2 initially, later upgraded to bge-base) with FAISS for fast nearest-neighbor retrieval. Designed the query expansion module that handles vocabulary mismatch between user queries and document terms. Reported search-relevance improvement of 35% over the prior Elasticsearch BM25 setup, validated through human relevance judgments."
+      },
+      {
+        "company": "CRED",
+        "title": "Senior Data Scientist",
+        "start_date": "2020-06-20",
+        "end_date": "2023-12-02",
+        "duration_months": 42,
+        "is_current": false,
+        "industry": "Fintech",
+        "company_size": "1001-5000",
+        "description": "Built and operated production ML pipelines using MLflow for experiment tracking, Kubeflow for orchestration, and our internal feature store. My main project was a churn prediction model that's now used by the customer success team to prioritize outreach. Designed the model monitoring stack: data drift detection, prediction distribution checks, and alerting. Mentored a junior engineer through their first end-to-end ML project last year."
+      },
+      {
+        "company": "Microsoft",
+        "title": "Machine Learning Engineer",
+        "start_date": "2018-11-21",
+        "end_date": "2020-06-13",
+        "duration_months": 19,
+        "is_current": false,
+        "industry": "Software",
+        "company_size": "10001+",
+        "description": "Built and operated production ML pipelines using MLflow for experiment tracking, Kubeflow for orchestration, and our internal feature store. My main project was a churn prediction model that's now used by the customer success team to prioritize outreach. Designed the model monitoring stack: data drift detection, prediction distribution checks, and alerting. Mentored a junior engineer through their first end-to-end ML project last year."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Jadavpur University",
+        "degree": "B.E.",
+        "field_of_study": "Data Science",
+        "start_year": 2009,
+        "end_year": 2012,
+        "grade": "66%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "advanced",
+        "endorsements": 41,
+        "duration_months": 32
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 22
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "expert",
+        "endorsements": 56,
+        "duration_months": 42
+      },
+      {
+        "name": "Weaviate",
+        "proficiency": "advanced",
+        "endorsements": 29,
+        "duration_months": 29
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 22
+      },
+      {
+        "name": "LlamaIndex",
+        "proficiency": "advanced",
+        "endorsements": 2,
+        "duration_months": 38
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "advanced",
+        "endorsements": 51,
+        "duration_months": 34
+      },
+      {
+        "name": "SAP",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 26
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 22
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "advanced",
+        "endorsements": 55,
+        "duration_months": 18
+      },
+      {
+        "name": "Kafka",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 18
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "advanced",
+        "endorsements": 52,
+        "duration_months": 57
+      },
+      {
+        "name": "Learning to Rank",
+        "proficiency": "expert",
+        "endorsements": 5,
+        "duration_months": 92
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "advanced",
+        "endorsements": 36,
+        "duration_months": 20
+      },
+      {
+        "name": "Semantic Search",
+        "proficiency": "advanced",
+        "endorsements": 45,
+        "duration_months": 33
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "expert",
+        "endorsements": 0,
+        "duration_months": 43
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 85.5,
+      "signup_date": "2025-09-03",
+      "last_active_date": "2026-04-15",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 18,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.51,
+      "avg_response_time_hours": 24.1,
+      "skill_assessment_scores": {
+        "Fine-tuning LLMs": 68.4,
+        "Hugging Face Transformers": 64.5,
+        "Weaviate": 76.3,
+        "Time Series": 57.5,
+        "LlamaIndex": 71.5
+      },
+      "connection_count": 140,
+      "endorsements_received": 148,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 29.8,
+        "max": 42.7,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 237,
+      "saved_by_recruiters_30d": 47,
+      "interview_completion_rate": 0.61,
+      "offer_acceptance_rate": 0.58,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 6.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": true,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "fabrication_bandwidth": 0.000783
+  }
+]

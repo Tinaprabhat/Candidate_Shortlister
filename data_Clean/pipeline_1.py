@@ -2309,6 +2309,64 @@
 #   python pipeline.py
 # ─────────────────────────────────────────────────────────────────────────────
 
+# pipeline.py
+# ─────────────────────────────────────────────────────────────────────────────
+# PURPOSE
+#   Single-pass pipeline.
+#   Reads candidates.jsonl → cleans (fixes + flags) → stamps fabrication
+#   → classifies into 5-dimension tree → writes Dataset/ folder tree
+#
+# REMOVED FLAGS (per latest requirement):
+#   - possible_honeypot (boolean removed; honeypot_score value retained)
+#   - possible_fabrication (boolean removed; fabrication_bandwidth value retained, 0-1 scale)
+#   - all_descriptions_identical (merged into single duplicate_job_descriptions flag)
+#
+# FL18 LOGIC CHANGE:
+#   duplicate_job_descriptions is now a WITHIN-CANDIDATE check only.
+#   True if 2 or more of this candidate's OWN career descriptions are
+#   identical (whether just 2 match, or all of them match - single flag).
+#   No longer checks against the global dataset-wide frequency table.
+#
+# TREE STRUCTURE
+#   Dataset/
+#   └── {code_status}        code | no_code
+#       └── {availability}   available | unavailable
+#           └── {experience} 0_to_3 | 4_to_9 | 10_plus
+#               └── {domain}  engineering | devops_and_cloud |
+#                              product_and_design | operations |
+#                              business | marketing | finance |
+#                              hr_and_people | non_tech_engineering | other
+#                   └── {role}.json
+#
+# CODE vs NO_CODE LOGIC:
+#   code    = current title IS a hands-on technical role that requires
+#             writing production code right now.
+#   no_code = everything else:
+#             - management/leadership drift (tech lead, architect, EM)
+#             - non-technical roles (PM, BA, HR, marketing, finance, etc.)
+#             - zero career history (pure academic)
+#             - entire career in pure research/academic titles
+#
+# COMPUTER VISION SPECIAL RULE (from JD):
+#   "People whose primary expertise is computer vision, speech, or robotics
+#    without significant NLP/IR exposure — we respect your work but you'd be
+#    re-learning fundamentals here."
+#
+#   A candidate routes to computer_vision_engineer.json ONLY IF:
+#     - Current title matches CV keywords AND
+#     - They do NOT have significant retrieval/NLP/IR skills
+#       (embeddings, vector DBs, sentence transformers, FAISS, Pinecone,
+#        Qdrant, Weaviate, Milvus, OpenSearch, NLP, semantic search,
+#        information retrieval, learning to rank, BM25, RAG, LLMs,
+#        fine-tuning LLMs, haystack, pgvector)
+#
+#   If they DO have those skills → they are NOT pure CV →
+#   route to ml_engineer.json instead (they cross the JD's threshold)
+#
+# USAGE
+#   python pipeline.py
+# ─────────────────────────────────────────────────────────────────────────────
+
 import json
 import os
 import time
@@ -2378,13 +2436,13 @@ INDIA_PREFERRED_CITIES = {
     "navi mumbai", "thane", "kolkata"
 }
 
-_SCORE_FIELDS = [
-    "skill_career_domain_mismatch", "education_overlap",
-    "reverse_degree_order", "second_undergrad_after_first",
-    "education_career_gap_flag", "active_before_signup",
-    "duplicate_job_descriptions", "all_descriptions_identical",
-    "low_engagement_flag", "possible_honeypot", "_any_invalid_degree_field",
-]
+# _SCORE_FIELDS = [
+#     "skill_career_domain_mismatch", "education_overlap",
+#     "reverse_degree_order", "second_undergrad_after_first",
+#     "education_career_gap_flag", "active_before_signup",
+#     "duplicate_job_descriptions",
+#     "low_engagement_flag", "_any_invalid_degree_field",
+# ]
 
 # ── Titles that ARE hands-on production coding roles ─────────────────────────
 # code = current title is in this set
@@ -2732,17 +2790,23 @@ def fl16_invalid_degree_field(edu):
     if deg in {"m.sc", "m.sc.", "m.s.", "m.s"} and field in INVALID_ENG_FIELDS: return True
     return False
 
-def fl18_fl19_duplicate_descriptions(career):
-    if len(career) < 2: return False, False, []
+def fl18_duplicate_descriptions(career):
+    """
+    FL18 — Within-candidate duplicate description check (single flag).
+    True if ANY two (or more) of this candidate's OWN career descriptions
+    are character-for-character identical — whether it's just 2 matching,
+    or all of them matching.
+
+    This replaces the old FL18/FL19 split (any-duplicate vs all-identical)
+    with one unified flag: duplicate_job_descriptions.
+    """
     descs = [(j.get("description") or "").strip() for j in career]
-    pairs = [
-        [i, j] for i in range(len(descs))
-        for j in range(i + 1, len(descs))
-        if descs[i] and descs[i] == descs[j]
-    ]
     non_empty = [d for d in descs if d]
-    all_ident  = len(non_empty) > 1 and len(set(non_empty)) == 1
-    return bool(pairs), all_ident, pairs
+    if len(non_empty) < 2:
+        return False
+    # True if there are fewer unique descriptions than total descriptions
+    # i.e. at least one description repeats within this candidate
+    return len(set(non_empty)) < len(non_empty)
 
 def fl20_low_engagement(c):
     sig  = c.get("redrob_signals", {})
@@ -2751,18 +2815,9 @@ def fl20_low_engagement(c):
     if rate is None or hrs is None: return False
     return rate < 0.10 and hrs > 200
 
-def fl25_possible_honeypot(c):
-    structural = sum([
-        bool(c.get("education_overlap")),
-        bool(c.get("reverse_degree_order")),
-        bool(c.get("second_undergrad_after_first")),
-        bool(c.get("all_descriptions_identical")),
-        bool(c.get("duplicate_job_descriptions")),
-    ])
-    return structural >= 3
 
-def fl26_honeypot_score(c):
-    return sum(1 for f in _SCORE_FIELDS if c.get(f, False))
+# def fl26_honeypot_score(c):
+#     return sum(1 for f in _SCORE_FIELDS if c.get(f, False))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -2792,10 +2847,7 @@ def process_candidate(c):
     c["active_before_signup"]         = abs_flag
     c["signup_active_gap_days"]       = abs_days
 
-    dup_any, all_ident, dup_idx = fl18_fl19_duplicate_descriptions(career)
-    c["duplicate_job_descriptions"]    = dup_any
-    c["all_descriptions_identical"]    = all_ident
-    c["duplicate_description_indices"] = dup_idx
+    c["duplicate_job_descriptions"] = fl18_duplicate_descriptions(career)
 
     c["low_engagement_flag"] = fl20_low_engagement(c)
 
@@ -2806,12 +2858,10 @@ def process_candidate(c):
         if val: any_invalid = True
     c["_any_invalid_degree_field"] = any_invalid
 
-    c["possible_honeypot"] = fl25_possible_honeypot(c)
-    c["honeypot_score"]    = fl26_honeypot_score(c)
+    # c["honeypot_score"] = fl26_honeypot_score(c)
 
     # fabrication — stamped after full freq table built
-    c["fabrication_bandwidth"] = 0
-    c["possible_fabrication"]  = False
+    c["fabrication_bandwidth"] = 0.0
 
     return c
 
@@ -2827,14 +2877,34 @@ def collect_desc_freq(freq, c):
             h = _md5(desc)
             freq[h] = freq.get(h, 0) + 1
 
-def stamp_fabrication(c, freq):
-    total = sum(
+def stamp_fabrication_bandwidth(c, freq, max_bandwidth):
+    """
+    Called in Pass 2 after full freq table is built.
+
+    fabrication_bandwidth normalized to [0, 1]:
+      raw_bandwidth = sum of global frequencies of all career descriptions
+                       this candidate carries (each description's global
+                       template-reuse count, summed across their career)
+      normalized    = raw_bandwidth / max_bandwidth  (max across entire dataset)
+      If max_bandwidth = 0 (edge case: all unique descriptions), result = 0.0
+
+    Why divide by max (not full min-max):
+      min_bandwidth is always 0 (a candidate with all-unique descriptions).
+      So min-max normalization reduces to raw / max.
+      This gives a clean 0→1 scale where 1.0 = the most fabricated candidate
+      in the entire dataset.
+
+    Note: duplicate_job_descriptions (FL18) is computed earlier in
+    process_candidate() — it is a within-candidate check and does not
+    depend on the global frequency table.
+    """
+    raw = sum(
         freq.get(_md5((job.get("description") or "").strip()), 0)
         for job in c.get("career_history", [])
         if (job.get("description") or "").strip()
     )
-    c["fabrication_bandwidth"] = total
-    c["possible_fabrication"]  = total > FABRICATION_THRESHOLD
+    normalized = round(raw / max_bandwidth, 6) if max_bandwidth > 0 else 0.0
+    c["fabrication_bandwidth"] = normalized
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -2921,37 +2991,34 @@ def _code_status(c) -> str:
 
 def _availability_bucket(c) -> str:
     """
-    active_available: open_to_work=True OR last active within 90 days
-    inactive:         open_to_work=False AND last active > 90 days
+    Single availability dimension.
+
+    available   = open_to_work_flag=True
+                  AND willing_to_relocate=True
+                  AND notice_period_days < 90
+
+    unavailable = any other combination:
+                  - not open to work, OR
+                  - not willing to relocate, OR
+                  - notice period >= 90 days
+
+    Why all three required:
+      - open_to_work=True   : explicit intent signal - actively looking
+      - willing_to_relocate : role is Pune/Noida based, relocation needed
+      - notice < 90 days    : 90+ days is too long for a startup to wait
     """
     sig          = c.get("redrob_signals", {})
     open_to_work = sig.get("open_to_work_flag", False)
-    last         = _parse_date(sig.get("last_active_date"))
+    willing      = sig.get("willing_to_relocate", False)
+    notice       = sig.get("notice_period_days")
+    if notice is None:
+        notice = 999
 
-    if open_to_work:
-        return "active_available"
-    if last is not None and (TODAY - last).days <= 90:
-        return "active_available"
-    return "inactive"
-
-
-def _relocation_bucket(c) -> str:
-    """
-    available:   willing_to_relocate=True AND notice_period_days <= 60
-    unavailable: willing_to_relocate=False OR notice_period_days > 60
-
-    Why:
-      - Not willing to relocate → unavailable (role is Pune/Noida based)
-      - Notice > 60 days → unavailable (too long to wait regardless of willingness)
-      - Both must be satisfied to be considered available
-    """
-    sig     = c.get("redrob_signals", {})
-    willing = sig.get("willing_to_relocate", False)
-    notice  = sig.get("notice_period_days") or 999
-
-    if willing and notice <= 60:
+    if open_to_work and willing and notice < 90:
         return "available"
     return "unavailable"
+
+
 
 
 def _experience_band(c) -> str:
@@ -3003,7 +3070,6 @@ def classify(c) -> dict:
     return {
         "code_status":  _code_status(c),
         "availability": _availability_bucket(c),
-        "relocation":   _relocation_bucket(c),
         "experience":   _experience_band(c),
         "domain":       domain,
         "role":         role,
@@ -3019,7 +3085,6 @@ def _leaf_path(dataset_dir, b) -> str:
         dataset_dir,
         b["code_status"],
         b["availability"],
-        b["relocation"],
         b["experience"],
         b["domain"],
         b["role"] + ".json"
@@ -3055,7 +3120,6 @@ def run():
     print(f"📂  Reading and cleaning {INPUT_FILE} ...")
     cleaned   = []
     skipped   = 0
-    honeypots = 0
 
     with open(INPUT_FILE, "r", encoding="utf-8") as fh:
         for i, line in enumerate(fh, 1):
@@ -3071,24 +3135,33 @@ def run():
             collect_desc_freq(desc_freq, raw)
             c = process_candidate(raw)
             cleaned.append(c)
-            if c.get("possible_honeypot"): honeypots += 1
 
             if i % 10_000 == 0:
                 elapsed = time.time() - wall_start
                 print(f"    ... {i:,} processed  ({elapsed:.1f}s elapsed)")
 
     t1 = time.time() - wall_start
-    print(f"    ✅ {len(cleaned):,} cleaned  |  {skipped} skipped  |  "
-          f"{honeypots:,} honeypots  |  {t1:.1f}s")
+    print(f"    ✅ {len(cleaned):,} cleaned  |  {skipped} skipped  |  {t1:.1f}s")
 
-    # ── Pass 2: stamp fabrication flags ───────────────────────────────────────
-    print(f"\n🔖  Stamping fabrication flags ...")
+    # ── Pass 2: stamp global flags (fabrication + global duplicate) ──────────
+    print(f"\n🔖  Stamping fabrication bandwidth ...")
     t = time.time()
-    fabricated = 0
+
+    # Compute max raw bandwidth across all candidates for normalization
+    # raw bandwidth = sum of desc frequencies for each candidate
+    def _raw_bandwidth(c):
+        return sum(
+            desc_freq.get(_md5((job.get("description") or "").strip()), 0)
+            for job in c.get("career_history", [])
+            if (job.get("description") or "").strip()
+        )
+
+    max_bandwidth = max((_raw_bandwidth(c) for c in cleaned), default=1)
+    print(f"    max raw bandwidth across dataset : {max_bandwidth:,}")
+
     for c in cleaned:
-        stamp_fabrication(c, desc_freq)
-        if c["possible_fabrication"]: fabricated += 1
-    print(f"    ✅ possible_fabrication=True : {fabricated:,}  |  {time.time()-t:.1f}s")
+        stamp_fabrication_bandwidth(c, desc_freq, max_bandwidth)
+    print(f"    ✅ fabrication_bandwidth stamped for all candidates  |  {time.time()-t:.1f}s")
 
     # ── Pass 3: build tree ────────────────────────────────────────────────────
     print(f"\n🌳  Building Dataset/ tree ...")
@@ -3098,10 +3171,9 @@ def run():
 
     # ── Compute summary counts ─────────────────────────────────────────────────
     total         = len(cleaned)
-    code_count    = sum(1 for c in cleaned if _code_status(c)        == "code")
+    code_count    = sum(1 for c in cleaned if _code_status(c)         == "code")
     no_code_count = total - code_count
-    active_count  = sum(1 for c in cleaned if _availability_bucket(c) == "active_available")
-    reloc_count   = sum(1 for c in cleaned if _relocation_bucket(c)   == "available")
+    avail_count   = sum(1 for c in cleaned if _availability_bucket(c) == "available")
     pure_cv_count = sum(1 for c in cleaned if _is_pure_cv(c))
     total_time    = time.time() - wall_start
 
@@ -3112,16 +3184,20 @@ def run():
     print(f"  Candidates loaded        : {total + skipped:,}")
     print(f"  Candidates cleaned       : {total:,}")
     print(f"  Skipped (malformed)      : {skipped}")
+    dup_flagged       = sum(1 for c in cleaned if c.get("duplicate_job_descriptions"))
+    # avg_honeypot_score = sum(c.get("honeypot_score", 0) for c in cleaned) / max(total, 1)
+    avg_fabrication    = sum(c.get("fabrication_bandwidth", 0) for c in cleaned) / max(total, 1)
+
     print(f"  ── Quality ────────────────────────────────────────────")
-    print(f"  Honeypots (possible)     : {honeypots:,}  ({100*honeypots/max(total,1):.1f}%)")
-    print(f"  Possible fabrication     : {fabricated:,}  ({100*fabricated/max(total,1):.1f}%)")
+    print(f"  Duplicate descriptions   : {dup_flagged:,}  ({100*dup_flagged/max(total,1):.1f}%)")
+    # print(f"  Avg honeypot_score       : {avg_honeypot_score:.2f}  (0-8 scale)")
+    print(f"  Avg fabrication_bandwidth: {avg_fabrication:.3f}  (0-1 scale)")
+    print(f"  Max bandwidth (raw)      : {max_bandwidth:,}")
     print(f"  ── Classification ─────────────────────────────────────")
     print(f"  code                     : {code_count:,}  ({100*code_count/max(total,1):.1f}%)")
     print(f"  no_code                  : {no_code_count:,}  ({100*no_code_count/max(total,1):.1f}%)")
-    print(f"  active_available         : {active_count:,}  ({100*active_count/max(total,1):.1f}%)")
-    print(f"  inactive                 : {total-active_count:,}  ({100*(total-active_count)/max(total,1):.1f}%)")
-    print(f"  available (relocation)   : {reloc_count:,}  ({100*reloc_count/max(total,1):.1f}%)")
-    print(f"  unavailable (relocation) : {total-reloc_count:,}  ({100*(total-reloc_count)/max(total,1):.1f}%)")
+    print(f"  available                : {avail_count:,}  ({100*avail_count/max(total,1):.1f}%)")
+    print(f"  unavailable              : {total-avail_count:,}  ({100*(total-avail_count)/max(total,1):.1f}%)")
     print(f"  pure CV (no retrieval)   : {pure_cv_count:,}  ({100*pure_cv_count/max(total,1):.1f}%)")
     print(f"  ── Output ─────────────────────────────────────────────")
     print(f"  Unique descriptions      : {len(desc_freq):,}")

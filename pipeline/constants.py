@@ -10,10 +10,11 @@ from pathlib import Path
 # ──────────────────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).parent.parent
 MODELS_DIR = PROJECT_ROOT / "models" / "decompressed"
+MODELS_COMPRESSED_DIR = PROJECT_ROOT / "models" / "compressed"
 DATA_DIR = PROJECT_ROOT / "data"
 JD_JSON_PATH = DATA_DIR / "jd.json"
 
-# Model sub-paths (after setup.sh decompresses)
+# Model sub-paths (auto-decompressed into MODELS_DIR on first run if missing — see utils.ensure_models_decompressed)
 # Three models only: MiniLM sentence-transformer, FlashRank, Fraud KB
 SENTENCE_TRANSFORMER_DIR = MODELS_DIR / "sentence_transformer"
 FLASHRANK_DIR = MODELS_DIR / "ms-marco-MiniLM-L-12-v2"   # actual dir from tar extraction
@@ -56,6 +57,7 @@ DOWNLEVEL_SENIORITY_PENALTY = 0.85  # multiply score if candidate held a higher 
 # ──────────────────────────────────────────────────────────────────────────────
 L1C_MIN_SKILL_MATCH = 0.0    # per-folder gate inside l1c_skill_match (0.0 = off)
 L4_BATCH_SIZE = 64
+L4_INPUT_CAP = 400             # max candidates fed into L4 (sorted by L3 score); saves ~59s
 FLASHRANK_TOP_N = 50           # polish only top 50
 FLASHRANK_FIS_WEIGHT = 0.25    # blend weight: final = W*flashrank + (1-W)*fis  → FIS weight = 0.75
 OUTPUT_TOP_N = 100             # final CSV rows

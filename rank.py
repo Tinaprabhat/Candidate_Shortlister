@@ -3,13 +3,12 @@
 rank.py — RedRob ranking entry point (OFFLINE, no API calls).
 
 Pipeline:
-  L1a hard-reject → L1b profile-integrity → L1c skill-match → L1d bonus-match
+  L1a hard-reject → L1b profile-integrity → L1c skill-match → L1d inferred-match
   → L2 table-extract → L3 fuzzy-score
     (streamed continuously per candidate, concurrently across candidates —
      no batch wait between stages; see layers.run_streaming_cascade)
-  → gate (top 50% + random 25% = 75%)            ← the only compilation point
-  → L4 semantic-score + donts penalty (baked in) → top 100 [l3_score + l4_score]
-  → L5 FlashRank on top 50 (min-max normalised; total = (l3+l4+fr)/3) → final top 100
+  → L4 semantic-score + donts penalty (baked in) [all L3 survivors]
+  → top 100 by l4_combined_score
 
 Single-command:
     python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
@@ -72,25 +71,8 @@ def run_post_gate_cascade(
     candidates: List[dict], jd: dict, tracer: RunTracer
 ) -> List[dict]:
     """
-    gate (75%) → L4 semantic-score → top 200 → top 100 [l3_score + l4_score]
-    → L5 FlashRank top 50 (total_score = (l3 + l4 + flashrank) / 3) → top 100
+    L4 semantic-score (all L3 survivors) → top 100 [l4_combined_score]
     """
-    # Gate — top 50% + random 25% by l3_score = 75% (the one compilation point)
-    before_gate = len(candidates)
-    t = time.time()
-    candidates = layers.l3_gate(candidates)
-    tracer.record_cascade_step("L3_gate", before_gate, len(candidates),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "top_pct":    C.GATE_TOP_FRACTION,
-                                   "random_pct": C.GATE_RANDOM_FRACTION,
-                               })
-    logger.info(f"L3 gate: {before_gate} → {len(candidates)} passed (75%)")
-
-    # Slice to top 200 by l3_score BEFORE expensive L4 embedding (D23)
-    candidates = sorted(candidates, key=lambda c: c.get("l3_score", 0.0), reverse=True)[:200]
-    logger.info(f"Top-200 slice before L4: {len(candidates)} forwarded to semantic encoding")
-
     # L4 — semantic work relevance (returns all sorted by l4_combined_score)
     t = time.time()
     candidates = layers.l4_semantic_work(candidates, jd)
@@ -103,11 +85,17 @@ def run_post_gate_cascade(
                                    ),
                                })
 
-    # Top 100 by l4_combined_score (sorted; donts penalty already baked into l4_score by L4)
-    top100 = candidates[:100]
+    # Cap to top 100 by candidate_final_score; tie-break ascending candidate_id
+    top100 = sorted(
+        candidates,
+        key=lambda c: (
+            -float(c.get("candidate_final_score", 0.0)),
+            str(c.get("candidate_id", c.get("id", ""))),
+        ),
+    )[:100]
     n_penalised = sum(1 for c in top100 if c.get("l4_donts_penalty", 0.0) > 0)
-    logger.info(f"After L4+donts: {len(candidates)} scored → top {len(top100)} ({n_penalised} donts-penalised)")
-    tracer.record_cascade_step("L4_donts_baked", len(candidates), len(top100),
+    logger.info(f"After L4: {len(candidates)} scored → top {len(top100)} (ranks 1–{len(top100)}, {n_penalised} donts-penalised)")
+    tracer.record_cascade_step("L4_top100", len(candidates), len(top100),
                                notes={"donts_penalised": n_penalised})
 
     # L5 DISABLED — top-100 from L4 is the final ranking; no FlashRank reshuffling.
@@ -129,15 +117,17 @@ def run_post_gate_cascade(
 # ── Output helpers ────────────────────────────────────────────────────────────
 
 def _build_rows(top: List[dict]) -> List[dict]:
+    """
+    Assign ranks 1–N to the already-sorted top list.
+    top must arrive sorted (descending final_score, ascending candidate_id on tie)
+    — the sort is done once in run_post_gate_cascade.
+    """
     rows = []
-    prev = float("inf")
     for rank_pos, c in enumerate(top, start=1):
-        score = min(float(c.get("candidate_final_score", 0.0)), prev)
-        prev  = score
         rows.append({
             "candidate_id": str(c.get("candidate_id", c.get("id", f"UNKNOWN_{rank_pos}"))),
             "rank":         rank_pos,
-            "score":        round(score, 6),
+            "score":        round(float(c.get("candidate_final_score", 0.0)), 6),
             "reasoning":    c.get("l3_reasoning", ""),
         })
     return rows
@@ -152,74 +142,152 @@ def _write_csv(path: Path, rows: List[dict]):
 
 
 def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str) -> Path:
+    """
+    Write the full ranked output JSON.  Fields follow the 21-point spec:
+      1  rank                    2  candidate_id           3  final_score
+      4  profile                 5  education              6  career_history
+      7  skills                  8  projects               9  publications
+      10 skill_assessment_score  11 redrob_signals         12 other_profile_data
+      13 flags                   14 explicit_req_matched   15 explicit_bonus_matched
+      16 inferred_matched        17 unmatched_skills       18 tool_list
+      19 layer_scores            20 l2_table               21 reasoning
+    """
     _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     score_map = {r["candidate_id"]: r for r in rows}
-    records = []
-    for c in top:
-        cid = str(c.get("candidate_id", c.get("id", "")))
-        row = score_map.get(cid, {})
-        profile = c.get("profile") or {}
-        name = (
-            c.get("name")
-            or profile.get("name")
-            or profile.get("full_name")
-            or cid
-        )
-        records.append({
-            # ── Identity & rank ───────────────────────────────────────────
-            "rank":         row.get("rank"),
-            "candidate_id": cid,
-            "name":         name,
-            "final_score":  row.get("score"),
 
-            # ── Full candidate profile ────────────────────────────────────
+    # rows is already tie-break sorted; use that order for the JSON too
+    cid_to_rank = {r["candidate_id"]: r["rank"] for r in rows}
+    ordered_top = sorted(
+        top,
+        key=lambda c: cid_to_rank.get(
+            str(c.get("candidate_id", c.get("id", ""))), 9999
+        ),
+    )
+
+    records = []
+    for c in ordered_top:
+        cid    = str(c.get("candidate_id", c.get("id", "")))
+        row    = score_map.get(cid, {})
+        rank   = row.get("rank")
+        fscore = row.get("score")
+
+        profile = c.get("profile") or {}
+        signals = c.get("redrob_signals") or {}
+
+        # ── 13: flags — all boolean/flag fields in one place ─────────────
+        flags = {
+            # L1a fraud flags
+            "l1_flags":              c.get("l1_flags") or [],
+            "l1_status":             c.get("l1_status", "pass"),
+            # L1b availability flags
+            "l1b_flags":             c.get("l1b_flags") or [],
+            "l1b_status":            c.get("l1b_status", "pass"),
+            # L2/L3 profile flags (from table_row)
+            "is_phd":                bool((c.get("table_row") or {}).get("is_phd")),
+            "consulting_only":       bool((c.get("table_row") or {}).get("consulting_only")),
+            "research_published":    bool((c.get("table_row") or {}).get("research_published")),
+            "edu_career_gap_flag":   bool((c.get("table_row") or {}).get("edu_career_gap_flag")),
+            "low_engagement_flag":   bool((c.get("table_row") or {}).get("low_engagement_flag")),
+            "possible_fabrication":  bool((c.get("table_row") or {}).get("possible_fabrication")),
+            "no_certifications":     bool((c.get("table_row") or {}).get("no_certifications")),
+            "no_offer_history":      bool((c.get("table_row") or {}).get("no_offer_history")),
+            "second_undergrad_after_first": bool((c.get("table_row") or {}).get("second_undergrad_after_first")),
+            "skill_career_domain_mismatch": bool((c.get("table_row") or {}).get("skill_career_domain_mismatch")),
+            # L4 donts flag
+            "l4_donts_triggered":    float(c.get("l4_donts_penalty") or 0.0) > 0.0,
+            # Platform flags from redrob_signals
+            "open_to_work":          signals.get("open_to_work_flag"),
+            "verified_email":        signals.get("verified_email"),
+            "verified_phone":        signals.get("verified_phone"),
+            "linkedin_connected":    signals.get("linkedin_connected"),
+            "github_not_linked":     signals.get("github_not_linked"),
+            "no_offer_history_sig":  signals.get("no_offer_history"),
+        }
+
+        # ── 12: other_profile_data — every candidate field not in main sections ─
+        _main_keys = {
+            "candidate_id", "id", "name", "profile", "education", "career_history",
+            "work_experience", "skills", "projects", "publications", "research_papers",
+            "redrob_signals", "certifications", "languages",
+            # pipeline-added keys
+            "l1_score", "l1_flags", "l1_status", "l1b_penalty", "l1b_flags", "l1b_status",
+            "l1c_score", "l1c_matched_required", "l1c_missing_required", "l1c_matched_bonus",
+            "l1c_matched_inferred", "l1c_unmatched_skills", "l1c_matched_explicit",
+            "l1c_explicit_proficiency_score", "jd_req_score", "jd_req_results",
+            "l1d_matched_inferred", "l1d_unmatched_inferred", "l1d_inferred_ratio",
+            "l1d_leftover_count", "l1d_tool_list", "l1d_tools_score", "l1d_score",
+            "l1d_inferred_matched_score", "l1d_explicit_req_matched_score",
+            "l1d_explicit_bonus_matched_score", "l1d_unmatched_skills_score",
+            "l1d_inferred_proficiency_score",
+            "table_row", "l3_score", "l3_class", "l3_reasoning",
+            "l4_work_relevance", "l4_donts_sim", "l4_donts_penalty",
+            "l4_combined_score", "l4_score", "candidate_final_score",
+            "l5_flashrank_score", "l5_total_score",
+            "_folder",
+        }
+        other_profile_data = {
+            k: v for k, v in c.items() if k not in _main_keys
+        }
+
+        records.append({
+            # 1–3: identity
+            "rank":          rank,
+            "candidate_id":  cid,
+            "final_score":   fscore,
+
+            # 4–9: core profile sections
             "profile":        profile,
             "education":      c.get("education") or [],
             "career_history": c.get("career_history") or c.get("work_experience") or [],
             "skills":         c.get("skills") or [],
-            "certifications": c.get("certifications") or [],
-            "languages":      c.get("languages") or [],
             "projects":       c.get("projects") or [],
             "publications":   c.get("publications") or c.get("research_papers") or [],
-            "redrob_signals": c.get("redrob_signals") or {},
 
-            # ── Skill match detail ────────────────────────────────────────
-            "skill_match": {
-                "matched_explicit_required": c.get("l1c_matched_explicit", []),
-                "matched_all_required":      c.get("l1c_matched_required", []),
-                "missing_required":          c.get("l1c_missing_required", []),
-                "matched_explicit_bonus":    c.get("l1d_matched_bonus", []),
-                "unmatched_explicit_bonus":  c.get("l1d_unmatched_bonus", []),
-                "matched_all_bonus":         c.get("l1c_matched_bonus", []),
-                "jd_req_score":              round(c.get("jd_req_score", 0.0), 4),
-                "jd_req_results":            c.get("jd_req_results", {}),
-            },
+            # 10: skill assessment score (extracted from signals for quick access)
+            "skill_assessment_score": signals.get("skill_assessment_scores") or {},
 
-            # ── Per-layer scores ──────────────────────────────────────────
+            # 11: full redrob platform signals
+            "redrob_signals": signals,
+
+            # 12: everything else from the candidate record
+            "other_profile_data": other_profile_data,
+
+            # 13: all flags
+            "flags": flags,
+
+            # 14–18: skill matching lists (from L1c/L1d)
+            "explicit_req_matched":   c.get("l1c_matched_required", []),
+            "explicit_bonus_matched": c.get("l1c_matched_bonus", []),
+            "inferred_matched":       c.get("l1c_matched_inferred", []),
+            "unmatched_skills":       c.get("l1c_unmatched_skills", []),
+            "tool_list":              c.get("l1d_tool_list", []),
+
+            # 19: per-layer scores
             "layer_scores": {
-                "l1_score":              round(float(c.get("l1_score") or 0.5), 4),
-                "l1_flags":              c.get("l1_flags") or [],
-                "l1_status":             c.get("l1_status", "pass"),
-                "l1b_penalty":           round(float(c.get("l1b_penalty") or 1.0), 4),
-                "l1b_flags":             c.get("l1b_flags") or [],
-                "l1b_status":            c.get("l1b_status", "pass"),
-                "l1c_score":             round(float(c.get("l1c_score") or 0.0), 4),
-                "l1d_inferred_ratio":    round(float(c.get("l1d_inferred_ratio") or 1.0), 4),
-                "l1d_score":             round(float(c.get("l1d_score") or 0.0), 4),
-                "l3_score":              round(float(c.get("l3_score") or 0.0), 4),
-                "l3_class":              c.get("l3_class", ""),
-                "l4_work_relevance":     round(float(c.get("l4_work_relevance") or 0.0), 4),
-                "l4_donts_sim":          round(float(c.get("l4_donts_sim") or 0.0), 4),
-                "l4_donts_penalty":      round(float(c.get("l4_donts_penalty") or 0.0), 4),
-                "l4_combined_score":     round(float(c.get("l4_combined_score") or 0.0), 4),
-                "l5_flashrank_score":    round(float(c.get("l5_flashrank_score") or 0.0), 4),
-                "l5_total_score":        round(float(c.get("l5_total_score") or 0.0), 4),
+                "l1_score":                    round(float(c.get("l1_score") or 0.5), 4),
+                "l1b_penalty":                 round(float(c.get("l1b_penalty") or 1.0), 4),
+                "l1c_score":                   round(float(c.get("l1c_score") or 0.0), 4),
+                "l1c_explicit_proficiency":    round(float(c.get("l1c_explicit_proficiency_score") or 0.0), 4),
+                "l1d_score":                   round(float(c.get("l1d_score") or 0.0), 4),
+                "l1d_inferred_ratio":          round(float(c.get("l1d_inferred_ratio") or 0.0), 4),
+                "l1d_tools_score":             int(c.get("l1d_tools_score") or 0),
+                "l1d_inferred_proficiency":    round(float(c.get("l1d_inferred_proficiency_score") or 0.0), 4),
+                "jd_req_score":                round(float(c.get("jd_req_score") or 0.0), 4),
+                "l3_score":                    round(float(c.get("l3_score") or 0.0), 4),
+                "l3_class":                    c.get("l3_class", ""),
+                "l4_work_relevance":           round(float(c.get("l4_work_relevance") or 0.0), 4),
+                "l4_donts_sim":                round(float(c.get("l4_donts_sim") or 0.0), 4),
+                "l4_donts_penalty":            round(float(c.get("l4_donts_penalty") or 0.0), 4),
+                "l4_combined_score":           round(float(c.get("l4_combined_score") or 0.0), 4),
+                "l5_flashrank_score":          round(float(c.get("l5_flashrank_score") or 0.0), 4),
+                "l5_total_score":              round(float(c.get("l5_total_score") or 0.0), 4),
+                "candidate_final_score":       round(float(c.get("candidate_final_score") or 0.0), 4),
             },
 
-            # ── L2 table — all computed columns ──────────────────────────
+            # 20: full L2 table row
             "l2_table": c.get("table_row") or {},
 
-            # ── Reasoning string from L3 ──────────────────────────────────
+            # 21: L3 reasoning string
             "reasoning": c.get("l3_reasoning", ""),
         })
 
@@ -340,7 +408,7 @@ def main():
         tracer.finish(args.out, rows_written=0, elapsed=time.time() - t0)
         return
 
-    # Post-gate cascade — gate (75%) → L4 → top200 → top100 → L5
+    # Post-L3 cascade — L4 (all survivors) → top100
     top100 = run_post_gate_cascade(all_scored, jd, tracer)
 
     if not top100:

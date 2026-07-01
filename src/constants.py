@@ -25,12 +25,8 @@ FLASHRANK_MODEL_NAME = "ms-marco-MiniLM-L-12-v2"
 EMBED_DIM = 384
 
 # ──────────────────────────────────────────────────────────────────────────────
-# GATE / THRESHOLDS
+# THRESHOLDS
 # ──────────────────────────────────────────────────────────────────────────────
-GATE_TOP_FRACTION = 0.50      # top 50% by l3_score
-GATE_RANDOM_FRACTION = 0.05   # + random 5% from bottom half
-GATE_TOTAL = GATE_TOP_FRACTION + GATE_RANDOM_FRACTION  # 55%
-
 FOLDER_PRUNE_THRESHOLD = 0.15  # folder token-overlap cutoff
 FOLDER_DISPATCH_STAGGER_SEC = 0   # 0 = all folder threads start simultaneously
 MIN_FOLDERS_KEPT = 1           # never drop everything
@@ -261,25 +257,38 @@ ROLE_FAMILY_KEYWORDS: dict = {
 # Any match in ANY normalised path component triggers a Phase-1e hard-DROP.
 ROLE_FAMILY_EXCLUSIONS: dict = {
     "ai_ml": frozenset({
+        # cloud / infrastructure
         "cloud engineer", "cloud architect", "devops", "devops engineer",
-        "qa engineer", "quality engineer", "quality assurance",
+        "systems engineer",
+        # quality / test
+        "qa engineer", "quality engineer", "quality assurance", "sdet",
+        # mobile
         "mobile engineer", "mobile developer", "android", "ios developer",
-        "java developer", "java engineer", "net engineer", "dotnet",
+        # java / .net  (both "engineer" and "developer" variants)
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
+        # frontend (not relevant for backend AI/ML work)
+        "frontend engineer", "frontend developer",
+        "front end engineer", "front end developer",
     }),
     "cloud_devops": frozenset({
-        "qa engineer", "quality engineer", "quality assurance",
+        "qa engineer", "quality engineer", "quality assurance", "sdet",
         "mobile engineer", "mobile developer", "android", "ios developer",
-        "java developer", "java engineer", "net engineer", "dotnet",
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
+        "frontend engineer", "frontend developer",
     }),
     "qa": frozenset({
         "cloud engineer", "cloud architect", "devops", "mobile engineer",
         "mobile developer", "android", "ios developer",
-        "java developer", "java engineer", "net engineer", "dotnet",
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
     }),
     "mobile": frozenset({
         "cloud engineer", "cloud architect", "devops", "devops engineer",
         "qa engineer", "quality engineer", "quality assurance",
-        "java developer", "java engineer", "net engineer", "dotnet",
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
     }),
     "java_net": frozenset({
         "cloud engineer", "cloud architect", "devops", "devops engineer",

@@ -506,13 +506,48 @@ def pipeline_funnel(run_id: str) -> list[dict[str, Any]]:
     return rows
 
 
+def _pipeline_diagnostics(trace: dict[str, Any]) -> dict[str, Any]:
+    output = trace.get("output", {}) or {}
+    cascade = trace.get("cascade", {}) or {}
+    setup_timings = trace.get("setup_timings", []) or []
+    errors = trace.get("errors", []) or []
+
+    elapsed = float(output.get("elapsed_seconds") or 0)
+    setup_seconds = sum(float(t.get("elapsed_s") or 0) for t in setup_timings)
+
+    return {
+        "elapsed_seconds": round(elapsed, 1),
+        "setup_seconds": round(setup_seconds, 1),
+        "total_input": int(cascade.get("total_input") or 0),
+        "shortlist_count": int(output.get("candidates_ranked") or 0),
+        "error_count": len(errors),
+        "stage_count": len(cascade.get("steps", [])),
+    }
+
+
+def _health_summary(diag: dict[str, Any], running: bool) -> str:
+    if running:
+        return "Pipeline run in progress — diagnostics will update once it completes."
+    if not diag["elapsed_seconds"] and not diag["total_input"]:
+        return "No completed pipeline run found yet. Start a run to populate diagnostics."
+    summary = (
+        f"Last run processed {diag['total_input']:,} candidates across {diag['stage_count']} pipeline stages "
+        f"in {diag['elapsed_seconds']:.1f}s ({diag['setup_seconds']:.1f}s of that was model setup)."
+    )
+    if diag["error_count"]:
+        summary += f" {diag['error_count']} error(s) were logged during the run — review logs before trusting the shortlist."
+    else:
+        summary += f" No errors logged; {diag['shortlist_count']} candidates were shortlisted."
+    return summary
+
+
 @app.get("/system/health", dependencies=[Depends(verify_token)])
 def system_health() -> dict[str, Any]:
     status = _process_status()
     dataset = _load_dataset()
     trace = dataset.get("trace", {})
-    elapsed = float(trace.get("output", {}).get("elapsed_seconds") or 0)
     running = status == "running"
+    diag = _pipeline_diagnostics(trace)
     return {
         "neural_load": 86 if running else 42,
         "cache_size": "1.1 GB",
@@ -520,7 +555,10 @@ def system_health() -> dict[str, Any]:
         "uptime": "99.982%",
         "latency_ms": 28 if not running else 64,
         "queue_depth": 1 if running else 0,
-        "core_efficiency": max(1, min(100, round(300 / elapsed * 100))) if elapsed else 98,
+        "core_efficiency": max(1, min(100, round(300 / diag["elapsed_seconds"] * 100))) if diag["elapsed_seconds"] else 98,
+        "pipeline_running": running,
+        **diag,
+        "summary": _health_summary(diag, running),
     }
 
 

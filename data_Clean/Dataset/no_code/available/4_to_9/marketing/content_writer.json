@@ -165,6 +165,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.331141
   },
   {
@@ -329,6 +330,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.333204
   },
   {
@@ -510,6 +512,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.221162
   },
   {
@@ -671,6 +674,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.221484
   },
   {
@@ -847,6 +851,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.222707
   },
   {
@@ -1010,6 +1015,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221162
   },
   {
@@ -1175,6 +1181,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221162
   },
   {
@@ -1337,6 +1344,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.221572
   },
   {
@@ -1502,6 +1510,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221352
   },
   {
@@ -1679,6 +1688,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.220423
   },
   {
@@ -1827,6 +1837,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.111268
   },
   {
@@ -2020,6 +2031,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.442972
   },
   {
@@ -2188,6 +2200,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.334005
   },
   {
@@ -2407,6 +2420,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.221048
   },
   {
@@ -2586,6 +2600,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.331352
   },
   {
@@ -2739,6 +2754,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": true,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.222707
   },
   {
@@ -2919,6 +2935,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.223525
   },
   {
@@ -3124,6 +3141,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.445884
   },
   {
@@ -3300,6 +3318,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.33287
   },
   {
@@ -3452,6 +3471,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.332712
   },
   {
@@ -3650,6 +3670,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.331458
   },
   {
@@ -3838,6 +3859,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.331603
   },
   {
@@ -4024,6 +4046,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.333627
   },
   {
@@ -4189,6 +4212,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.224515
   },
   {
@@ -4380,6 +4404,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.444718
   },
   {
@@ -4533,6 +4558,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.22316
   },
   {
@@ -4708,6 +4734,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.222707
   },
   {
@@ -4882,6 +4909,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.220898
   },
   {
@@ -5069,6 +5097,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.332518
   },
   {
@@ -5232,6 +5261,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.222069
   },
   {
@@ -5400,6 +5430,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.331088
   },
   {
@@ -5576,6 +5607,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.332505
   },
   {
@@ -5763,6 +5795,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221484
   },
   {
@@ -5963,6 +5996,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.332839
   },
   {
@@ -6143,6 +6177,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.331722
   },
   {
@@ -6325,6 +6360,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.330903
   },
   {
@@ -6479,6 +6515,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.110902
   },
   {
@@ -6665,6 +6702,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.442096
   },
   {
@@ -6885,6 +6923,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.332272
   },
   {
@@ -7037,6 +7076,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.223292
   },
   {
@@ -7190,6 +7230,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221022
   },
   {
@@ -7376,6 +7417,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.222377
   },
   {
@@ -7549,6 +7591,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.331167
   },
   {
@@ -7755,6 +7798,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.112257
   },
   {
@@ -7928,6 +7972,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.442985
   },
   {
@@ -8092,6 +8137,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.332496
   },
   {
@@ -8297,6 +8343,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.331933
   },
   {
@@ -8506,6 +8553,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.331352
   },
   {
@@ -8715,6 +8763,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.443579
   },
   {
@@ -8868,6 +8917,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221387
   },
   {
@@ -9037,6 +9087,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.441586
   },
   {
@@ -9195,6 +9246,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.331673
   },
   {
@@ -9377,6 +9429,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.331612
   },
   {
@@ -9543,6 +9596,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": true,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.334238
   },
   {
@@ -9733,6 +9787,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.444775
   },
   {
@@ -9909,6 +9964,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.332619
   },
   {
@@ -10072,6 +10128,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.222707
   },
   {
@@ -10296,6 +10353,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.332197
   },
   {
@@ -10470,6 +10528,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.331656
   },
   {
@@ -10651,6 +10710,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.442175
   },
   {
@@ -10858,6 +10918,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.552805
   },
   {
@@ -11006,6 +11067,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.110449
   },
   {
@@ -11158,6 +11220,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.332606
   },
   {
@@ -11360,6 +11423,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.331488
   },
   {
@@ -11534,6 +11598,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.332285
   },
   {
@@ -11704,6 +11769,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.110902
   },
   {
@@ -11888,6 +11954,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.331867
   },
   {
@@ -12059,6 +12126,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.220753
   },
   {
@@ -12252,6 +12320,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.446817
   },
   {
@@ -12455,6 +12524,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.3321
   },
   {
@@ -12632,6 +12702,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.220568
   },
   {
@@ -12799,6 +12870,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.223525
   },
   {
@@ -12968,6 +13040,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.221048
   },
   {
@@ -13127,6 +13200,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.221805
   },
   {
@@ -13296,6 +13370,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.221022
   },
   {
@@ -13473,6 +13548,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221981
   },
   {
@@ -13636,6 +13712,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221352
   },
   {
@@ -13806,6 +13883,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221937
   },
   {
@@ -13986,6 +14064,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.221748
   },
   {
@@ -14145,6 +14224,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.220784
   },
   {
@@ -14387,6 +14467,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.33151
   },
   {
@@ -14561,6 +14642,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.332712
   },
   {
@@ -14710,6 +14792,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
     "fabrication_bandwidth": 0.221017
   },
   {
@@ -14891,6 +14974,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.442835
   },
   {
@@ -15070,6 +15154,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.330943
   },
   {
@@ -15266,6 +15351,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.442765
   },
   {
@@ -15440,6 +15526,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.333015
   },
   {
@@ -15620,6 +15707,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.331326
   },
   {
@@ -15802,6 +15890,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.332984
   },
   {
@@ -15971,6 +16060,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.443684
   }
 ]

@@ -1,0 +1,249 @@
+[
+  {
+    "candidate_id": "CAND_0024466",
+    "profile": {
+      "anonymized_name": "Om Mukherjee",
+      "headline": "Search Engineer | Applied ML | Building intelligent products",
+      "summary": "Machine learning engineer with 5.2 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, I led the team that migrated our keyword-search-based product to embedding-based retrieval. I care a lot about evaluation rigor — too many teams ship models without offline benchmarks they trust. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Toronto",
+      "country": "Canada",
+      "years_of_experience": 5.2,
+      "current_title": "Search Engineer",
+      "current_company": "PharmEasy",
+      "current_company_size": "5001-10000",
+      "current_industry": "HealthTech"
+    },
+    "career_history": [
+      {
+        "company": "PharmEasy",
+        "title": "Search Engineer",
+        "start_date": "2022-11-14",
+        "end_date": null,
+        "duration_months": 43,
+        "is_current": true,
+        "industry": "HealthTech",
+        "company_size": "5001-10000",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Mad Street Den",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2021-04-16",
+        "end_date": "2022-11-07",
+        "duration_months": 19,
+        "is_current": false,
+        "industry": "AI/ML",
+        "company_size": "201-500",
+        "description": "Built a content recommendation system serving 10M+ users that combined collaborative filtering with content-based ranking. The system uses item-item similarity (via sentence-transformer embeddings) for cold starts and a gradient-boosted model trained on engagement signals for warm users. Most of my time went into the feature pipeline (~200 features) and the A/B testing infrastructure. The launch improved 7-day retention by 6% and time spent per session by 14%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IISc Bangalore",
+        "degree": "M.Sc",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2012,
+        "end_year": 2016,
+        "grade": "6.57 CGPA",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Anna University",
+        "degree": "Ph.D",
+        "field_of_study": "Information Technology",
+        "start_year": 2016,
+        "end_year": 2020,
+        "grade": "7.58 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 50
+      },
+      {
+        "name": "pgvector",
+        "proficiency": "advanced",
+        "endorsements": 10,
+        "duration_months": 53
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 17
+      },
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "advanced",
+        "endorsements": 0,
+        "duration_months": 49
+      },
+      {
+        "name": "BM25",
+        "proficiency": "expert",
+        "endorsements": 6,
+        "duration_months": 41
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 32
+      },
+      {
+        "name": "Computer Vision",
+        "proficiency": "advanced",
+        "endorsements": 26,
+        "duration_months": 48
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "advanced",
+        "endorsements": 12,
+        "duration_months": 23
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "advanced",
+        "endorsements": 32,
+        "duration_months": 35
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "advanced",
+        "endorsements": 14,
+        "duration_months": 54
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "expert",
+        "endorsements": 28,
+        "duration_months": 92
+      },
+      {
+        "name": "NLP",
+        "proficiency": "advanced",
+        "endorsements": 53,
+        "duration_months": 26
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 29,
+        "duration_months": 48
+      },
+      {
+        "name": "CI/CD",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 7
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "expert",
+        "endorsements": 58,
+        "duration_months": 60
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "expert",
+        "endorsements": 35,
+        "duration_months": 52
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "advanced",
+        "endorsements": 20,
+        "duration_months": 59
+      },
+      {
+        "name": "PyTorch",
+        "proficiency": "advanced",
+        "endorsements": 35,
+        "duration_months": 21
+      }
+    ],
+    "certifications": [
+      {
+        "name": "LangChain for LLM Application Development",
+        "issuer": "DeepLearning.AI",
+        "year": 2021
+      },
+      {
+        "name": "NLP Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2020
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 72.8,
+      "signup_date": "2025-08-05",
+      "last_active_date": "2026-05-22",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 29,
+      "applications_submitted_30d": 18,
+      "recruiter_response_rate": 0.47,
+      "avg_response_time_hours": 13.4,
+      "skill_assessment_scores": {
+        "Recommendation Systems": 75.0,
+        "pgvector": 79.2,
+        "Reinforcement Learning": 89.4,
+        "BM25": 74.7,
+        "Computer Vision": 65.9
+      },
+      "connection_count": 121,
+      "endorsements_received": 31,
+      "notice_period_days": 120,
+      "expected_salary_range_inr_lpa": {
+        "min": 27.1,
+        "max": 38.8,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 78,
+      "saved_by_recruiters_30d": 5,
+      "interview_completion_rate": 0.56,
+      "offer_acceptance_rate": 0.61,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 1.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
+    "fabrication_bandwidth": 0.000598
+  }
+]

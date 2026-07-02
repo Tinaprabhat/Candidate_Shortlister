@@ -145,7 +145,198 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.044107
+  },
+  {
+    "candidate_id": "CAND_0015690",
+    "profile": {
+      "anonymized_name": "Reyansh Tiwari",
+      "headline": "Software Engineer | Cloud & DevOps",
+      "summary": "Software engineer with 2.9 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. Most of my work is conventional backend engineering — APIs, databases, queues, deployments. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Indore, Madhya Pradesh",
+      "country": "India",
+      "years_of_experience": 2.9,
+      "current_title": "Software Engineer",
+      "current_company": "Zomato",
+      "current_company_size": "5001-10000",
+      "current_industry": "Food Delivery"
+    },
+    "career_history": [
+      {
+        "company": "Zomato",
+        "title": "Software Engineer",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Food Delivery",
+        "company_size": "5001-10000",
+        "description": "Full-stack web application development at a SaaS company. Built React-based admin interfaces and the Node.js REST API backing them. Worked across the stack: frontend components, REST endpoint design, PostgreSQL schema, deployment via Docker/Kubernetes. Comfortable in most parts of a typical web stack though my comfort zone is the backend and database side. Recent learning has been on the testing and CI/CD discipline."
+      },
+      {
+        "company": "Accenture",
+        "title": ".NET Developer",
+        "start_date": "2023-06-12",
+        "end_date": "2025-02-01",
+        "duration_months": 20,
+        "is_current": false,
+        "industry": "Consulting",
+        "company_size": "10001+",
+        "description": "Android mobile development using Java and (more recently) Kotlin at a consumer-app company. Built and maintained multiple production features including the main shopping flow, push notification system, and the offline-first sync layer. Comfortable with the Android framework, Jetpack components, and the typical patterns (MVVM, Hilt, Coroutines). My career has been entirely on mobile so far; interested in expanding into broader backend or platform engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Anna University",
+        "degree": "M.E.",
+        "field_of_study": "Machine Learning",
+        "start_year": 2004,
+        "end_year": 2008,
+        "grade": "92%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "PostgreSQL",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 34
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "intermediate",
+        "endorsements": 7,
+        "duration_months": 27
+      },
+      {
+        "name": "Kafka",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 8
+      },
+      {
+        "name": "Snowflake",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 9
+      },
+      {
+        "name": "Apache Flink",
+        "proficiency": "beginner",
+        "endorsements": 6,
+        "duration_months": 18
+      },
+      {
+        "name": "Redis",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 17
+      },
+      {
+        "name": "gRPC",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 18
+      },
+      {
+        "name": "Tailwind",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 24
+      },
+      {
+        "name": "Marketing",
+        "proficiency": "beginner",
+        "endorsements": 14,
+        "duration_months": 11
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 24
+      },
+      {
+        "name": "Speech Recognition",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 20
+      },
+      {
+        "name": "Elasticsearch",
+        "proficiency": "advanced",
+        "endorsements": 18,
+        "duration_months": 56
+      },
+      {
+        "name": "GCP",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 4
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 87.2,
+      "signup_date": "2024-01-03",
+      "last_active_date": "2026-04-17",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 5,
+      "applications_submitted_30d": 8,
+      "recruiter_response_rate": 0.12,
+      "avg_response_time_hours": 14.4,
+      "skill_assessment_scores": {},
+      "connection_count": 320,
+      "endorsements_received": 51,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 17.2,
+        "max": 19.9,
+        "salary_was_inverted": true
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 166,
+      "saved_by_recruiters_30d": 0,
+      "interview_completion_rate": 0.75,
+      "offer_acceptance_rate": 0.53,
+      "verified_email": false,
+      "verified_phone": false,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": true,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 15.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 0.087844
   },
   {
     "candidate_id": "CAND_0020088",
@@ -311,6 +502,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -476,6 +668,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.087844
   },
   {
@@ -646,6 +839,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043051
   },
   {
@@ -804,6 +998,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.044107
   },
   {
@@ -987,6 +1182,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -1152,6 +1348,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -1323,7 +1520,208 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043605
+  },
+  {
+    "candidate_id": "CAND_0079004",
+    "profile": {
+      "anonymized_name": "Vikram Krishnan",
+      "headline": "Software Engineer | Cloud & DevOps",
+      "summary": "Software engineer with 3.0 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've worked across web frontends, REST APIs, and cloud deployments; comfortable in most parts of a typical SaaS stack. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Dubai",
+      "country": "UAE",
+      "years_of_experience": 3.0,
+      "current_title": "Software Engineer",
+      "current_company": "Pied Piper",
+      "current_company_size": "11-50",
+      "current_industry": "Software"
+    },
+    "career_history": [
+      {
+        "company": "Pied Piper",
+        "title": "Software Engineer",
+        "start_date": "2025-04-02",
+        "end_date": null,
+        "duration_months": 14,
+        "is_current": true,
+        "industry": "Software",
+        "company_size": "11-50",
+        "description": "Frontend engineering at a media company. React, TypeScript, and the typical surrounding tooling (Webpack, Jest, Cypress). Built the company's design system from scratch and led the migration from a legacy AngularJS app. Strong on the frontend craft — accessibility, performance, animations — but limited backend exposure."
+      },
+      {
+        "company": "Hooli",
+        "title": ".NET Developer",
+        "start_date": "2023-07-12",
+        "end_date": "2025-04-02",
+        "duration_months": 21,
+        "is_current": false,
+        "industry": "Software",
+        "company_size": "1001-5000",
+        "description": "Test automation and QA engineering for a fintech product. Built and maintained the end-to-end test suite using Selenium and pytest, plus the load-testing setup using Locust. Worked closely with developers on testability patterns and with product on acceptance criteria. Recent work has been on shifting test responsibility into the dev team — moving from QA-as-gate to QA-as-coach. Career has been entirely in QA/test engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Generic State University",
+        "degree": "Ph.D",
+        "field_of_study": "Electronics",
+        "start_year": 2003,
+        "end_year": 2008,
+        "grade": "9.00 CGPA",
+        "tier": "tier_4",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Bharati Vidyapeeth",
+        "degree": "M.Tech",
+        "field_of_study": "Mathematics",
+        "start_year": 2010,
+        "end_year": 2013,
+        "grade": "7.52 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Hadoop",
+        "proficiency": "intermediate",
+        "endorsements": 10,
+        "duration_months": 23
+      },
+      {
+        "name": "MongoDB",
+        "proficiency": "beginner",
+        "endorsements": 3,
+        "duration_months": 2
+      },
+      {
+        "name": "CSS",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 31
+      },
+      {
+        "name": "TypeScript",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 8
+      },
+      {
+        "name": "Data Pipelines",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 14
+      },
+      {
+        "name": "Recommendation Systems",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 33
+      },
+      {
+        "name": "Rust",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 18
+      },
+      {
+        "name": "Sales",
+        "proficiency": "beginner",
+        "endorsements": 10,
+        "duration_months": 18
+      },
+      {
+        "name": "Terraform",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 7
+      },
+      {
+        "name": "Azure",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 2
+      },
+      {
+        "name": "AWS",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 16
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 33
+      },
+      {
+        "name": "FastAPI",
+        "proficiency": "beginner",
+        "endorsements": 15,
+        "duration_months": 11
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 48.5,
+      "signup_date": "2024-08-14",
+      "last_active_date": "2026-01-12",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 81,
+      "applications_submitted_30d": 7,
+      "recruiter_response_rate": 0.43,
+      "avg_response_time_hours": 100.1,
+      "skill_assessment_scores": {},
+      "connection_count": 699,
+      "endorsements_received": 43,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 16.1,
+        "max": 33.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "remote",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 223,
+      "saved_by_recruiters_30d": 7,
+      "interview_completion_rate": 0.43,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 10.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
+    "fabrication_bandwidth": 0.087157
   },
   {
     "candidate_id": "CAND_0080896",
@@ -1492,6 +1890,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.044239
   },
   {
@@ -1650,6 +2049,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -1846,6 +2246,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.044239
   },
   {
@@ -2029,6 +2430,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.087289
   }
 ]

@@ -189,6 +189,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008078
   },
   {
@@ -375,6 +376,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.00795
   },
   {
@@ -562,6 +564,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.016107
   },
   {
@@ -734,6 +737,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008078
   },
   {
@@ -950,6 +954,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.007981
   },
   {
@@ -1149,6 +1154,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.008078
   },
   {
@@ -1321,7 +1327,190 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008078
+  },
+  {
+    "candidate_id": "CAND_0091527",
+    "profile": {
+      "anonymized_name": "Om Iyengar",
+      "headline": "Software Engineer | 2.4+ yrs in data engineering",
+      "summary": "Software / data professional with 2.4 years of experience building data pipelines, backend systems, and analytics infrastructure. Most of my work has been data pipelines and analytics infrastructure; I've shipped a couple of small ML features but it's not the core of my day. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Delhi, Delhi",
+      "country": "India",
+      "years_of_experience": 2.4,
+      "current_title": "Software Engineer",
+      "current_company": "Globex Inc",
+      "current_company_size": "501-1000",
+      "current_industry": "Manufacturing"
+    },
+    "career_history": [
+      {
+        "company": "Globex Inc",
+        "title": "Software Engineer",
+        "start_date": "2025-02-01",
+        "end_date": null,
+        "duration_months": 16,
+        "is_current": true,
+        "industry": "Manufacturing",
+        "company_size": "501-1000",
+        "description": "Built and maintained data pipelines on Apache Airflow processing ~500GB of daily transactional data across 12 source systems. Worked extensively with Spark (PySpark) for batch processing and dbt for the transformation/modeling layer in our Snowflake warehouse. Owned the on-call rotation for data quality issues — wrote most of the data quality checks that detect schema drift and unusual volume changes. The pipeline supports the analytics team and a few internal ML models."
+      },
+      {
+        "company": "Meesho",
+        "title": "Data Analyst",
+        "start_date": "2024-01-24",
+        "end_date": "2025-01-18",
+        "duration_months": 12,
+        "is_current": false,
+        "industry": "E-commerce",
+        "company_size": "1001-5000",
+        "description": "Mixed data science and analytics-engineering role at a marketing-analytics startup. Spent maybe 30% of my time on lightweight ML (clustering, classification, churn prediction in sklearn/XGBoost) and 70% on data infrastructure and dashboards. Comfortable with the modeling work but I wouldn't call myself an ML specialist. Built our experimentation framework that supports the product team's A/B tests."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Manipal Institute of Technology",
+        "degree": "M.E.",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2012,
+        "end_year": 2015,
+        "grade": "8.74 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Reinforcement Learning",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 26
+      },
+      {
+        "name": "Object Detection",
+        "proficiency": "advanced",
+        "endorsements": 57,
+        "duration_months": 48
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "intermediate",
+        "endorsements": 6,
+        "duration_months": 12
+      },
+      {
+        "name": "Pinecone",
+        "proficiency": "advanced",
+        "endorsements": 40,
+        "duration_months": 33
+      },
+      {
+        "name": "Java",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 14
+      },
+      {
+        "name": "PEFT",
+        "proficiency": "advanced",
+        "endorsements": 4,
+        "duration_months": 18
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "advanced",
+        "endorsements": 30,
+        "duration_months": 37
+      },
+      {
+        "name": "Image Classification",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 35
+      },
+      {
+        "name": "Prompt Engineering",
+        "proficiency": "advanced",
+        "endorsements": 19,
+        "duration_months": 57
+      },
+      {
+        "name": "Airflow",
+        "proficiency": "intermediate",
+        "endorsements": 14,
+        "duration_months": 33
+      },
+      {
+        "name": "SAP",
+        "proficiency": "intermediate",
+        "endorsements": 1,
+        "duration_months": 30
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 71.3,
+      "signup_date": "2025-07-28",
+      "last_active_date": "2026-02-19",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 152,
+      "applications_submitted_30d": 10,
+      "recruiter_response_rate": 0.67,
+      "avg_response_time_hours": 23.5,
+      "skill_assessment_scores": {
+        "Object Detection": 67.1,
+        "Pinecone": 42.4,
+        "PEFT": 74.0
+      },
+      "connection_count": 619,
+      "endorsements_received": 97,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 24.1,
+        "max": 28.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": 7.4,
+      "search_appearance_30d": 60,
+      "saved_by_recruiters_30d": 7,
+      "interview_completion_rate": 0.65,
+      "offer_acceptance_rate": 0.24,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 9.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 0.016028
   },
   {
     "candidate_id": "CAND_0092711",
@@ -1499,6 +1688,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.007875
   }
 ]

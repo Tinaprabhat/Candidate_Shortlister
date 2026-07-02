@@ -160,7 +160,211 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.0159
+  },
+  {
+    "candidate_id": "CAND_0013165",
+    "profile": {
+      "anonymized_name": "Anika Kapoor",
+      "headline": "Software Engineer | Data pipelines & analytics",
+      "summary": "Software / data professional with 2.6 years of experience building data pipelines, backend systems, and analytics infrastructure. I've been the engineer who makes ML possible by getting the data pipelines right; now I want to do more of the ML itself. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Hyderabad, Telangana",
+      "country": "India",
+      "years_of_experience": 2.6,
+      "current_title": "Software Engineer",
+      "current_company": "InMobi",
+      "current_company_size": "1001-5000",
+      "current_industry": "AdTech"
+    },
+    "career_history": [
+      {
+        "company": "InMobi",
+        "title": "Software Engineer",
+        "start_date": "2024-11-03",
+        "end_date": null,
+        "duration_months": 19,
+        "is_current": true,
+        "industry": "AdTech",
+        "company_size": "1001-5000",
+        "description": "Backend development with Python (FastAPI), PostgreSQL, and Redis at a B2B SaaS product. Owned the analytics-and-reporting service which serves dashboards to ~3K paying customers. Recent work includes integrating a model-serving service (built by another team) into our API layer; my work was the integration and observability, not the model itself. Strong on API design, database performance, and reliability engineering."
+      },
+      {
+        "company": "Capgemini",
+        "title": "Analytics Engineer",
+        "start_date": "2023-11-09",
+        "end_date": "2024-11-03",
+        "duration_months": 12,
+        "is_current": false,
+        "industry": "IT Services",
+        "company_size": "10001+",
+        "description": "Backend + data hybrid role at a growth-stage startup. Built the company's first proper data warehouse (migrating from a tangled set of Postgres replicas to a clean Snowflake setup with dbt), the orchestration layer (Airflow), and the BI integration (Looker). Shipped a couple of small predictive features but the bulk of the role was data infrastructure."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Bharati Vidyapeeth",
+        "degree": "M.S.",
+        "field_of_study": "Mechanical Engineering",
+        "start_year": 2014,
+        "end_year": 2018,
+        "grade": "7.20 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "Delhi College of Engineering",
+        "degree": "B.E.",
+        "field_of_study": "Electrical Engineering",
+        "start_year": 2002,
+        "end_year": 2007,
+        "grade": "7.26 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Milvus",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 26
+      },
+      {
+        "name": "PostgreSQL",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 5
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "intermediate",
+        "endorsements": 9,
+        "duration_months": 34
+      },
+      {
+        "name": "Airflow",
+        "proficiency": "beginner",
+        "endorsements": 8,
+        "duration_months": 18
+      },
+      {
+        "name": "Content Writing",
+        "proficiency": "beginner",
+        "endorsements": 9,
+        "duration_months": 5
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "advanced",
+        "endorsements": 3,
+        "duration_months": 33
+      },
+      {
+        "name": "Excel",
+        "proficiency": "intermediate",
+        "endorsements": 3,
+        "duration_months": 29
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 17
+      },
+      {
+        "name": "SAP",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 2
+      },
+      {
+        "name": "Angular",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 12
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 11,
+        "duration_months": 4
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "advanced",
+        "endorsements": 13,
+        "duration_months": 54
+      },
+      {
+        "name": "Fine-tuning LLMs",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 19
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 59.4,
+      "signup_date": "2025-08-10",
+      "last_active_date": "2026-01-24",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 39,
+      "applications_submitted_30d": 6,
+      "recruiter_response_rate": 0.28,
+      "avg_response_time_hours": 71.4,
+      "skill_assessment_scores": {
+        "LangChain": 63.2,
+        "Data Science": 78.5
+      },
+      "connection_count": 237,
+      "endorsements_received": 81,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 27.7,
+        "max": 45.3,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": 36.7,
+      "search_appearance_30d": 178,
+      "saved_by_recruiters_30d": 21,
+      "interview_completion_rate": 0.94,
+      "offer_acceptance_rate": 0.65,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 5.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
+    "fabrication_bandwidth": 0.015896
   },
   {
     "candidate_id": "CAND_0029925",
@@ -340,6 +544,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008021
   },
   {
@@ -522,6 +727,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008021
   },
   {
@@ -742,6 +948,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.016178
   },
   {
@@ -922,6 +1129,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.007981
   },
   {
@@ -1085,6 +1293,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.00795
   },
   {
@@ -1239,6 +1448,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.007981
   },
   {
@@ -1440,6 +1650,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008078
   },
   {
@@ -1632,6 +1843,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.007981
   },
   {
@@ -1841,7 +2053,235 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.008078
+  },
+  {
+    "candidate_id": "CAND_0063819",
+    "profile": {
+      "anonymized_name": "Rohan Chopra",
+      "headline": "Backend Engineer | SQL, Spark, Cloud",
+      "summary": "Software / data professional with 3.0 years of experience building data pipelines, backend systems, and analytics infrastructure. Started my career in backend engineering and gradually moved closer to data — first dashboards, then ETL, now some basic ML. My toolkit is solid on the data engineering side — Python, SQL, Spark, Airflow, warehouse design — and I've completed a couple of self-directed ML projects (Kaggle competitions, side projects fine-tuning small models). Interested in transitioning toward more AI/ML-focused work, ideally at a company where I can leverage my existing data-infra skills while learning modern ML practice.",
+      "location": "Jaipur, Rajasthan",
+      "country": "India",
+      "years_of_experience": 3.0,
+      "current_title": "Backend Engineer",
+      "current_company": "Flipkart",
+      "current_company_size": "10001+",
+      "current_industry": "E-commerce"
+    },
+    "career_history": [
+      {
+        "company": "Flipkart",
+        "title": "Backend Engineer",
+        "start_date": "2024-08-05",
+        "end_date": null,
+        "duration_months": 22,
+        "is_current": true,
+        "industry": "E-commerce",
+        "company_size": "10001+",
+        "description": "Designed and maintained the analytical data warehouse on Snowflake supporting the BI team's ~50 dashboards. Wrote complex SQL — heavy on window functions, CTEs, and incremental modeling patterns via dbt. Worked on the data modeling side (dimensional modeling, slowly changing dimensions) as well as performance optimization (query tuning, cluster sizing, materialized views). Also built the lineage and documentation framework now in use across the data org."
+      },
+      {
+        "company": "Dunder Mifflin",
+        "title": "Analytics Engineer",
+        "start_date": "2023-07-05",
+        "end_date": "2024-07-29",
+        "duration_months": 13,
+        "is_current": false,
+        "industry": "Paper Products",
+        "company_size": "201-500",
+        "description": "Backend development with Python (FastAPI), PostgreSQL, and Redis at a B2B SaaS product. Owned the analytics-and-reporting service which serves dashboards to ~3K paying customers. Recent work includes integrating a model-serving service (built by another team) into our API layer; my work was the integration and observability, not the model itself. Strong on API design, database performance, and reliability engineering."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Bharati Vidyapeeth",
+        "degree": "M.S.",
+        "field_of_study": "Artificial Intelligence",
+        "start_year": 2015,
+        "end_year": 2018,
+        "grade": "7.35 CGPA",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "VIT Chennai",
+        "degree": "B.E.",
+        "field_of_study": "Mechanical Engineering",
+        "start_year": 2017,
+        "end_year": 2020,
+        "grade": "74%",
+        "tier": "tier_3",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Illustrator",
+        "proficiency": "intermediate",
+        "endorsements": 4,
+        "duration_months": 12
+      },
+      {
+        "name": "Deep Learning",
+        "proficiency": "intermediate",
+        "endorsements": 15,
+        "duration_months": 26
+      },
+      {
+        "name": "MLflow",
+        "proficiency": "advanced",
+        "endorsements": 48,
+        "duration_months": 21
+      },
+      {
+        "name": "Data Science",
+        "proficiency": "advanced",
+        "endorsements": 53,
+        "duration_months": 34
+      },
+      {
+        "name": "GraphQL",
+        "proficiency": "beginner",
+        "endorsements": 7,
+        "duration_months": 14
+      },
+      {
+        "name": "Webpack",
+        "proficiency": "beginner",
+        "endorsements": 13,
+        "duration_months": 14
+      },
+      {
+        "name": "RAG",
+        "proficiency": "advanced",
+        "endorsements": 10,
+        "duration_months": 59
+      },
+      {
+        "name": "Sentence Transformers",
+        "proficiency": "intermediate",
+        "endorsements": 8,
+        "duration_months": 28
+      },
+      {
+        "name": "LoRA",
+        "proficiency": "advanced",
+        "endorsements": 49,
+        "duration_months": 21
+      },
+      {
+        "name": "Diffusion Models",
+        "proficiency": "advanced",
+        "endorsements": 8,
+        "duration_months": 29
+      },
+      {
+        "name": "Vue.js",
+        "proficiency": "beginner",
+        "endorsements": 0,
+        "duration_months": 18
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 10
+      },
+      {
+        "name": "REST APIs",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 8
+      },
+      {
+        "name": "Time Series",
+        "proficiency": "advanced",
+        "endorsements": 25,
+        "duration_months": 33
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Scrum Master Certified",
+        "issuer": "Scrum Alliance",
+        "year": 2024
+      },
+      {
+        "name": "Six Sigma Green Belt",
+        "issuer": "ASQ",
+        "year": 2022
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "professional"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "conversational"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 65.2,
+      "signup_date": "2025-02-17",
+      "last_active_date": "2026-03-11",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 68,
+      "applications_submitted_30d": 5,
+      "recruiter_response_rate": 0.75,
+      "avg_response_time_hours": 178.6,
+      "skill_assessment_scores": {
+        "MLflow": 78.8,
+        "Data Science": 76.4,
+        "RAG": 50.6,
+        "LoRA": 36.7
+      },
+      "connection_count": 317,
+      "endorsements_received": 80,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 23.4,
+        "max": 46.1,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "onsite",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 416,
+      "saved_by_recruiters_30d": 9,
+      "interview_completion_rate": 0.67,
+      "offer_acceptance_rate": 0.46,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": true,
+      "no_offer_history": false
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": false,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 3.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 0.016032
   },
   {
     "candidate_id": "CAND_0071276",
@@ -1997,6 +2437,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008021
   },
   {
@@ -2186,6 +2627,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.008078
   },
   {
@@ -2406,6 +2848,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.016138
   },
   {
@@ -2629,6 +3072,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.0159
   },
   {
@@ -2815,6 +3259,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.00795
   },
   {
@@ -2995,6 +3440,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.016235
   },
   {
@@ -3176,6 +3622,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.008078
   }
 ]

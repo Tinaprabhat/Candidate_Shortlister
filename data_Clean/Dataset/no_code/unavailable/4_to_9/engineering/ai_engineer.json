@@ -1,0 +1,244 @@
+[
+  {
+    "candidate_id": "CAND_0081686",
+    "profile": {
+      "anonymized_name": "Naina Tiwari",
+      "headline": "Search Engineer | Applied ML | Building intelligent products",
+      "summary": "Machine learning engineer with 6.0 years of experience building ML-powered features in production. Strong background in NLP, recommendation systems, and applied AI; comfortable across the ML stack from feature engineering through deployment. Recently, my main project for the last 18 months has been the recommendation system that powers our discovery feed. I've spent enough time debugging production ranking issues to know which signals matter and which are noise. My academic background is in CS/ML but my main learning has come from shipping real systems and seeing what holds up under production load. Open to senior IC roles in applied ML or AI engineering, ideally at product companies where I'd own a meaningful piece of the ML stack.",
+      "location": "Austin",
+      "country": "USA",
+      "years_of_experience": 6.0,
+      "current_title": "Search Engineer",
+      "current_company": "Netflix",
+      "current_company_size": "10001+",
+      "current_industry": "Media"
+    },
+    "career_history": [
+      {
+        "company": "Netflix",
+        "title": "Search Engineer",
+        "start_date": "2024-02-07",
+        "end_date": null,
+        "duration_months": 28,
+        "is_current": true,
+        "industry": "Media",
+        "company_size": "10001+",
+        "description": "Owned the ranking layer for an e-commerce search product, evolving it from a hand-tuned scoring function to a learning-to-rank model over 9 months. Designed the relevance labeling pipeline (mix of click-through data and explicit human judgments), the feature pipeline, and the training/eval workflow. Most of the work was infrastructure and data quality — the modeling part was almost the easy bit. Final model improved revenue-per-search by 12%."
+      },
+      {
+        "company": "Niramai",
+        "title": "Recommendation Systems Engineer",
+        "start_date": "2021-08-21",
+        "end_date": "2024-02-07",
+        "duration_months": 30,
+        "is_current": false,
+        "industry": "HealthTech AI",
+        "company_size": "51-200",
+        "description": "Developed a semantic search feature for an internal knowledge base of ~500K documents. Used sentence-transformers (all-MiniLM-L6-v2 initially, later upgraded to bge-base) with FAISS for fast nearest-neighbor retrieval. Designed the query expansion module that handles vocabulary mismatch between user queries and document terms. Reported search-relevance improvement of 35% over the prior Elasticsearch BM25 setup, validated through human relevance judgments."
+      },
+      {
+        "company": "Zoho",
+        "title": "AI Engineer",
+        "start_date": "2020-06-27",
+        "end_date": "2021-07-22",
+        "duration_months": 13,
+        "is_current": false,
+        "industry": "SaaS",
+        "company_size": "10001+",
+        "description": "Built a content recommendation system serving 10M+ users that combined collaborative filtering with content-based ranking. The system uses item-item similarity (via sentence-transformer embeddings) for cold starts and a gradient-boosted model trained on engagement signals for warm users. Most of my time went into the feature pipeline (~200 features) and the A/B testing infrastructure. The launch improved 7-day retention by 6% and time spent per session by 14%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "IIT Kanpur",
+        "degree": "M.S.",
+        "field_of_study": "Data Science",
+        "start_year": 2017,
+        "end_year": 2020,
+        "grade": "79%",
+        "tier": "tier_1",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Machine Learning",
+        "proficiency": "expert",
+        "endorsements": 25,
+        "duration_months": 84
+      },
+      {
+        "name": "Kubeflow",
+        "proficiency": "advanced",
+        "endorsements": 49,
+        "duration_months": 33
+      },
+      {
+        "name": "Embeddings",
+        "proficiency": "expert",
+        "endorsements": 30,
+        "duration_months": 59
+      },
+      {
+        "name": "FAISS",
+        "proficiency": "expert",
+        "endorsements": 26,
+        "duration_months": 49
+      },
+      {
+        "name": "Feature Engineering",
+        "proficiency": "intermediate",
+        "endorsements": 11,
+        "duration_months": 13
+      },
+      {
+        "name": "OpenCV",
+        "proficiency": "intermediate",
+        "endorsements": 12,
+        "duration_months": 30
+      },
+      {
+        "name": "Milvus",
+        "proficiency": "expert",
+        "endorsements": 55,
+        "duration_months": 93
+      },
+      {
+        "name": "BigQuery",
+        "proficiency": "beginner",
+        "endorsements": 5,
+        "duration_months": 2
+      },
+      {
+        "name": "CNN",
+        "proficiency": "advanced",
+        "endorsements": 46,
+        "duration_months": 43
+      },
+      {
+        "name": "Python",
+        "proficiency": "expert",
+        "endorsements": 59,
+        "duration_months": 78
+      },
+      {
+        "name": "LangChain",
+        "proficiency": "expert",
+        "endorsements": 36,
+        "duration_months": 48
+      },
+      {
+        "name": "Semantic Search",
+        "proficiency": "expert",
+        "endorsements": 44,
+        "duration_months": 68
+      },
+      {
+        "name": "QLoRA",
+        "proficiency": "expert",
+        "endorsements": 8,
+        "duration_months": 75
+      },
+      {
+        "name": "Java",
+        "proficiency": "beginner",
+        "endorsements": 4,
+        "duration_months": 3
+      },
+      {
+        "name": "LLMs",
+        "proficiency": "expert",
+        "endorsements": 38,
+        "duration_months": 61
+      },
+      {
+        "name": "Hugging Face Transformers",
+        "proficiency": "advanced",
+        "endorsements": 37,
+        "duration_months": 21
+      },
+      {
+        "name": "Forecasting",
+        "proficiency": "advanced",
+        "endorsements": 14,
+        "duration_months": 44
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "intermediate",
+        "endorsements": 0,
+        "duration_months": 12
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Deep Learning Specialization",
+        "issuer": "Coursera/DeepLearning.AI",
+        "year": 2024
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "professional"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 57.2,
+      "signup_date": "2024-11-10",
+      "last_active_date": "2026-04-25",
+      "open_to_work_flag": false,
+      "profile_views_received_30d": 218,
+      "applications_submitted_30d": 10,
+      "recruiter_response_rate": 0.91,
+      "avg_response_time_hours": 68.9,
+      "skill_assessment_scores": {
+        "Machine Learning": 64.9,
+        "Kubeflow": 73.2,
+        "Embeddings": 61.8,
+        "FAISS": 85.9
+      },
+      "connection_count": 1106,
+      "endorsements_received": 66,
+      "notice_period_days": 60,
+      "expected_salary_range_inr_lpa": {
+        "min": 30.3,
+        "max": 45.9,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "hybrid",
+      "willing_to_relocate": false,
+      "github_activity_score": 46.4,
+      "search_appearance_30d": 399,
+      "saved_by_recruiters_30d": 47,
+      "interview_completion_rate": 0.86,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": true,
+      "github_not_linked": false,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": false,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": false,
+    "education_overlap": false,
+    "overlapping_education_indices": [],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": false,
+    "education_career_gap_years": 0.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 0,
+    "fabrication_bandwidth": 0.00088
+  }
+]

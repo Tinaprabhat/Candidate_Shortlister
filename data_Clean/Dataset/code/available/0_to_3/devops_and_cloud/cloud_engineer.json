@@ -158,6 +158,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": true,
+    "honeypot_score": 4,
     "fabrication_bandwidth": 0.044107
   },
   {
@@ -332,6 +333,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.044239
   },
   {
@@ -495,6 +497,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.044547
   },
   {
@@ -663,6 +666,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -805,6 +809,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.044063
   },
   {
@@ -987,6 +992,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.044547
   },
   {
@@ -1153,6 +1159,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -1324,6 +1331,7 @@
     "duplicate_job_descriptions": true,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.08721
   },
   {
@@ -1531,6 +1539,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.044107
   },
   {
@@ -1700,6 +1709,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.044063
   },
   {
@@ -1872,6 +1882,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.044547
   },
   {
@@ -2026,6 +2037,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.044239
   },
   {
@@ -2187,6 +2199,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -2388,6 +2401,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
     "fabrication_bandwidth": 0.043051
   },
   {
@@ -2565,7 +2579,197 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.044063
+  },
+  {
+    "candidate_id": "CAND_0073866",
+    "profile": {
+      "anonymized_name": "Arnav Tiwari",
+      "headline": "Software Engineer | Full-stack development",
+      "summary": "Software engineer with 1.7 years of experience across web, backend, and cloud systems. Strong fundamentals in software development and system design. I've spent most of my career on web and API development — Python/Django and Node.js mostly. I've been keeping up with AI/ML at a self-learner level — taken some online courses, played with the OpenAI and Anthropic APIs, built a small RAG side project — but I haven't done it in a professional capacity yet. Open to roles where I can either deepen my software engineering work or, if the team is open to it, start contributing to ML-adjacent systems.",
+      "location": "Bangalore, Karnataka",
+      "country": "India",
+      "years_of_experience": 1.7,
+      "current_title": "Software Engineer",
+      "current_company": "Flipkart",
+      "current_company_size": "10001+",
+      "current_industry": "E-commerce"
+    },
+    "career_history": [
+      {
+        "company": "Flipkart",
+        "title": "Software Engineer",
+        "start_date": "2025-05-02",
+        "end_date": null,
+        "duration_months": 13,
+        "is_current": true,
+        "industry": "E-commerce",
+        "company_size": "10001+",
+        "description": "Frontend engineering at a media company. React, TypeScript, and the typical surrounding tooling (Webpack, Jest, Cypress). Built the company's design system from scratch and led the migration from a legacy AngularJS app. Strong on the frontend craft — accessibility, performance, animations — but limited backend exposure."
+      },
+      {
+        "company": "Initech",
+        "title": "Cloud Engineer",
+        "start_date": "2024-09-20",
+        "end_date": "2025-04-18",
+        "duration_months": 7,
+        "is_current": false,
+        "industry": "Software",
+        "company_size": "51-200",
+        "description": "Cloud infrastructure and DevOps work at an enterprise SaaS company. Owned the AWS account architecture (VPC, IAM, networking), the Terraform modules for our service deployments, and the Kubernetes cluster operations. Designed the CI/CD pipelines (GitLab CI + ArgoCD) and the monitoring stack (Prometheus, Grafana, Loki). Strong on the infra and ops side; haven't done much application development."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Jadavpur University",
+        "degree": "M.E.",
+        "field_of_study": "Computer Engineering",
+        "start_year": 2007,
+        "end_year": 2010,
+        "grade": "87%",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      },
+      {
+        "institution": "VJTI Mumbai",
+        "degree": "M.E.",
+        "field_of_study": "Computer Science",
+        "start_year": 2008,
+        "end_year": 2012,
+        "grade": "9.02 CGPA",
+        "tier": "tier_2",
+        "invalid_degree_field_combination": false
+      }
+    ],
+    "skills": [
+      {
+        "name": "Time Series",
+        "proficiency": "advanced",
+        "endorsements": 39,
+        "duration_months": 41
+      },
+      {
+        "name": "Flask",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 10
+      },
+      {
+        "name": "SQL",
+        "proficiency": "intermediate",
+        "endorsements": 5,
+        "duration_months": 24
+      },
+      {
+        "name": "Content Writing",
+        "proficiency": "beginner",
+        "endorsements": 12,
+        "duration_months": 15
+      },
+      {
+        "name": "Webpack",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 10
+      },
+      {
+        "name": "Excel",
+        "proficiency": "beginner",
+        "endorsements": 1,
+        "duration_months": 17
+      },
+      {
+        "name": "Weights & Biases",
+        "proficiency": "advanced",
+        "endorsements": 28,
+        "duration_months": 43
+      },
+      {
+        "name": "MongoDB",
+        "proficiency": "intermediate",
+        "endorsements": 2,
+        "duration_months": 21
+      },
+      {
+        "name": "MLOps",
+        "proficiency": "advanced",
+        "endorsements": 54,
+        "duration_months": 26
+      },
+      {
+        "name": "Scrum",
+        "proficiency": "beginner",
+        "endorsements": 2,
+        "duration_months": 11
+      }
+    ],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": "native"
+      },
+      {
+        "language": "Hindi",
+        "proficiency": "native"
+      }
+    ],
+    "redrob_signals": {
+      "profile_completeness_score": 76.7,
+      "signup_date": "2023-12-29",
+      "last_active_date": "2026-04-18",
+      "open_to_work_flag": true,
+      "profile_views_received_30d": 75,
+      "applications_submitted_30d": 1,
+      "recruiter_response_rate": 0.12,
+      "avg_response_time_hours": 60.5,
+      "skill_assessment_scores": {
+        "Time Series": 59.4
+      },
+      "connection_count": 581,
+      "endorsements_received": 6,
+      "notice_period_days": 30,
+      "expected_salary_range_inr_lpa": {
+        "min": 16.4,
+        "max": 29.5,
+        "salary_was_inverted": false
+      },
+      "preferred_work_mode": "flexible",
+      "willing_to_relocate": true,
+      "github_activity_score": null,
+      "search_appearance_30d": 232,
+      "saved_by_recruiters_30d": 3,
+      "interview_completion_rate": 0.77,
+      "offer_acceptance_rate": null,
+      "verified_email": true,
+      "verified_phone": true,
+      "linkedin_connected": false,
+      "github_not_linked": true,
+      "no_offer_history": true
+    },
+    "salary_was_inverted": false,
+    "github_not_linked": true,
+    "no_offer_history": true,
+    "skill_career_domain_mismatch": true,
+    "education_overlap": true,
+    "overlapping_education_indices": [
+      [
+        0,
+        1
+      ]
+    ],
+    "reverse_degree_order": false,
+    "second_undergrad_after_first": false,
+    "education_career_gap_flag": true,
+    "education_career_gap_years": 12.0,
+    "active_before_signup": false,
+    "signup_active_gap_days": 0,
+    "duplicate_job_descriptions": false,
+    "low_engagement_flag": false,
+    "_any_invalid_degree_field": false,
+    "honeypot_score": 3,
+    "fabrication_bandwidth": 0.088653
   },
   {
     "candidate_id": "CAND_0077070",
@@ -2752,6 +2956,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.088653
   },
   {
@@ -2932,6 +3137,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.043051
   },
   {
@@ -3118,6 +3324,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 1,
     "fabrication_bandwidth": 0.043051
   },
   {
@@ -3304,6 +3511,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.043605
   },
   {
@@ -3472,6 +3680,7 @@
     "duplicate_job_descriptions": false,
     "low_engagement_flag": false,
     "_any_invalid_degree_field": false,
+    "honeypot_score": 2,
     "fabrication_bandwidth": 0.044547
   }
 ]

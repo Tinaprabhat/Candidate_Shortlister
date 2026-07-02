@@ -2367,6 +2367,64 @@
 #   python pipeline.py
 # ─────────────────────────────────────────────────────────────────────────────
 
+# pipeline.py
+# ─────────────────────────────────────────────────────────────────────────────
+# PURPOSE
+#   Single-pass pipeline.
+#   Reads candidates.jsonl → cleans (fixes + flags) → stamps fabrication
+#   → classifies into 5-dimension tree → writes Dataset/ folder tree
+#
+# REMOVED FLAGS (per latest requirement):
+#   - possible_honeypot (boolean removed; honeypot_score value retained)
+#   - possible_fabrication (boolean removed; fabrication_bandwidth value retained, 0-1 scale)
+#   - all_descriptions_identical (merged into single duplicate_job_descriptions flag)
+#
+# FL18 LOGIC CHANGE:
+#   duplicate_job_descriptions is now a WITHIN-CANDIDATE check only.
+#   True if 2 or more of this candidate's OWN career descriptions are
+#   identical (whether just 2 match, or all of them match - single flag).
+#   No longer checks against the global dataset-wide frequency table.
+#
+# TREE STRUCTURE
+#   Dataset/
+#   └── {code_status}        code | no_code
+#       └── {availability}   available | unavailable
+#           └── {experience} 0_to_3 | 4_to_9 | 10_plus
+#               └── {domain}  engineering | devops_and_cloud |
+#                              product_and_design | operations |
+#                              business | marketing | finance |
+#                              hr_and_people | non_tech_engineering | other
+#                   └── {role}.json
+#
+# CODE vs NO_CODE LOGIC:
+#   code    = current title IS a hands-on technical role that requires
+#             writing production code right now.
+#   no_code = everything else:
+#             - management/leadership drift (tech lead, architect, EM)
+#             - non-technical roles (PM, BA, HR, marketing, finance, etc.)
+#             - zero career history (pure academic)
+#             - entire career in pure research/academic titles
+#
+# COMPUTER VISION SPECIAL RULE (from JD):
+#   "People whose primary expertise is computer vision, speech, or robotics
+#    without significant NLP/IR exposure — we respect your work but you'd be
+#    re-learning fundamentals here."
+#
+#   A candidate routes to computer_vision_engineer.json ONLY IF:
+#     - Current title matches CV keywords AND
+#     - They do NOT have significant retrieval/NLP/IR skills
+#       (embeddings, vector DBs, sentence transformers, FAISS, Pinecone,
+#        Qdrant, Weaviate, Milvus, OpenSearch, NLP, semantic search,
+#        information retrieval, learning to rank, BM25, RAG, LLMs,
+#        fine-tuning LLMs, haystack, pgvector)
+#
+#   If they DO have those skills → they are NOT pure CV →
+#   route to ml_engineer.json instead (they cross the JD's threshold)
+#
+# USAGE
+#   python pipeline.py
+# ─────────────────────────────────────────────────────────────────────────────
+
 import json
 import os
 import time
@@ -2436,13 +2494,13 @@ INDIA_PREFERRED_CITIES = {
     "navi mumbai", "thane", "kolkata"
 }
 
-# _SCORE_FIELDS = [
-#     "skill_career_domain_mismatch", "education_overlap",
-#     "reverse_degree_order", "second_undergrad_after_first",
-#     "education_career_gap_flag", "active_before_signup",
-#     "duplicate_job_descriptions",
-#     "low_engagement_flag", "_any_invalid_degree_field",
-# ]
+_SCORE_FIELDS = [
+    "skill_career_domain_mismatch", "education_overlap",
+    "reverse_degree_order", "second_undergrad_after_first",
+    "education_career_gap_flag", "active_before_signup",
+    "duplicate_job_descriptions",
+    "low_engagement_flag", "_any_invalid_degree_field",
+]
 
 # ── Titles that ARE hands-on production coding roles ─────────────────────────
 # code = current title is in this set
@@ -2816,8 +2874,8 @@ def fl20_low_engagement(c):
     return rate < 0.10 and hrs > 200
 
 
-# def fl26_honeypot_score(c):
-#     return sum(1 for f in _SCORE_FIELDS if c.get(f, False))
+def fl26_honeypot_score(c):
+    return sum(1 for f in _SCORE_FIELDS if c.get(f, False))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -2858,7 +2916,7 @@ def process_candidate(c):
         if val: any_invalid = True
     c["_any_invalid_degree_field"] = any_invalid
 
-    # c["honeypot_score"] = fl26_honeypot_score(c)
+    c["honeypot_score"] = fl26_honeypot_score(c)
 
     # fabrication — stamped after full freq table built
     c["fabrication_bandwidth"] = 0.0
@@ -3029,38 +3087,182 @@ def _experience_band(c) -> str:
     return "10_plus"
 
 
+# ── Keyword sets for career-based routing (within engineering domain) ─────────
+
+# AI/Data career titles — any match in career history → route to AI/Data role
+AI_DATA_CAREER_TITLES = {
+    "ml engineer", "machine learning engineer", "data scientist",
+    "ai engineer", "ai specialist", "nlp engineer",
+    "computer vision engineer", "deep learning engineer",
+    "research engineer", "research scientist", "applied scientist",
+    "mlops engineer", "data engineer", "analytics engineer",
+    "data architect", "etl developer", "spark engineer",
+    "kafka engineer", "databricks engineer", "data analyst",
+    "business intelligence", "bi analyst",
+}
+
+# Specialized tech roles — most recent career match wins over generic SWE
+SPECIALIZED_TECH_TITLES = {
+    "mobile developer", "android developer", "ios developer",
+    "mobile engineer", "android engineer", "ios engineer",
+    "java developer", "java engineer",
+    ".net developer", ".net engineer",
+    "embedded engineer", "firmware engineer",
+    "qa engineer", "quality assurance engineer", "test engineer",
+    "automation engineer", "sdet",
+    "cloud engineer", "devops engineer", "platform engineer",
+    "site reliability engineer", "sre", "systems engineer",
+    "security engineer",
+}
+
+# Mapping from specialized career title → (domain, role_slug)
+SPECIALIZED_TITLE_ROUTE = {
+    "mobile developer":            ("engineering",       "mobile_developer"),
+    "android developer":           ("engineering",       "mobile_developer"),
+    "ios developer":               ("engineering",       "mobile_developer"),
+    "mobile engineer":             ("engineering",       "mobile_developer"),
+    "android engineer":            ("engineering",       "mobile_developer"),
+    "ios engineer":                ("engineering",       "mobile_developer"),
+    "java developer":              ("engineering",       "java_developer"),
+    "java engineer":               ("engineering",       "java_developer"),
+    ".net developer":              ("engineering",       "net_developer"),
+    ".net engineer":               ("engineering",       "net_developer"),
+    "embedded engineer":           ("engineering",       "embedded_engineer"),
+    "firmware engineer":           ("engineering",       "embedded_engineer"),
+    "qa engineer":                 ("engineering",       "qa_engineer"),
+    "quality assurance engineer":  ("engineering",       "qa_engineer"),
+    "test engineer":               ("engineering",       "qa_engineer"),
+    "automation engineer":         ("engineering",       "qa_engineer"),
+    "sdet":                        ("engineering",       "qa_engineer"),
+    "cloud engineer":              ("devops_and_cloud",  "cloud_engineer"),
+    "devops engineer":             ("devops_and_cloud",  "devops_engineer"),
+    "platform engineer":           ("devops_and_cloud",  "platform_engineer"),
+    "site reliability engineer":   ("devops_and_cloud",  "site_reliability_engineer"),
+    "sre":                         ("devops_and_cloud",  "site_reliability_engineer"),
+    "systems engineer":            ("devops_and_cloud",  "systems_engineer"),
+    "security engineer":           ("devops_and_cloud",  "security_engineer"),
+}
+
+
+def _career_ai_data_role(career: list):
+    """
+    Rule 1: Check if ANY career job title is an AI/Data role.
+    If yes, return the best-matching (domain, role_slug) based on the
+    MOST RECENT AI/Data career entry.
+    Returns None if no AI/Data career titles found.
+
+    Why career titles only (not descriptions):
+      Descriptions are template-generated and unreliable.
+      Job titles are the primary signal of what someone actually did.
+    """
+    for job in sorted(career, key=lambda j: j.get("start_date", ""), reverse=True):
+        jt = _s(job.get("title", ""))
+        if any(kw in jt for kw in AI_DATA_CAREER_TITLES):
+            # Map to the best role slug using DOMAIN_ROLE_RULES
+            for domain, role_slug, keywords in DOMAIN_ROLE_RULES:
+                if any(kw in jt for kw in keywords):
+                    return domain, role_slug
+            # fallback for AI/Data titles not in DOMAIN_ROLE_RULES
+            return "engineering", "ml_engineer"
+    return None
+
+
+def _career_specialized_role(career: list):
+    """
+    Rule 2: Find the most recent specialized tech career entry.
+    Returns (domain, role_slug) for the most recent specialized role found,
+    or None if no specialized roles in career history.
+
+    Why most recent: Career direction matters more than past experience.
+    A SWE → QA Engineer trajectory means QA is their current specialization.
+    The most recent specialized role best represents where they are heading.
+    """
+    for job in sorted(career, key=lambda j: j.get("start_date", ""), reverse=True):
+        jt = _s(job.get("title", ""))
+        for kw, route in SPECIALIZED_TITLE_ROUTE.items():
+            if kw in jt:
+                return route
+    return None
+
+
 def _domain_and_role(c) -> tuple[str, str]:
     """
     Routes candidate to (domain, role_slug).
 
-    Special rule for computer_vision_engineer:
-      If title matches CV keywords:
+    For non-engineering domains: first title keyword match in DOMAIN_ROLE_RULES wins.
+
+    For engineering domain candidates, three-tier priority system:
+
+      Priority 1 — AI/Data career (highest):
+        If ANY career job title is an AI/ML/Data role → route to that AI/Data
+        role file, based on the most recent AI/Data career entry.
+        Why: Career history proves real AI/Data experience. Current title
+        alone can be misleading (e.g. someone titled "SWE" who spent 3 years
+        as an ML Engineer).
+
+      Priority 2 — Specialized tech career:
+        If career contains any specialized tech title (mobile, java, .net,
+        embedded, qa, cloud, devops, etc.) → route to that role based on
+        the most recent specialized entry.
+        Why: A SWE + Cloud Engineer career should be Cloud Engineer, not
+        Software Engineer. Most recent specialized role wins over generic
+        title when there is a conflict.
+
+      Priority 3 — Pure Software Engineer (fallback):
+        No AI/Data career and no specialized career → software_engineer.json.
+        This is truly a generalist SWE with no specialization signal.
+
+    CV Special Rule (applied before priority system):
+      If current title matches CV keywords:
         - pure CV (no retrieval/NLP skills) → computer_vision_engineer.json
         - has retrieval/NLP skills          → ml_engineer.json
-          (they cross the JD threshold and are NOT pure CV)
-
-    All other roles: first title keyword match in DOMAIN_ROLE_RULES wins.
     """
     title       = _s(c.get("profile", {}).get("current_title", ""))
     skill_names = {_s(sk.get("name")) for sk in c.get("skills", [])}
+    career      = c.get("career_history", [])
 
-    # Check CV special rule first
+    # ── CV Special Rule (unchanged) ───────────────────────────────────────────
     is_cv_title = any(kw in title for kw in CV_TITLE_KEYWORDS)
     if is_cv_title:
         has_retrieval = bool(skill_names & RETRIEVAL_NLP_SKILLS)
-        if has_retrieval:
-            # Has NLP/retrieval depth → not pure CV → ml_engineer
-            return "engineering", "ml_engineer"
-        else:
-            # Pure CV → computer_vision_engineer
-            return "engineering", "computer_vision_engineer"
+        return ("engineering", "ml_engineer") if has_retrieval else ("engineering", "computer_vision_engineer")
 
-    # Standard routing
+    # ── Check if this is an engineering-domain candidate ─────────────────────
+    # First do a standard title match to find the domain
+    matched_domain = None
+    matched_role   = None
     for domain, role_slug, keywords in DOMAIN_ROLE_RULES:
         if role_slug == "computer_vision_engineer":
-            continue  # already handled above
+            continue
         if any(kw in title for kw in keywords):
-            return domain, role_slug
+            matched_domain = domain
+            matched_role   = role_slug
+            break
+
+    # ── For non-engineering domains: return the title match directly ──────────
+    if matched_domain is not None and matched_domain != "engineering":
+        return matched_domain, matched_role
+
+    # ── For engineering domain (or unmatched): apply 3-tier career routing ────
+    # Priority 1: AI/Data career history
+    ai_data = _career_ai_data_role(career)
+    if ai_data:
+        return ai_data
+
+    # Priority 2: Specialized tech career history (most recent wins)
+    specialized = _career_specialized_role(career)
+    if specialized:
+        return specialized
+
+    # Priority 3: Pure SWE fallback — use the title match if we had one,
+    # otherwise software_engineer as the default for unspecialized engineers
+    if matched_domain == "engineering" and matched_role:
+        return matched_domain, matched_role
+
+    # Last resort: if title matched nothing but career indicates engineering
+    # (e.g. title is "senior developer" with no specific keyword match)
+    if matched_domain is None and _code_status(c) == "code":
+        return "engineering", "software_engineer"
 
     return OTHER_DOMAIN, OTHER_ROLE_SLUG
 
@@ -3185,12 +3387,12 @@ def run():
     print(f"  Candidates cleaned       : {total:,}")
     print(f"  Skipped (malformed)      : {skipped}")
     dup_flagged       = sum(1 for c in cleaned if c.get("duplicate_job_descriptions"))
-    # avg_honeypot_score = sum(c.get("honeypot_score", 0) for c in cleaned) / max(total, 1)
+    avg_honeypot_score = sum(c.get("honeypot_score", 0) for c in cleaned) / max(total, 1)
     avg_fabrication    = sum(c.get("fabrication_bandwidth", 0) for c in cleaned) / max(total, 1)
 
     print(f"  ── Quality ────────────────────────────────────────────")
     print(f"  Duplicate descriptions   : {dup_flagged:,}  ({100*dup_flagged/max(total,1):.1f}%)")
-    # print(f"  Avg honeypot_score       : {avg_honeypot_score:.2f}  (0-8 scale)")
+    print(f"  Avg honeypot_score       : {avg_honeypot_score:.2f}  (0-8 scale)")
     print(f"  Avg fabrication_bandwidth: {avg_fabrication:.3f}  (0-1 scale)")
     print(f"  Max bandwidth (raw)      : {max_bandwidth:,}")
     print(f"  ── Classification ─────────────────────────────────────")

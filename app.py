@@ -14,69 +14,24 @@ Pipeline:
 Run:  streamlit run app.py
 """
 
-import os
 import io
 import csv
 import json
 import time
 import tempfile
 import threading
-import shutil
-import concurrent.futures
 from pathlib import Path
 
 import streamlit as st
 
-# ── Load .env ─────────────────────────────────────────────────────────────────
-_env = Path(".env")
-
-def _read_env_file(path: Path) -> str:
-    for enc in ("utf-8-sig", "utf-16", "latin-1"):
-        try:
-            return path.read_text(encoding=enc)
-        except UnicodeError:
-            continue
-    return ""
-
-if _env.exists():
-    for _line in _read_env_file(_env).splitlines():
-        _line = _line.strip()
-        if _line and not _line.startswith("#") and "=" in _line:
-            _k, _v = _line.split("=", 1)
-            os.environ.setdefault(_k.strip(), _v.strip())
-
-
-# ── Groq status (sidebar) ─────────────────────────────────────────────────────
-@st.cache_data(show_spinner=False)
-def get_groq_status():
-    api_key    = os.environ.get("GROQ_API_KEY", "").strip()
-    model_name = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile").strip()
-    if not api_key:
-        return {"state": "missing_key"}
-    try:
-        from groq import Groq
-    except ImportError:
-        return {"state": "error", "message": "groq package not installed; install with pip install groq"}
-    try:
-        client     = Groq(api_key=api_key)
-        model_ids  = [m.id for m in client.models.list().data]
-        if model_name in model_ids:
-            return {"state": "working", "model": model_name}
-        # Key is valid even if this specific model name isn't in the list
-        return {"state": "working", "model": model_name}
-    except Exception as exc:
-        return {"state": "error", "message": str(exc)}
-
-
 from src import constants as C
 from src import utils, layers, pruning
-from src.jd_parser import parse_jd
 from src.tracer import RunTracer
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="RedRob — AI Candidate Ranker", page_icon="🤖", layout="wide")
 st.title("🤖 RedRob — AI-Powered Candidate Ranking")
-st.caption("Upload a candidates ZIP and a Job Description file. Get a ranked top-100 shortlist.")
+st.caption("Upload a candidates ZIP. Get a ranked top-100 shortlist against the active JD.")
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -85,19 +40,23 @@ with st.sidebar:
         "Folder dispatch stagger (sec)", 0, 60, C.FOLDER_DISPATCH_STAGGER_SEC,
         help="Seconds between dispatching each folder into the cascade",
     )
-    has_ollama = shutil.which("ollama") is not None
-    st.markdown(f"**Local Ollama CLI:** {'✅ available' if has_ollama else '❌ missing'}")
 
-    gs = get_groq_status()
-    if gs["state"] == "working":
-        st.markdown(f"**Groq API:** ✅ `{gs['model']}`")
-        st.success("Groq is ready for JD parsing.")
-    elif gs["state"] == "missing_key":
-        st.markdown("**Groq API:** ❌ GROQ_API_KEY not set")
-        st.warning("JD parsing will fall back to local Ollama.")
+    # Show active JD summary
+    st.markdown("---")
+    st.markdown("**Active JD**")
+    if C.JD_JSON_PATH.exists():
+        try:
+            _jd_preview = json.loads(C.JD_JSON_PATH.read_text(encoding="utf-8"))
+            st.markdown(f"📄 `{C.JD_JSON_PATH.name}`")
+            st.markdown(f"**{_jd_preview.get('job_title', 'Unknown')}**")
+            st.caption(
+                f"Industry: {_jd_preview.get('industry', 'n/a')} | "
+                f"Exp: {_jd_preview.get('experience_min', 0)}–{_jd_preview.get('experience_max', 99)} yrs"
+            )
+        except Exception:
+            st.warning("Could not preview jd.json")
     else:
-        st.markdown(f"**Groq API:** ❌ {gs.get('message', gs['state'])}")
-        st.warning("JD parsing will fall back to local Ollama.")
+        st.error(f"`{C.JD_JSON_PATH}` not found — place a parsed jd.json there before running.")
 
     st.markdown("---")
     st.markdown(
@@ -114,16 +73,13 @@ with st.sidebar:
     )
 
 # ── Uploaders ─────────────────────────────────────────────────────────────────
-col1, col2 = st.columns(2)
-with col1:
-    zip_file = st.file_uploader("📦 Candidates ZIP", type=["zip"])
-with col2:
-    jd_file = st.file_uploader(
-        "📄 Job Description (PDF / DOCX / TXT / MD)",
-        type=["pdf", "docx", "txt", "md"],
-    )
+zip_file = st.file_uploader("📦 Candidates ZIP", type=["zip"])
 
-run_btn = st.button("🚀 Run Ranking", type="primary", disabled=not (zip_file and jd_file))
+_jd_missing = not C.JD_JSON_PATH.exists()
+if _jd_missing:
+    st.error(f"No JD found at `{C.JD_JSON_PATH}`. Place a parsed `jd.json` there first.")
+
+run_btn = st.button("🚀 Run Ranking", type="primary", disabled=not zip_file or _jd_missing)
 
 _OUTPUT_DIR = Path(__file__).parent / "output"
 
@@ -185,6 +141,14 @@ def _run_post_gate_cascade(candidates, jd, tracer=None):
         tracer.record_cascade_step("L4_semantic_work", len(candidates), len(candidates),
                                    notes={"elapsed_s": round(time.time()-t, 3)})
 
+    # L4b — explicit required-skill penalty (< 4 matched → graduated −0.075/missing)
+    candidates = layers.l4b_explicit_req_penalty(candidates)
+    n_l4b = sum(1 for c in candidates if c.get("l4b_explicit_req_penalty", 0.0) > 0)
+    _logger.info(f"L4b penalised {n_l4b}/{len(candidates)}")
+    if tracer:
+        tracer.record_cascade_step("L4b_explicit_req_penalty", len(candidates), len(candidates),
+                                   notes={"penalised": n_l4b})
+
     # Cap to top 100; tie-break ascending candidate_id
     top100 = sorted(
         candidates,
@@ -194,7 +158,7 @@ def _run_post_gate_cascade(candidates, jd, tracer=None):
         ),
     )[:100]
     n_pen = sum(1 for c in top100 if c.get("l4_donts_penalty", 0.0) > 0)
-    _logger.info(f"Top {len(top100)} selected (ranks 1–{len(top100)}, {n_pen} donts-penalised)")
+    _logger.info(f"Top {len(top100)} selected (ranks 1–{len(top100)}, {n_pen} donts-penalised, {n_l4b} explicit-req-penalised)")
     if tracer:
         tracer.record_cascade_step("L4_top100", len(candidates), len(top100),
                                    notes={"donts_penalised": n_pen})
@@ -212,6 +176,25 @@ def _run_post_gate_cascade(candidates, jd, tracer=None):
 
 
 # ── Output helpers ────────────────────────────────────────────────────────────
+
+def _build_reasoning(c: dict) -> str:
+    profile = c.get("profile") or {}
+    title   = str(
+        profile.get("current_title") or profile.get("title") or profile.get("headline") or "Candidate"
+    ).strip()
+    exp     = utils.get_total_experience_years(c)
+    exp_str = f"{exp:.0f} yrs" if exp else "N/A"
+    l1c     = round(float(c.get("l1c_score") or 0.0), 2)
+    prof    = round(float(c.get("l1c_explicit_proficiency_score") or 0.0), 2)
+    wr      = round(float(c.get("l4_work_relevance") or 0.0), 2)
+    l3      = round(float(c.get("l3_score") or 0.0), 2)
+    return (
+        f"{title} with {exp_str}, {l1c} score for explicit skill match "
+        f"with {prof} proficiency score. Has {wr} work relevance score "
+        f"and {l3} reasoning layer score. Thus a Good fit for this position."
+    )
+
+
 def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
     """
     Write the full ranked output JSON.  Fields follow the 21-point spec:
@@ -224,10 +207,10 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
       19 layer_scores            20 l2_table               21 reasoning
     """
     _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    score_map = {r["candidate_id"]: r for r in rows}
+    score_map = {r["Cand_ID"]: r for r in rows}
 
     # rows is already tie-break sorted; use that order for the JSON too
-    cid_to_rank = {r["candidate_id"]: r["rank"] for r in rows}
+    cid_to_rank = {r["Cand_ID"]: r["rank"] for r in rows}
     ordered_top = sorted(
         top,
         key=lambda c: cid_to_rank.get(
@@ -240,7 +223,7 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
         cid    = str(c.get("candidate_id", c.get("id", "")))
         row    = score_map.get(cid, {})
         rank   = row.get("rank")
-        fscore = row.get("score")
+        fscore = row.get("final_score")
 
         profile = c.get("profile") or {}
         signals = c.get("redrob_signals") or {}
@@ -341,6 +324,7 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
                 "l4_work_relevance":           round(float(c.get("l4_work_relevance") or 0.0), 4),
                 "l4_donts_sim":                round(float(c.get("l4_donts_sim") or 0.0), 4),
                 "l4_donts_penalty":            round(float(c.get("l4_donts_penalty") or 0.0), 4),
+                "l4b_explicit_req_penalty":    round(float(c.get("l4b_explicit_req_penalty") or 0.0), 4),
                 "l4_combined_score":           round(float(c.get("l4_combined_score") or 0.0), 4),
                 "l5_flashrank_score":          round(float(c.get("l5_flashrank_score") or 0.0), 4),
                 "l5_total_score":              round(float(c.get("l5_total_score") or 0.0), 4),
@@ -350,8 +334,8 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
             # 20: full L2 table row
             "l2_table": c.get("table_row") or {},
 
-            # 21: L3 reasoning string
-            "reasoning": c.get("l3_reasoning", ""),
+            # 21: reasoning summary
+            "reasoning": _build_reasoning(c),
         })
 
     out = {
@@ -375,43 +359,29 @@ if run_btn:
     tmp    = Path(tempfile.mkdtemp(prefix="redrob_ui_"))
 
     zip_path = tmp / "candidates.zip"
-    jd_path  = tmp / jd_file.name
     zip_path.write_bytes(zip_file.getvalue())
-    jd_path.write_bytes(jd_file.getvalue())
 
-    # ── Step 1 + 2: Parse JD & load models in parallel ───────────────────────
-    with st.status("Parsing JD & loading models...", expanded=True) as status:
-        C.DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
-            t_jd_submit = time.time()
-            jd_fut     = ex.submit(parse_jd, jd_path, C.JD_JSON_PATH)
-            t_models_submit = time.time()
-            models_fut = ex.submit(_load_models)
-            jd_exc = models_exc = None
-            try:
-                jd = jd_fut.result()
-                tracer.record_timing("jd_parse", round(time.time() - t_jd_submit, 3))
-            except Exception as e:
-                jd_exc = e
-            try:
-                models = models_fut.result()
-                tracer.record_timing("models_load", round(time.time() - t_models_submit, 3))
-            except Exception as e:
-                models_exc = e
-
-        if jd_exc:
-            status.update(label="JD parsing failed", state="error")
-            st.error(f"JD parsing error: {jd_exc}")
+    # ── Step 1: Load JD from disk + load models ───────────────────────────────
+    with st.status("Loading JD & models...", expanded=True) as status:
+        try:
+            jd = json.loads(C.JD_JSON_PATH.read_text(encoding="utf-8"))
+        except Exception as e:
+            status.update(label="Failed to load jd.json", state="error")
+            st.error(f"Could not read {C.JD_JSON_PATH}: {e}")
             st.stop()
-        if models_exc:
+
+        try:
+            t_models = time.time()
+            models = _load_models()
+            tracer.record_timing("models_load", round(time.time() - t_models, 3))
+        except Exception as e:
             status.update(label="Model loading failed", state="error")
-            st.error(f"Model loading error: {models_exc}")
+            st.error(f"Model loading error: {e}")
             st.stop()
 
         tracer.set_jd(jd)
         st.write(
-            f"✅ JD parsed — **{jd.get('job_title','')}** | "
+            f"✅ JD loaded — **{jd.get('job_title','')}** | "
             f"Industry: **{jd.get('industry','n/a')}** | "
             f"Location: **{jd.get('location','n/a')}** | "
             f"Exp: **{jd.get('experience_min',0)}–{jd.get('experience_max',99)} yrs**"
@@ -428,7 +398,7 @@ if run_btn:
                 "explicit_required", "inferred_required", "donts",
             ]})
         st.write("✅ Models loaded")
-        status.update(label="JD parsed & models ready ✅", state="complete")
+        status.update(label="JD & models ready ✅", state="complete")
 
     # ── Step 3: Load raw candidates per folder (pure I/O — no scoring yet) ──
     all_raw = []
@@ -508,17 +478,17 @@ if run_btn:
         score = min(float(c.get("candidate_final_score", 0.0)), prev)
         prev  = score
         rows.append({
-            "candidate_id": str(c.get("candidate_id", c.get("id", f"UNKNOWN_{i}"))),
-            "rank":         i,
-            "score":        round(score, 6),
-            "reasoning":    c.get("l3_reasoning", ""),
+            "Cand_ID":     str(c.get("candidate_id", c.get("id", f"UNKNOWN_{i}"))),
+            "rank":        i,
+            "final_score": round(score, 6),
+            "reasoning":   _build_reasoning(c),
         })
 
     t_write = time.time()
     json_path = _write_ranked_json(top100, rows, jd, tracer.run_id)
 
     buf = io.StringIO()
-    w   = csv.DictWriter(buf, fieldnames=["candidate_id", "rank", "score", "reasoning"])
+    w   = csv.DictWriter(buf, fieldnames=["Cand_ID", "rank", "final_score", "reasoning"])
     w.writeheader()
     w.writerows(rows)
     csv_bytes = buf.getvalue().encode("utf-8")
@@ -528,7 +498,7 @@ if run_btn:
     trace_path = tracer.finish(
         output_json=json_path,
         rows_written=len(rows),
-        top_scores=[r["score"] for r in rows[:10]],
+        top_scores=[r["final_score"] for r in rows[:10]],
         elapsed=elapsed,
     )
 
@@ -550,13 +520,13 @@ if run_btn:
     st.subheader("Top 100 Ranking")
     display_rows = []
     for r in rows:
-        cid = r["candidate_id"]
+        cid = r["Cand_ID"]
         c   = next((x for x in top100
                     if str(x.get("candidate_id", x.get("id", ""))) == cid), {})
         display_rows.append({
             "Rank":          r["rank"],
             "Candidate ID":  cid,
-            "Final Score":   r["score"],
+            "Final Score":   r["final_score"],
             "L3 Fuzzy":      round(c.get("l3_score", 0.0), 3),
             "L3 Class":      c.get("l3_class", ""),
             "H Penalty":     int(c.get("table_row", {}).get("l3_h_penalty", False)),

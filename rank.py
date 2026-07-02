@@ -85,6 +85,12 @@ def run_post_gate_cascade(
                                    ),
                                })
 
+    # L4b — explicit required-skill penalty (< 4 matched → graduated −0.075/missing)
+    candidates = layers.l4b_explicit_req_penalty(candidates)
+    n_l4b = sum(1 for c in candidates if c.get("l4b_explicit_req_penalty", 0.0) > 0)
+    tracer.record_cascade_step("L4b_explicit_req_penalty", len(candidates), len(candidates),
+                               notes={"penalised": n_l4b})
+
     # Cap to top 100 by candidate_final_score; tie-break ascending candidate_id
     top100 = sorted(
         candidates,
@@ -94,7 +100,7 @@ def run_post_gate_cascade(
         ),
     )[:100]
     n_penalised = sum(1 for c in top100 if c.get("l4_donts_penalty", 0.0) > 0)
-    logger.info(f"After L4: {len(candidates)} scored → top {len(top100)} (ranks 1–{len(top100)}, {n_penalised} donts-penalised)")
+    logger.info(f"After L4b: {len(candidates)} scored → top {len(top100)} (ranks 1–{len(top100)}, {n_penalised} donts-penalised, {n_l4b} explicit-req-penalised)")
     tracer.record_cascade_step("L4_top100", len(candidates), len(top100),
                                notes={"donts_penalised": n_penalised})
 
@@ -116,6 +122,24 @@ def run_post_gate_cascade(
 
 # ── Output helpers ────────────────────────────────────────────────────────────
 
+def _build_reasoning(c: dict) -> str:
+    profile = c.get("profile") or {}
+    title   = str(
+        profile.get("current_title") or profile.get("title") or profile.get("headline") or "Candidate"
+    ).strip()
+    exp     = utils.get_total_experience_years(c)
+    exp_str = f"{exp:.0f} yrs" if exp else "N/A"
+    l1c     = round(float(c.get("l1c_score") or 0.0), 2)
+    prof    = round(float(c.get("l1c_explicit_proficiency_score") or 0.0), 2)
+    wr      = round(float(c.get("l4_work_relevance") or 0.0), 2)
+    l3      = round(float(c.get("l3_score") or 0.0), 2)
+    return (
+        f"{title} with {exp_str}, {l1c} score for explicit skill match "
+        f"with {prof} proficiency score. Has {wr} work relevance score "
+        f"and {l3} reasoning layer score. Thus a Good fit for this position."
+    )
+
+
 def _build_rows(top: List[dict]) -> List[dict]:
     """
     Assign ranks 1–N to the already-sorted top list.
@@ -125,10 +149,10 @@ def _build_rows(top: List[dict]) -> List[dict]:
     rows = []
     for rank_pos, c in enumerate(top, start=1):
         rows.append({
-            "candidate_id": str(c.get("candidate_id", c.get("id", f"UNKNOWN_{rank_pos}"))),
-            "rank":         rank_pos,
-            "score":        round(float(c.get("candidate_final_score", 0.0)), 6),
-            "reasoning":    c.get("l3_reasoning", ""),
+            "Cand_ID":     str(c.get("candidate_id", c.get("id", f"UNKNOWN_{rank_pos}"))),
+            "rank":        rank_pos,
+            "final_score": round(float(c.get("candidate_final_score", 0.0)), 6),
+            "reasoning":   _build_reasoning(c),
         })
     return rows
 
@@ -136,7 +160,7 @@ def _build_rows(top: List[dict]) -> List[dict]:
 def _write_csv(path: Path, rows: List[dict]):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["candidate_id", "rank", "score", "reasoning"])
+        writer = csv.DictWriter(f, fieldnames=["Cand_ID", "rank", "final_score", "reasoning"])
         writer.writeheader()
         writer.writerows(rows)
 
@@ -153,10 +177,10 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
       19 layer_scores            20 l2_table               21 reasoning
     """
     _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    score_map = {r["candidate_id"]: r for r in rows}
+    score_map = {r["Cand_ID"]: r for r in rows}
 
     # rows is already tie-break sorted; use that order for the JSON too
-    cid_to_rank = {r["candidate_id"]: r["rank"] for r in rows}
+    cid_to_rank = {r["Cand_ID"]: r["rank"] for r in rows}
     ordered_top = sorted(
         top,
         key=lambda c: cid_to_rank.get(
@@ -169,7 +193,7 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
         cid    = str(c.get("candidate_id", c.get("id", "")))
         row    = score_map.get(cid, {})
         rank   = row.get("rank")
-        fscore = row.get("score")
+        fscore = row.get("final_score")
 
         profile = c.get("profile") or {}
         signals = c.get("redrob_signals") or {}
@@ -278,6 +302,7 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
                 "l4_work_relevance":           round(float(c.get("l4_work_relevance") or 0.0), 4),
                 "l4_donts_sim":                round(float(c.get("l4_donts_sim") or 0.0), 4),
                 "l4_donts_penalty":            round(float(c.get("l4_donts_penalty") or 0.0), 4),
+                "l4b_explicit_req_penalty":    round(float(c.get("l4b_explicit_req_penalty") or 0.0), 4),
                 "l4_combined_score":           round(float(c.get("l4_combined_score") or 0.0), 4),
                 "l5_flashrank_score":          round(float(c.get("l5_flashrank_score") or 0.0), 4),
                 "l5_total_score":              round(float(c.get("l5_total_score") or 0.0), 4),
@@ -287,8 +312,8 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
             # 20: full L2 table row
             "l2_table": c.get("table_row") or {},
 
-            # 21: L3 reasoning string
-            "reasoning": c.get("l3_reasoning", ""),
+            # 21: reasoning summary
+            "reasoning": _build_reasoning(c),
         })
 
     out = {
@@ -431,7 +456,7 @@ def main():
         args.out,
         output_json=json_path,
         rows_written=len(rows),
-        top_scores=[r["score"] for r in rows[:10]],
+        top_scores=[r["final_score"] for r in rows[:10]],
         elapsed=elapsed,
     )
     logger.info(f"Wrote {len(rows)} ranked candidates → {args.out}")

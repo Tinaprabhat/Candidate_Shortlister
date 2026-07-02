@@ -707,7 +707,7 @@ def _l1c_process_one(c: dict, ctx: dict) -> bool:
     raw_score = (
         0.7 * len(explicit_req_matched)
         + 0.3 * len(explicit_bonus_matched)
-        - 0.5 * len(unmatched_skills)
+        - 0.2 * len(unmatched_skills)
     )
     if max_positive > 0:
         score = max(0.0, min(1.0, raw_score / max_positive))
@@ -1779,7 +1779,7 @@ _CV_SPEECH_TITLE_KW: frozenset = frozenset({
     "speech recognition", "asr engineer", "tts engineer", "speech engineer",
     "image processing", "visual recognition",
 })
-_CATEGORICAL_DONTS_PENALTY = 0.60  # full _L4_DONTS_WEIGHT applied to CV/speech candidates
+_CATEGORICAL_DONTS_FLOOR = 0.06  # minimum donts penalty for CV/speech candidates — blended with ramp, not overriding it
 
 
 def _is_cv_speech_candidate(c: dict) -> bool:
@@ -1844,6 +1844,8 @@ _L4_WORK_WEIGHT           = 0.5
 _L4_DONTS_WEIGHT          = 0.6
 # Near-zero work similarity → hard reject (candidate removed from output)
 _L4_WORK_SIM_HARD_REJECT  = 0.05
+_L4B_PENALTY_PER_MISSING  = 0.005  # per missing explicit required skill (max 3 steps; 0-match is hard-rejected by L1c)
+_L4B_SCORE_FLOOR          = 0.010  # minimum final score after L4b — never exactly 0
 
 
 def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
@@ -1860,8 +1862,9 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
 
       Hard-reject        : l4_work_relevance < _L4_WORK_SIM_HARD_REJECT → removed from output
 
-      l4_donts_penalty   = _L4_DONTS_WEIGHT × l4_donts_sim   if donts present & sim > threshold
-                         = _L4_DONTS_WEIGHT                   if categorical CV/speech candidate
+      l4_donts_penalty   = max(_L4_DONTS_WEIGHT × ramp × sim,  if categorical CV/speech: blended with floor
+                               _CATEGORICAL_DONTS_FLOOR)       floor=0.06 so strong retrieval candidates
+                         = _L4_DONTS_WEIGHT × ramp × sim      if non-categorical & sim > noise floor
                          = 0                                   otherwise  (cannot backfire)
 
       candidate_final_score = 0.5 × l3_score + 0.5 × l4_work_relevance − l4_donts_penalty
@@ -1982,7 +1985,11 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
         # Donts penalty: linear ramp from noise floor → full weight, smoothing
         # the discontinuity of the old step function.  Zero otherwise → cannot backfire.
         if is_cv_speech[i]:
-            donts_penalty = _CATEGORICAL_DONTS_PENALTY
+            ramp_penalty = 0.0
+            if jd_donts_vec is not None and ds > _noise_floor:
+                ramp = min(1.0, (ds - _noise_floor) / (_full_penalty_at - _noise_floor))
+                ramp_penalty = _L4_DONTS_WEIGHT * ramp * ds
+            donts_penalty = max(ramp_penalty, _CATEGORICAL_DONTS_FLOOR)
         elif jd_donts_vec is not None and ds > _noise_floor:
             ramp = min(1.0, (ds - _noise_floor) / (_full_penalty_at - _noise_floor))
             donts_penalty = _L4_DONTS_WEIGHT * ramp * ds
@@ -2121,3 +2128,41 @@ def l5_flashrank_rerank(candidates: List[dict], _jd: dict) -> List[dict]:
     # )
     # return top_reranked + tail
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LAYER 4b — EXPLICIT REQUIRED-SKILL PENALTY
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+def l4b_explicit_req_penalty(candidates: List[dict]) -> List[dict]:
+    """
+    Post-L4 penalty: candidates with fewer than 4 explicit required skills matched
+    (l1c_matched_required) receive a graduated deduction of 0.005 per missing match,
+    capped at −0.015 (for 1 matched).  Scores are re-clamped to [0, 1] and the list
+    is re-sorted so the top-100 slice in the caller reflects the adjusted ranking.
+    """
+    _THRESHOLD = 4
+    n_penalised = 0
+    for c in candidates:
+        n = len(c.get("l1c_matched_required") or [])
+        if n < _THRESHOLD:
+            penalty   = round(_L4B_PENALTY_PER_MISSING * (_THRESHOLD - n), 4)
+            raw = float(c.get("candidate_final_score", 0.0)) - penalty
+            new_score = round(_L4B_SCORE_FLOOR if raw <= 0.0 else raw, 4)
+            c["l4b_explicit_req_penalty"] = penalty
+            c["candidate_final_score"]    = new_score
+            c["l4_combined_score"]        = new_score
+            n_penalised += 1
+        else:
+            c["l4b_explicit_req_penalty"] = 0.0
+    candidates.sort(
+        key=lambda c: (
+            -c["candidate_final_score"],
+            str(c.get("candidate_id", c.get("id", ""))),
+        )
+    )
+    logger.info(
+        f"L4b explicit-req penalty: {n_penalised}/{len(candidates)} penalised "
+        f"(threshold={_THRESHOLD}, step={_L4B_PENALTY_PER_MISSING})"
+    )
+    return candidates

@@ -1,6 +1,4 @@
 import { LayoutGrid, Play, Settings, Users } from 'lucide-react'
-import { useQueryClient } from '@tanstack/react-query'
-import { useStartPipelineRun } from '../../hooks/usePipeline.js'
 import { useAppStore } from '../../store/useAppStore.js'
 
 const navItems = [
@@ -12,24 +10,6 @@ const navItems = [
 export default function Sidebar() {
   const activePage = useAppStore((state) => state.activePage)
   const setActivePage = useAppStore((state) => state.setActivePage)
-  const queryClient = useQueryClient()
-  const startPipeline = useStartPipelineRun()
-
-  async function handleNewPipeline() {
-    try {
-      await startPipeline.mutateAsync()
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['pipeline-runs'] }),
-        queryClient.invalidateQueries({ queryKey: ['pipeline-funnel'] }),
-        queryClient.invalidateQueries({ queryKey: ['candidates'] }),
-        queryClient.invalidateQueries({ queryKey: ['system-health'] }),
-        queryClient.invalidateQueries({ queryKey: ['system-events'] })
-      ])
-      setActivePage('candidates')
-    } catch (err) {
-      console.error('[NewPipeline] launch failed:', err)
-    }
-  }
 
   return (
     <aside className="sidebar">
@@ -60,9 +40,9 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <button className="primary-action" type="button" onClick={handleNewPipeline} disabled={startPipeline.isPending}>
+      <button className="primary-action" type="button" onClick={() => setActivePage('overview')}>
         <Play size={16} aria-hidden="true" />
-        <span>{startPipeline.isPending ? 'Starting...' : 'New Pipeline'}</span>
+        <span>New Pipeline</span>
       </button>
     </aside>
   )

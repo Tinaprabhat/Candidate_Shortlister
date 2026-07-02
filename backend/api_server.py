@@ -17,9 +17,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.staticfiles import StaticFiles
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -417,33 +419,25 @@ def pipeline_runs() -> list[dict[str, Any]]:
     }]
 
 
-@app.post("/pipeline/runs", dependencies=[Depends(verify_token)])
-def start_pipeline() -> dict[str, Any]:
+SANDBOX_UPLOAD_DIR = OUTPUT_DIR / "sandbox_uploads"
+SANDBOX_MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB — sandbox is for small samples, not the full 100K pool
+
+
+def _launch_rank(run_id: str, candidates_path: Path, jd_path: Path, out_path: Path) -> None:
     global _active_process, _active_started_at, _active_run_id, _active_log_handle
-    status = _process_status()
-    if status == "running":
-        return {"ok": True, "status": "running", "run_id": _active_run_id}
-
-    candidates = _candidate_source()
-    if not candidates.exists():
-        raise HTTPException(status_code=400, detail="No candidates.jsonl file found.")
-    if not JD_JSON.exists():
-        raise HTTPException(status_code=400, detail="data/jd.json is required before ranking.")
-
-    started = _utc_now()
-    run_id = "api_" + started.strftime("%Y%m%d_%H%M%S")
     env = os.environ.copy()
     env.setdefault("HF_HUB_OFFLINE", "1")
     env.setdefault("TRANSFORMERS_OFFLINE", "1")
+    env["PYTHONIOENCODING"] = "utf-8"  # rank.py's preprocessing step prints emoji; Windows consoles default to cp1252
     cmd = [
         str(VENV_PYTHON if VENV_PYTHON.exists() else Path(sys.executable)),
         str(PROJECT_ROOT / "rank.py"),
         "--candidates",
-        str(candidates),
+        str(candidates_path),
         "--jd",
-        str(JD_JSON),
+        str(jd_path),
         "--out",
-        str(SUBMISSION_CSV),
+        str(out_path),
     ]
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
     log_handle = (LOGS_DIR / f"api_rank_{run_id}.log").open("w", encoding="utf-8")
@@ -457,10 +451,67 @@ def start_pipeline() -> dict[str, Any]:
     )
     with _lock:
         _active_process = process
-        _active_started_at = started
+        _active_started_at = _utc_now()
         _active_run_id = run_id
         _active_log_handle = log_handle
+
+
+@app.post("/pipeline/runs", dependencies=[Depends(verify_token)])
+def start_pipeline() -> dict[str, Any]:
+    status = _process_status()
+    if status == "running":
+        return {"ok": True, "status": "running", "run_id": _active_run_id}
+
+    candidates = _candidate_source()
+    if not candidates.exists():
+        raise HTTPException(status_code=400, detail="No candidates.jsonl file found.")
+    if not JD_JSON.exists():
+        raise HTTPException(status_code=400, detail="data/jd.json is required before ranking.")
+
+    run_id = "api_" + _utc_now().strftime("%Y%m%d_%H%M%S")
+    _launch_rank(run_id, candidates, JD_JSON, SUBMISSION_CSV)
     return {"ok": True, "status": "running", "run_id": run_id}
+
+
+@app.post("/pipeline/runs/upload", dependencies=[Depends(verify_token)])
+async def upload_and_rank(candidates: UploadFile = File(...)) -> dict[str, Any]:
+    """Sandbox entry point: accepts a reviewer-supplied candidates.jsonl (<=100 rows,
+    <=5MB), runs the real offline pipeline against the bundled JD, and reuses the
+    same run-status/candidates endpoints the dashboard already polls."""
+    status = _process_status()
+    if status == "running":
+        raise HTTPException(status_code=409, detail="A pipeline run is already in progress.")
+    if not JD_JSON.exists():
+        raise HTTPException(status_code=400, detail="data/jd.json is required before ranking.")
+
+    body = await candidates.read()
+    if len(body) > SANDBOX_MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large ({len(body)} bytes). Sandbox accepts small samples only "
+                   f"(<= {SANDBOX_MAX_UPLOAD_BYTES // (1024 * 1024)} MB).",
+        )
+    try:
+        text = body.decode("utf-8")
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=400, detail="File must be UTF-8 text.")
+
+    lines = [line for line in text.splitlines() if line.strip()]
+    if not lines:
+        raise HTTPException(status_code=400, detail="Uploaded file has no candidate rows.")
+    for line in lines:
+        try:
+            json.loads(line)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="File must be JSONL — one JSON object per line.")
+
+    run_id = "upload_" + _utc_now().strftime("%Y%m%d_%H%M%S")
+    SANDBOX_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    upload_path = SANDBOX_UPLOAD_DIR / f"{run_id}.jsonl"
+    upload_path.write_text("\n".join(lines), encoding="utf-8")
+
+    _launch_rank(run_id, upload_path, JD_JSON, SUBMISSION_CSV)
+    return {"ok": True, "status": "running", "run_id": run_id, "candidates_received": len(lines)}
 
 
 @app.get("/pipeline/runs/{run_id}/funnel", dependencies=[Depends(verify_token)])
@@ -483,7 +534,6 @@ def pipeline_funnel(run_id: str) -> list[dict[str, Any]]:
         ("L3", "Fuzzy Gate", ["L3_fuzzy_score", "L3_gate"]),
         ("L4", "Semantic Work", ["L4_semantic_work"]),
         ("L5", "JD Donts", ["Donts_penalty"]),
-        ("L6", "FlashRank", ["L5_flashrank"]),
         ("L7", "Final Shortlist", []),
     ]
     rows: list[dict[str, Any]] = []
@@ -592,3 +642,15 @@ def system_events(limit: int = Query(10, ge=1, le=50)) -> list[dict[str, str]]:
         },
     ]
     return events[:limit]
+
+
+# ── Static frontend (single-container Docker sandbox) ───────────────────────
+# Mounted after all API routes so it never shadows them. Absent in local dev,
+# where the Vite dev server on :5173 serves the frontend instead.
+_FRONTEND_DIST = FRONTEND_ROOT / "dist"
+if _FRONTEND_DIST.exists():
+    app.mount("/assets", StaticFiles(directory=_FRONTEND_DIST / "assets"), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    def serve_frontend() -> FileResponse:
+        return FileResponse(_FRONTEND_DIST / "index.html")

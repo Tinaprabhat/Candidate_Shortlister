@@ -136,26 +136,6 @@ class RunTracer:
             self._trace["cascade"]["steps"].append(entry)
             self._trace["cascade"]["total_output"] = after
 
-    # ── L7 FIS + FlashRank ────────────────────────────────────────────────────
-    def record_l7(
-        self,
-        fis_input: int,
-        fis_output: int,
-        flashrank_ran: bool,
-        flashrank_top_n: int = 0,
-        score_range: tuple = (0.0, 0.0),
-    ) -> None:
-        """Record the L7 FIS aggregation + FlashRank polish outcome."""
-        with self._lock:
-            self._trace["l7"] = {
-                "fis_input": fis_input,
-                "fis_output": fis_output,
-                "flashrank_ran": flashrank_ran,
-                "flashrank_top_n_reranked": flashrank_top_n,
-                "score_min": round(score_range[0], 4),
-                "score_max": round(score_range[1], 4),
-            }
-
     # ── Setup timings (model load / JD parse / I/O) ───────────────────────────
     def record_timing(self, name: str, elapsed_s: float) -> None:
         """Record a named elapsed time (seconds) for setup / I/O operations."""

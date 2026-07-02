@@ -15,14 +15,12 @@ DATA_DIR = PROJECT_ROOT / "data"
 JD_JSON_PATH = DATA_DIR / "jd.json"
 
 # Model sub-paths (auto-decompressed into MODELS_DIR on first run if missing — see utils.ensure_models_decompressed)
-# Three models only: MiniLM sentence-transformer, FlashRank, Fraud KB
+# Two models only: MiniLM sentence-transformer, Fraud KB
 SENTENCE_TRANSFORMER_DIR = MODELS_DIR / "sentence_transformer"
-FLASHRANK_DIR = MODELS_DIR / "ms-marco-MiniLM-L-12-v2"   # actual dir from tar extraction
 FRAUD_KB_PATH = MODELS_DIR / "fraud_kb" / "fraud_kb.db"
 
 # Embedding model name (downloaded by build_kb.py)
 ST_MODEL_NAME = "all-MiniLM-L6-v2"
-FLASHRANK_MODEL_NAME = "ms-marco-MiniLM-L-12-v2"
 EMBED_DIM = 384
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -58,8 +56,6 @@ DOWNLEVEL_SENIORITY_PENALTY = 0.85  # multiply score if candidate held a higher 
 # ──────────────────────────────────────────────────────────────────────────────
 L1C_MIN_SKILL_MATCH = 0.0    # per-folder gate inside l1c_skill_match (0.0 = off)
 L4_BATCH_SIZE = 64
-FLASHRANK_TOP_N = 50           # polish only top 50
-FLASHRANK_FIS_WEIGHT = 0.25    # blend weight: final = W*flashrank + (1-W)*fis  → FIS weight = 0.75
 OUTPUT_TOP_N = 100             # final CSV rows
 
 # ──────────────────────────────────────────────────────────────────────────────

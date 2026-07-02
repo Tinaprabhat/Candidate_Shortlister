@@ -67,10 +67,7 @@ with st.expander("ℹ️ How this works", expanded=False):
 Upload JSONL → Pre-process → Folder Pruning
 → L1 Fraud Reject → L1b Profile Integrity → L1c Skill Match (NLP)
 → L2 Feature Extract → L3 Sugeno Fuzzy Score
-→ L4 Semantic Relevance (MiniLM) → Top 200
-→ L5a Don'ts Penalty → Top 100
-→ L5b FlashRank Cross-Encoder (Top 50)
-→ FIS Mamdani Final Score → submission.csv
+→ L4 Semantic Relevance (MiniLM) + Don'ts Penalty → Top 100 → submission.csv
 ```
 
 **Input:** A `.jsonl` file where each line is a candidate JSON profile.

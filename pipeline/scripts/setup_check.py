@@ -7,10 +7,9 @@ BEFORE you start a ranking run. Run this after setup.sh.
 
     python setup_check.py
 
-Three required model artifacts:
+Two required model artifacts:
   1. sentence_transformer/   — all-MiniLM-L6-v2 (ONNX INT8 + PyTorch fallback)
-  2. ms-marco-MiniLM-L-12-v2/ — FlashRank cross-encoder (ONNX INT8)
-  3. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
+  2. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
 
 FAISS is built in-memory by L4 — no on-disk artifact required.
 
@@ -59,7 +58,6 @@ def check_packages():
     required = ["numpy", "sentence_transformers"]
     optional = {
         "faiss": "L4 FAISS similarity search (in-memory; built each run)",
-        "flashrank": "L7 cross-encoder polish (falls back to FIS order)",
         "fitz": "PDF parsing (only needed for JD pre-step)",
         "groq": "Groq API integration (only needed if GROQ_API_KEY is set)",
         "streamlit": "Web UI (only needed for app.py)",
@@ -81,13 +79,12 @@ def check_packages():
 
 
 def check_models():
-    print("\n3. Model artifacts on disk (3 required)")
+    print("\n3. Model artifacts on disk (2 required)")
     global warnings
     from src import constants as C
     artifacts = {
         "MiniLM sentence-transformer (ONNX INT8)": C.SENTENCE_TRANSFORMER_DIR / "onnx" / "model_quantized.onnx",
         "MiniLM sentence-transformer (PyTorch)":   C.SENTENCE_TRANSFORMER_DIR,
-        "FlashRank cross-encoder (ONNX INT8)":     C.FLASHRANK_DIR,
         "Fraud KB (SQLite)":                        C.FRAUD_KB_PATH,
     }
     for name, path in artifacts.items():

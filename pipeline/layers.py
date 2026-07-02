@@ -17,7 +17,6 @@ the end of run_streaming_cascade, right before L4.
 
 Global cascade (after the one compilation point — no gate between L3 and L4):
   L4    Semantic work relevance (all-MiniLM-L6-v2)      → l4_combined_score (donts penalty baked in); top-100 forwarded
-  L5    FlashRank cross-encoder (DISABLED)              → pass-through; no l5_flashrank_score/l5_total_score written
 """
 
 import logging
@@ -1709,8 +1708,7 @@ def l4_semantic_work(candidates: List[dict], jd: dict) -> List[dict]:
 
       candidate_final_score = 0.5 × l3_score + 0.5 × l4_work_relevance − l4_donts_penalty, clamped to [0, ∞)
       l4_score              = 0.5 × l4_work_relevance   (L4 positive contribution only)
-      l4_combined_score     = candidate_final_score      (sort key; final ranking score — L5 is
-                              disabled and writes no score of its own; see l5_flashrank_rerank below)
+      l4_combined_score     = candidate_final_score      (sort key; final ranking score)
 
     Donts component can only subtract — it is zero when JD has no donts and zero when
     donts similarity is below the noise threshold, so it can never inflate scores.
@@ -1908,19 +1906,4 @@ def l4b_explicit_req_penalty(candidates: List[dict]) -> List[dict]:
         f"L4b explicit-req penalty: {n_penalised}/{len(candidates)} penalised "
         f"(threshold={_THRESHOLD}, step={_L4B_PENALTY_PER_MISSING})"
     )
-    return candidates
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# LAYER 5 — FLASHRANK CROSS-ENCODER RE-RANK  (DISABLED)
-# ══════════════════════════════════════════════════════════════════════════════
-
-def l5_flashrank_rerank(candidates: List[dict], _jd: dict) -> List[dict]:
-    """
-    Layer 5 — FlashRank cross-encoder re-rank (DISABLED — pass-through).
-
-    Returns candidates unchanged; no l5_flashrank_score / l5_total_score is
-    written. L4 already produces the final combined score (work relevance +
-    L3 − donts penalty) as candidate_final_score / l4_combined_score.
-    """
     return candidates

@@ -43,13 +43,6 @@ export function getPipelineRuns() {
   )
 }
 
-export function startPipelineRun() {
-  return remoteOrMock(
-    () => api.post('/pipeline/runs').then((res) => res.data),
-    () => Promise.resolve({ ok: true, status: 'mocked', run_id: 'mock-run' })
-  )
-}
-
 export function getPipelineFunnel(runId) {
   return remoteOrMock(
     () => api.get(`/pipeline/runs/${runId}/funnel`).then((res) => res.data),
@@ -76,4 +69,13 @@ export function scheduleInterview(candidateId) {
     () => api.post(`/candidates/${candidateId}/schedule-interview`).then((res) => res.data),
     () => mockScheduleInterview(candidateId)
   )
+}
+
+export function uploadCandidates(file) {
+  const upload = () => {
+    const form = new FormData()
+    form.append('candidates', file)
+    return api.post('/pipeline/runs/upload', form).then((res) => res.data)
+  }
+  return remoteOrMock(upload, () => Promise.resolve({ ok: true, status: 'running', run_id: 'mock' }))
 }

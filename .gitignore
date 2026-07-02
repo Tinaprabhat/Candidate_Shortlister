@@ -49,3 +49,4 @@ Thumbs.db
 # Large files
 data_Clean/candidates.jsonl
 data/preprocessing/candidates.jsonl
+.claude/

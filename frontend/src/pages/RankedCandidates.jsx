@@ -17,7 +17,7 @@ export default function RankedCandidates() {
             <h1>Ranked Candidates</h1>
           </div>
           <span className="refresh-state">
-            {isFetching ? 'Refreshing' : `Matched ${candidates.length} profiles • SR AI Researcher`}
+            {isFetching ? 'Refreshing' : `Matched ${candidates.length} profiles - SR AI Researcher`}
           </span>
         </div>
         <CandidateTable candidates={candidates} isLoading={isLoading} />

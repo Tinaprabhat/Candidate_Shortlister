@@ -1,10 +1,9 @@
 """
 utils.py — Model loading & shared helpers for rank.py.
 
-Three models only (all in models/decompressed/ after setup.sh):
+Two models only (all in models/decompressed/ after setup.sh):
   1. sentence_transformer/  — all-MiniLM-L6-v2 (ONNX INT8 + PyTorch fallback)
-  2. ms-marco-MiniLM-L-12-v2/ — FlashRank cross-encoder (ONNX INT8)
-  3. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
+  2. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
 
 L4 computes cosine similarity directly via numpy (no FAISS index — the
 "faiss" weight key elsewhere refers to a scoring signal name, not this
@@ -49,7 +48,7 @@ def ensure_models_decompressed() -> None:
     for archive in sorted(comp_dir.glob("*.tar.gz")):
         target = decomp_dir / archive.stem.removesuffix(".tar")
         if target.exists():
-            continue  # already decompressed (some archives, e.g. flashrank_onnx, are legitimately empty)
+            continue  # already decompressed
         logger.info(f"[model-setup] Decompressing {archive.name} → {decomp_dir}")
         with tarfile.open(archive, "r:gz") as tar:
             tar.extractall(decomp_dir)
@@ -90,23 +89,6 @@ def load_sentence_transformer():
         logger.warning(f"{model_dir} not found; loading {C.ST_MODEL_NAME} by name (requires network)")
         return SentenceTransformer(C.ST_MODEL_NAME, device="cpu")
     return _get("st", _load)
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# FLASHRANK — ms-marco-MiniLM-L-12-v2 (ONNX INT8 cross-encoder, L7 polish)
-# ──────────────────────────────────────────────────────────────────────────────
-def load_flashrank():
-    """Load FlashRank cross-encoder from the local ms-marco-MiniLM-L-12-v2 directory."""
-    def _load():
-        try:
-            from flashrank import Ranker
-        except ImportError:
-            raise ImportError("flashrank required: pip install flashrank")
-        logger.info(f"Loading FlashRank ({C.FLASHRANK_MODEL_NAME}) from {C.FLASHRANK_DIR}")
-        # Ranker(model_name, cache_dir) looks for cache_dir/model_name/
-        # FLASHRANK_DIR IS the model directory, so cache_dir = FLASHRANK_DIR.parent
-        return Ranker(model_name=C.FLASHRANK_MODEL_NAME, cache_dir=str(C.FLASHRANK_DIR.parent))
-    return _get("flashrank", _load)
 
 
 # ──────────────────────────────────────────────────────────────────────────────

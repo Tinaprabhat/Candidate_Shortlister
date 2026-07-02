@@ -122,19 +122,6 @@ def test_faiss_index_loads_or_none():
     print(f"  ✅ FAISS index: {status}")
 
 
-# ── FlashRank (L7 polish) ─────────────────────────────────────────────────────
-def test_flashrank_loads_or_error():
-    """FlashRank must load when installed; ImportError is acceptable if not installed."""
-    from pipeline import utils
-    try:
-        fr = utils.load_flashrank()
-        assert hasattr(fr, "rerank"), \
-            f"FlashRank object missing .rerank() method; got {type(fr)}"
-        print("  ✅ FlashRank: loaded with .rerank()")
-    except ImportError as e:
-        print(f"  ⚠️  FlashRank not installed: {e} — install with: pip install flashrank")
-
-
 # ── spaCy ────────────────────────────────────────────────────────────────────
 def test_spacy_loads_or_error():
     """spaCy must load when installed; ImportError / OSError are acceptable if not."""
@@ -151,7 +138,7 @@ def test_spacy_loads_or_error():
 def test_model_path_constants_defined():
     """All model-path constants expected by utils must exist in constants.py."""
     required = [
-        "SENTENCE_TRANSFORMER_DIR", "FAISS_INDEX_DIR", "FLASHRANK_DIR",
+        "SENTENCE_TRANSFORMER_DIR", "FAISS_INDEX_DIR",
         "SPACY_DIR", "FRAUD_KB_PATH", "MODELS_DIR",
     ]
     missing = [name for name in required if not hasattr(C, name)]

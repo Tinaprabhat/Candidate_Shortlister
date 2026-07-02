@@ -3,7 +3,7 @@ import { useAppStore } from '../../store/useAppStore.js'
 export default function FunnelChart({ rows = [] }) {
   const setActivePage = useAppStore((state) => state.setActivePage)
   const displayRows = rows.length
-    ? [...rows.slice(0, 3), rows[rows.length - 1]]
+    ? rows.slice(0, 4)
     : [
         { layer: 'L1', label: 'Automated Profile Scan', count_out: 12842 },
         { layer: 'L2', label: 'Technical Assessment Gate', count_out: 8733 },
@@ -21,11 +21,8 @@ export default function FunnelChart({ rows = [] }) {
       <div className="funnel-stack">
         {displayRows.map((row, index) => {
           const width = [100, 86, 60, 30][index] || 24
+          const eliminated = ['32% eliminated', '78% eliminated', '89% eliminated'][index]
           const final = index === displayRows.length - 1
-          const pctEliminated = row.count_in > 0
-            ? Math.round(((row.count_in - row.count_out) / row.count_in) * 100)
-            : 0
-          const eliminatedLabel = pctEliminated > 0 ? `↓ ${pctEliminated}% eliminated` : '↓ Pass-through'
           return (
             <div className="funnel-layer-wrap" key={`${row.layer}-${row.label}`}>
               <button
@@ -36,9 +33,9 @@ export default function FunnelChart({ rows = [] }) {
               >
                 <span>{final ? 'Final Shortlist' : `${row.layer}: ${row.label}`}</span>
                 <strong>{row.count_out.toLocaleString()}</strong>
-                {!final ? <em>candidates</em> : null}
+                {!final ? <em>Unit</em> : null}
               </button>
-              {!final ? <div className="elimination-pill">{eliminatedLabel}</div> : null}
+              {!final ? <div className="elimination-pill">down {eliminated}</div> : null}
             </div>
           )
         })}

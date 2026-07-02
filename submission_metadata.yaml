@@ -1,21 +1,26 @@
 # RedRob — Submission Metadata
 # Fill in the blanks before submitting via the portal.
 
-team_name: "RedRob"
+team_name: "Lazy beings"
 
 primary_contact:
-  name: "Abin Mukherjee"
-  email: "abinccu@gmail.com"
-  phone: "TODO_FILL_PHONE"           # fill your phone number before submitting
+  name: "Tina Prabhat"
+  email: "23051879@kiit.ac.in"
+  phone: "9460197935"           # fill your phone number before submitting
 
-github_repository_url: "TODO_FILL_WHEN_PUBLIC"   # add after pushing to GitHub
+github_repository_url: "https://github.com/Tinaprabhat/Candidate_Shortlister"   # add after pushing to GitHub
 
-sandbox_demo_link: "https://huggingface.co/spaces/abinmukherjee23/redrob-ranker"
+sandbox_demo_link: >
+  docker pull abinmukherjee/redrob-sandbox:latest
+  && docker run -p 8000:8000 abinmukherjee/redrob-sandbox:latest
+  — then open http://localhost:8000, upload a candidates.jsonl sample (<=100 rows,
+  <=5MB), and the full offline pipeline (rank.py) runs against it end-to-end.
+  Custom React + FastAPI frontend; JD is fixed/bundled per this challenge.
+  Public image: https://hub.docker.com/r/abinmukherjee/redrob-sandbox
 
 ai_tools_declared:
   - Claude (code generation)
-  - Gemini API (JD parsing pre-step only, optional)
-  - Ollama Mistral (local, JD parsing fallback)
+
 
 compute_environment_summary: >
   Lenovo ThinkBook, 16 GB RAM, CPU-only, Python 3.11, Windows 11.
@@ -24,13 +29,16 @@ compute_environment_summary: >
 team_members:
   - name: "Abin Mukherjee"
     role: "Integration & Deployment"
-    email: "abinccu@gmail.com"
-  - name: "Sreshtho"
-    role: "Frontend (redrob.html dashboard)"
-  - name: "Rishi"
-    role: "Data Handling (cleaning pipeline, dataset)"
-  - name: "Tina"
-    role: "AI Logic (cascade layers, FIS, JD parser)"
+    email: "23051806@kiit.ac.in"
+  - name: "Sreshtho Sen"
+    role: "Frontend"
+    email: "23051806@kiit.ac.in"
+  - name: "Saptarshi Giri"
+    role: "Data Handling"
+    email: "23051861@kiit.ac.in"
+  - name: "Tina Prabhat"
+    role: "AI Logic"
+    email: "23051879@kiit.ac.in"
 
 methodology_summary: >
   7-layer cascade: folder pruning (heuristic token overlap) → L1 fraud hard-reject

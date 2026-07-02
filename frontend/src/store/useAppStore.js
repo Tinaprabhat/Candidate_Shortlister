@@ -6,7 +6,7 @@ const defaultFilters = {
   risk_flagged: false,
   domain: 'all',
   page: 1,
-  limit: 100
+  limit: 20
 }
 
 function readStoredBoolean(key, fallback) {
@@ -16,10 +16,18 @@ function readStoredBoolean(key, fallback) {
 }
 
 export const useAppStore = create((set) => ({
+  flowStage: 'input',
   activePage: 'overview',
   darkMode: readStoredBoolean('redrob_dark_mode', false),
   authToken: localStorage.getItem('supabase_token'),
   user: null,
+  uploadedFiles: {
+    candidates: null,
+    jobDescription: null
+  },
+  runId: null,
+  sandboxError: null,
+  processingProgress: 0,
   activeCandidateId: null,
   drawerOpen: false,
   filters: defaultFilters,
@@ -27,8 +35,20 @@ export const useAppStore = create((set) => ({
   hydrate: () => {
     const darkMode = readStoredBoolean('redrob_dark_mode', false)
     const authToken = localStorage.getItem('supabase_token')
+    const previewPage = new URLSearchParams(window.location.search).get('preview')
+    if (previewPage === 'overview' || previewPage === 'health') {
+      localStorage.setItem('redrob_dark_mode', 'true')
+      document.documentElement.classList.add('dark')
+      set({
+        darkMode: true,
+        authToken,
+        flowStage: 'app',
+        activePage: previewPage
+      })
+      return
+    }
     document.documentElement.classList.toggle('dark', darkMode)
-    set({ darkMode, authToken })
+    set({ darkMode, authToken, flowStage: 'input' })
   },
 
   setActivePage: (activePage) => set({ activePage }),
@@ -43,19 +63,62 @@ export const useAppStore = create((set) => ({
 
   login: ({ token, user }) => {
     localStorage.setItem('supabase_token', token)
-    set({ authToken: token, user })
+    set({ authToken: token, user, flowStage: 'app' })
   },
 
   logout: () => {
     localStorage.removeItem('supabase_token')
     set({
+      flowStage: 'input',
       authToken: null,
       user: null,
+      uploadedFiles: {
+        candidates: null,
+        jobDescription: null
+      },
+      runId: null,
+      sandboxError: null,
+      processingProgress: 0,
       activePage: 'overview',
       drawerOpen: false,
       activeCandidateId: null
     })
   },
+
+  setUploadedFiles: (uploadedFiles) => set({ uploadedFiles }),
+
+  startProcessing: (uploadedFiles, runId) =>
+    set(() => {
+      localStorage.setItem('redrob_dark_mode', 'true')
+      document.documentElement.classList.add('dark')
+      return {
+        uploadedFiles,
+        runId,
+        sandboxError: null,
+        processingProgress: 0,
+        flowStage: 'processing',
+        darkMode: true,
+        activePage: 'overview',
+        drawerOpen: false
+      }
+    }),
+
+  setProcessingProgress: (processingProgress) => set({ processingProgress }),
+
+  completeProcessing: () =>
+    set({
+      flowStage: 'app',
+      processingProgress: 100,
+      activePage: 'overview'
+    }),
+
+  failProcessing: (sandboxError) =>
+    set({
+      flowStage: 'input',
+      sandboxError,
+      processingProgress: 0,
+      runId: null
+    }),
 
   setActiveCandidate: (activeCandidateId) =>
     set({ activeCandidateId, drawerOpen: true }),

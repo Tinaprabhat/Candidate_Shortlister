@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import AppShell from './components/layout/AppShell.jsx'
-import LoginPage from './pages/LoginPage.jsx'
+import InputPage from './pages/InputPage.jsx'
+import ProcessingPage from './pages/ProcessingPage.jsx'
 import { signOut } from './api/supabase.js'
 import { useAppStore } from './store/useAppStore.js'
 
 export default function App() {
-  const authToken = useAppStore((state) => state.authToken)
+  const flowStage = useAppStore((state) => state.flowStage)
   const darkMode = useAppStore((state) => state.darkMode)
   const hydrate = useAppStore((state) => state.hydrate)
   const logout = useAppStore((state) => state.logout)
@@ -27,8 +28,12 @@ export default function App() {
     return () => window.removeEventListener('redrob:unauthorized', onUnauthorized)
   }, [logout])
 
-  if (!authToken) {
-    return <LoginPage />
+  if (flowStage === 'input') {
+    return <InputPage />
+  }
+
+  if (flowStage === 'processing') {
+    return <ProcessingPage />
   }
 
   return <AppShell />

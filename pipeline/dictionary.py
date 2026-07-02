@@ -511,7 +511,6 @@ SKILL_SYNONYMS: dict[str, list[str]] = {
         "cross encoders", "cross-encoders", "cross encoder model",
         "neural reranking", "two-stage reranking", "semantic reranking",
         "rankgpt", "rank gpt", "llm reranking", "rag reranking",
-        # Flashrank is the reranker used in this pipeline
         "flash rank", "flashrank reranker",
         # RAG adjacent — candidates with RAG experience almost always know reranking
         "rag pipeline reranking", "retrieval reranking",

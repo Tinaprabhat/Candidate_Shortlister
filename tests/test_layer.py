@@ -787,12 +787,6 @@ class TestL7FIS:
         ranked = fis.rank_candidates([a, b], kb)
         assert ranked[0]["candidate_id"] == "A"  # more experience wins
 
-    def test_flashrank_polish_returns_same_count_when_ranker_none(self):
-        ranked = [self._make_scored(f"C{i}", l1c=0.7, l4=0.6) for i in range(5)]
-        fis.run_fis(ranked)
-        result = fis.flashrank_polish(ranked, JD, ranker=None, fraud_kb=None)
-        assert len(result) == 5
-
     def test_generate_reasoning_non_empty(self):
         c = self._make_scored("C1", l1c=0.75, l4=0.65)
         c["l3_flag"] = ""

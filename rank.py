@@ -6,8 +6,7 @@ Pipeline:
   L1a hard-reject → L1b profile-integrity → L1c skill-match → L1d inferred-match
   → L2 table-extract → L3 weighted score   (streamed per-candidate, concurrent — see layers.run_streaming_cascade)
   → gate (top 50% + random 25% = 75%)
-  → L4 semantic-score + donts penalty (baked in) → top 100
-  → L5 FlashRank (disabled; pass-through) → final top 100
+  → L4 semantic-score + donts penalty (baked in) → final top 100
 
 Single-command:
     python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
@@ -69,7 +68,6 @@ def run_late_cascade(
 ) -> List[dict]:
     """
     L4 semantic-score + donts penalty (baked in) → top 100
-    → L5 FlashRank (disabled — pass-through; no score written)
 
     L1a-L3 already ran per-candidate during the streaming early cascade.
     No gate between L3 and L4 — all L3 survivors are forwarded.
@@ -95,19 +93,7 @@ def run_late_cascade(
 
     # Top 100 by candidate_final_score (list already sorted; donts + L4b already applied)
     top100 = candidates[:100]
-    logger.info(f"After L4/L4b: {len(candidates)} scored → top {len(top100)} forwarded to L5")
-
-    # L5 — FlashRank (disabled); pass-through, no score written
-    t = time.time()
-    top100 = layers.l5_flashrank_rerank(top100, jd)
-    tracer.record_cascade_step("L5_flashrank", len(top100), len(top100),
-                               notes={
-                                   "elapsed_s": round(time.time() - t, 3),
-                                   "avg_total": round(
-                                       sum(c.get("l4_combined_score", 0) for c in top100)
-                                       / max(len(top100), 1), 3
-                                   ),
-                               })
+    logger.info(f"After L4/L4b: {len(candidates)} scored → top {len(top100)} final")
 
     return top100
 
@@ -222,8 +208,7 @@ def main():
     t_models = time.time()
     models = {
         "fraud_kb":  utils.load_fraud_kb(),
-        "flashrank": _try_load_flashrank(),
-        "embedder":    utils.load_sentence_transformer()
+        "embedder":  utils.load_sentence_transformer()
     }
     tracer.record_timing("models_load", round(time.time() - t_models, 3))
 
@@ -403,7 +388,6 @@ def _print_timing_summary(tracer: RunTracer, total_elapsed: float) -> None:
             ("Late cascade total",     timings.get("late_cascade_total", 0)),
             ("  L3  gate",             cascade_steps.get("L3_gate", 0)),
             ("  L4  semantic + donts", cascade_steps.get("L4_semantic_work", 0)),
-            ("  L5  flashrank (disabled)", cascade_steps.get("L5_flashrank", 0)),
         ]),
         ("── Output", [
             ("Pool cap sort",          timings.get("pool_cap_sort", 0)),
@@ -433,15 +417,6 @@ def _print_timing_summary(tracer: RunTracer, total_elapsed: float) -> None:
         print(f"  Top-5 scores   : {scores_str}")
 
     print("=" * W + "\n")
-
-
-def _try_load_flashrank():
-    try:
-        import flashrank  # noqa
-        return utils.load_flashrank()
-    except Exception as exc:
-        logger.warning(f"FlashRank not available ({exc}); L5 will degrade gracefully")
-        return None
 
 
 if __name__ == "__main__":

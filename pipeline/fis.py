@@ -1,9 +1,9 @@
 """
-fis.py — Layer 7: Mamdani Fuzzy Inference System + FlashRank polish.
+fis.py — Layer 7: Mamdani Fuzzy Inference System.
 
 Combines L1c, L3, L4, L6 signals via fuzzy reasoning into a final
-composite score, assigns a tier, ranks by tier then score, polishes
-top 50 with FlashRank, applies tie-breaks.
+composite score, assigns a tier, ranks by tier then score, applies
+tie-breaks.
 
 Tiers (assigned in run_fis, enforced in rank_candidates):
   "very_good"  — meets ALL excellence criteria → guaranteed top-10 placement
@@ -248,84 +248,6 @@ def rank_candidates(candidates: List[dict], fraud_kb) -> List[dict]:
         return (tier,) + _tiebreak_key(c, fraud_kb)
 
     return sorted(candidates, key=_sort_key)
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# FLASHRANK POLISH (top 50)
-# ──────────────────────────────────────────────────────────────────────────────
-def flashrank_polish(ranked: List[dict], jd: dict, ranker, fraud_kb) -> List[dict]:
-    """
-    Re-rank the top FLASHRANK_TOP_N candidates using a blend of FlashRank
-    cross-encoder score and the L7 FIS score.
-
-    Ranks 1-50:  final_score = FLASHRANK_FIS_WEIGHT * flashrank_norm + (1 - FLASHRANK_FIS_WEIGHT) * fis_score
-                 (FIS weight = 0.75, FlashRank weight = 0.25)
-    Ranks 51-100: final_score = fis_score  (pure FIS, no FlashRank)
-
-    The original FIS score is preserved as 'l7_fis_raw'; 'fis_score' is updated
-    to the blended value so downstream CSV output reflects the combined ranking.
-    """
-    if ranker is None or len(ranked) == 0:
-        logger.warning("FlashRank unavailable; skipping polish")
-        return ranked
-
-    top_n = min(C.FLASHRANK_TOP_N, len(ranked))
-    top = ranked[:top_n]
-    mid = ranked[top_n:100]   # ranks 51-100: pure FIS, no FlashRank
-    tail = ranked[100:]
-
-    jd_text = " ".join(
-        jd.get("explicit_required", []) + jd.get("inferred_required", [])
-        + [jd.get("job_title", "")]
-    )
-
-    try:
-        from flashrank import RerankRequest
-        passages = [
-            {"id": i, "text": utils.get_work_profile_text(c) or " ",
-             "meta": {"orig_idx": i}}
-            for i, c in enumerate(top)
-        ]
-        req = RerankRequest(query=jd_text, passages=passages)
-        results = ranker.rerank(req)
-
-        # Map candidate index → raw FlashRank score
-        fr_raw: dict[int, float] = {r["id"]: float(r.get("score", 0.0)) for r in results}
-
-        # Min-max normalize FlashRank scores to [0, 1]
-        fr_values = list(fr_raw.values())
-        fr_min, fr_max = min(fr_values), max(fr_values)
-        fr_range = fr_max - fr_min if fr_max > fr_min else 1.0
-
-        w = C.FLASHRANK_FIS_WEIGHT
-        for i, c in enumerate(top):
-            raw = fr_raw.get(i, fr_min)
-            fr_norm = (raw - fr_min) / fr_range
-            orig_fis = c.get("fis_score", 0.0)
-            c["l7_fis_raw"] = round(orig_fis, 4)
-            c["flashrank_score"] = round(fr_norm, 4)
-            c["fis_score"] = float(w * fr_norm + (1.0 - w) * orig_fis)
-
-        # Sort by blended score descending
-        reordered = sorted(top, key=lambda c: c["fis_score"], reverse=True)
-        for rank_pos, c in enumerate(reordered):
-            c["flashrank_rank"] = rank_pos
-
-        # Ranks 51-100: mark as pure FIS (no FlashRank blending)
-        for c in mid:
-            c["l7_fis_raw"] = round(c.get("fis_score", 0.0), 4)
-            c["flashrank_score"] = None
-
-        logger.info(
-            f"FlashRank: blended top {top_n} "
-            f"(weight={w} FR + {1-w} FIS); "
-            f"fr_range=[{fr_min:.3f}, {fr_max:.3f}]; "
-            f"ranks 51-100 use pure FIS"
-        )
-        return reordered + mid + tail
-    except Exception as e:
-        logger.warning(f"FlashRank polish failed ({e}); keeping FIS order")
-        return ranked
 
 
 # ──────────────────────────────────────────────────────────────────────────────

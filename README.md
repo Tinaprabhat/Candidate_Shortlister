@@ -242,6 +242,16 @@ python -m pipeline.jd_parser --jd ./data/job_description.pdf --out ./data/jd.jso
 
 > `data/jd.json` must exist before running `rank.py`. It is manually structured — no LLM is used for JD parsing.
 
+### 5. Add the candidates file
+
+Place the `candidates.jsonl` file provided for this stage into the `data/` folder:
+
+```
+data/candidates.jsonl
+```
+
+(This file is intentionally not committed to the repo — it's the dataset provided by the hackathon at evaluation time.)
+
 ---
 
 ## Usage

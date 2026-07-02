@@ -26,17 +26,18 @@ FLASHRANK_MODEL_NAME = "ms-marco-MiniLM-L-12-v2"
 EMBED_DIM = 384
 
 # ──────────────────────────────────────────────────────────────────────────────
-# GATE / THRESHOLDS
+# THRESHOLDS
 # ──────────────────────────────────────────────────────────────────────────────
-GATE_TOP_FRACTION = 0.50      # top 50% by l1c_score
-GATE_RANDOM_FRACTION = 0.25   # + random 25% from bottom half
-GATE_TOTAL = GATE_TOP_FRACTION + GATE_RANDOM_FRACTION  # 75%
-
 FOLDER_PRUNE_THRESHOLD = 0.15  # folder token-overlap cutoff
 FOLDER_DISPATCH_STAGGER_SEC = 0   # 0 = all folder threads start simultaneously
 MIN_FOLDERS_KEPT = 1           # never drop everything
 
 HARD_POOL_CAP = 60_000         # hard cap before expensive layers
+
+# Concurrent workers for the L1a→L3 streaming pipeline (run_streaming_cascade).
+# Each worker streams one candidate continuously through every pre-gate stage;
+# multiple candidates are in-flight (at different stages) simultaneously.
+PIPELINE_MAX_WORKERS = 32
 
 # ──────────────────────────────────────────────────────────────────────────────
 # SCORING WEIGHTS (feed into FIS membership; also used for fallback weighted sum)
@@ -57,7 +58,6 @@ DOWNLEVEL_SENIORITY_PENALTY = 0.85  # multiply score if candidate held a higher 
 # ──────────────────────────────────────────────────────────────────────────────
 L1C_MIN_SKILL_MATCH = 0.0    # per-folder gate inside l1c_skill_match (0.0 = off)
 L4_BATCH_SIZE = 64
-L4_INPUT_CAP = 400             # max candidates fed into L4 (sorted by L3 score); saves ~59s
 FLASHRANK_TOP_N = 50           # polish only top 50
 FLASHRANK_FIS_WEIGHT = 0.25    # blend weight: final = W*flashrank + (1-W)*fis  → FIS weight = 0.75
 OUTPUT_TOP_N = 100             # final CSV rows
@@ -183,6 +183,8 @@ INACTIVE_CANDIDATE_STATUSES: frozenset = frozenset({
 # Folder names (normalised: lowercase, _ / - → space) where the ENTIRE FOLDER
 # is a bucket of inactive candidates.  The branch is hard-dropped in Phase 1
 # before any candidate is loaded.
+# Entries can be written raw (with underscores) or pre-normalised — pruning's
+# _root_token_set() auto-generates both forms from each entry before matching.
 INACTIVE_FOLDER_NAMES: frozenset = frozenset({
     "inactive", "not active", "closed", "unavailable",
     "deactivated", "blacklisted", "rejected", "archived",
@@ -210,6 +212,92 @@ CODE_FOLDER_ROOTS: frozenset = frozenset({
 ACTIVE_FOLDER_NAMES: frozenset = frozenset({
     "active", "open", "available", "eligible", "moderate",
 })
+
+# ──────────────────────────────────────────────────────────────────────────────
+# ROLE-FAMILY PRUNING (Phase 1e extended)
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Fine-grained JD role-family detection.
+# Iterated in insertion order; the FIRST family whose ANY keyword appears
+# (as a substring) in the normalised "job_title + required_skills" text wins.
+# All families here are engineering sub-families; a JD that matches none of
+# these (and none of ENGINEERING_ROLE_KEYWORDS) falls back to "other".
+ROLE_FAMILY_KEYWORDS: dict = {
+    "ai_ml": frozenset({
+        "ai engineer", "ml engineer", "machine learning", "deep learning",
+        "nlp", "natural language processing", "computer vision", "llm",
+        "large language model", "recommendation", "search engineer",
+        "data scientist", "generative ai", "gen ai", "aiml", "ai/ml",
+        "research scientist", "reinforcement learning",
+    }),
+    "cloud_devops": frozenset({
+        "cloud engineer", "cloud architect", "devops engineer",
+        "devops", "infrastructure engineer", "platform engineer",
+        "site reliability engineer", "sre", "devsecops",
+    }),
+    "qa": frozenset({
+        "qa engineer", "quality assurance", "quality engineer",
+        "test engineer", "testing engineer", "sdet",
+        "automation engineer", "software tester",
+    }),
+    "mobile": frozenset({
+        "mobile engineer", "mobile developer", "android developer",
+        "ios developer", "react native", "flutter developer",
+        "mobile application",
+    }),
+    "java_net": frozenset({
+        "java developer", "java engineer", ".net developer", ".net engineer",
+        "dotnet developer", "dotnet engineer", "spring boot developer",
+        "c# developer", "c# engineer",
+    }),
+    # "swe_general" is the implicit fallback for any other engineering role
+}
+
+# Folder-path substrings (normalised: lowercase, _ / - → space) that identify
+# candidate buckets INCOMPATIBLE with each JD role family.
+# Any match in ANY normalised path component triggers a Phase-1e hard-DROP.
+ROLE_FAMILY_EXCLUSIONS: dict = {
+    "ai_ml": frozenset({
+        # cloud / infrastructure
+        "cloud engineer", "cloud architect", "devops", "devops engineer",
+        "systems engineer",
+        # quality / test
+        "qa engineer", "quality engineer", "quality assurance", "sdet",
+        # mobile
+        "mobile engineer", "mobile developer", "android", "ios developer",
+        # java / .net  (both "engineer" and "developer" variants)
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
+        # frontend (not relevant for backend AI/ML work)
+        "frontend engineer", "frontend developer",
+        "front end engineer", "front end developer",
+    }),
+    "cloud_devops": frozenset({
+        "qa engineer", "quality engineer", "quality assurance", "sdet",
+        "mobile engineer", "mobile developer", "android", "ios developer",
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
+        "frontend engineer", "frontend developer",
+    }),
+    "qa": frozenset({
+        "cloud engineer", "cloud architect", "devops", "mobile engineer",
+        "mobile developer", "android", "ios developer",
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
+    }),
+    "mobile": frozenset({
+        "cloud engineer", "cloud architect", "devops", "devops engineer",
+        "qa engineer", "quality engineer", "quality assurance",
+        "java developer", "java engineer",
+        "net engineer", "net developer", "dotnet", "dotnet developer",
+    }),
+    "java_net": frozenset({
+        "cloud engineer", "cloud architect", "devops", "devops engineer",
+        "qa engineer", "quality engineer", "quality assurance",
+        "mobile engineer", "mobile developer", "android", "ios developer",
+    }),
+    "swe_general": frozenset(),   # broad SWE role: accept all engineering sub-families
+}
 
 # Default years-to-level mapping for candidate experience
 def years_to_seniority(years: float) -> int:

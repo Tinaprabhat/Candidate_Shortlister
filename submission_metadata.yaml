@@ -1,56 +1,137 @@
-# RedRob — Submission Metadata
-# Fill in the blanks before submitting via the portal.
+# Redrob Hackathon — Submission Metadata Template
+#
+# Copy this file to your repo root as `submission_metadata.yaml` and fill it in.
+# The fields here should match what you submit via the portal at upload time.
+# Stage 3 review uses this file to verify your portal metadata.
 
-team_name: "Lazy beings"
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "Lazy beings"  # Used in leaderboard and announcements
 
 primary_contact:
   name: "Tina Prabhat"
-  email: "23051879@kiit.ac.in"
-  phone: "9460197935"           # fill your phone number before submitting
-
-github_repository_url: "https://github.com/Tinaprabhat/Candidate_Shortlister"   # add after pushing to GitHub
-
-sandbox_demo_link: >
-  docker pull abinmukherjee/redrob-sandbox:latest
-  && docker run -p 8000:8000 abinmukherjee/redrob-sandbox:latest
-  — then open http://localhost:8000, upload a candidates.jsonl sample (<=100 rows,
-  <=5MB), and the full offline pipeline (rank.py) runs against it end-to-end.
-  Custom React + FastAPI frontend; JD is fixed/bundled per this challenge.
-  Public image: https://hub.docker.com/r/abinmukherjee/redrob-sandbox
-
-ai_tools_declared:
-  - Claude (code generation)
-
-
-compute_environment_summary: >
-  Lenovo ThinkBook, 16 GB RAM, CPU-only, Python 3.11, Windows 11.
-  Ranking step: CPU-only, no GPU, no network.
+  email: "23051879@kiit.ac.in"   # Used for all organizer communication
+  phone: "+91-9460197935"        # Used for top-50 / top-10 outreach
 
 team_members:
-  - name: "Abin Mukherjee"
-    role: "Integration & Deployment"
-    email: "23051806@kiit.ac.in"
-  - name: "Sreshtho Sen"
-    role: "Frontend"
-    email: "23051806@kiit.ac.in"
-  - name: "Saptarshi Giri"
-    role: "Data Handling"
-    email: "23051861@kiit.ac.in"
   - name: "Tina Prabhat"
-    role: "AI Logic"
     email: "23051879@kiit.ac.in"
+            # Optional, e.g. "Team Lead", "Backend", "Data"
+  - name: "Abin Mukharjee"
+    email: "23051806@kiit.ac.in"
 
-methodology_summary: >
-  7-layer cascade: folder pruning (heuristic token overlap) → L1 fraud hard-reject
-  (SQLite KB) → L2 bi-encoder gate (MiniLM INT8, 55% pass) → L3 seniority soft
-  penalty → L4 semantic work-to-JD relevance → L6 behavioral signals → L7 Mamdani
-  FIS + FlashRank cross-encoder polish (top 50). JD parsing is a pre-computation
-  step using Gemini API or local Ollama Mistral; rank.py reads data/jd.json and
-  makes zero network calls. Fully offline, CPU-only, reproducible via single command.
+  - name: "Saptarshi Giri"
+    email: "23051861@kiit.ac.in"
 
-constraints_met:
-  runtime: "~51s measured on 100k candidates (budget: 300s)"
-  memory: "~350 MB peak (budget: 16 GB)"
-  disk: "~233 MB intermediate (budget: 5 GB)"
-  gpu: "none — CPU only"
-  network_during_ranking: "none — zero external calls in rank.py"
+  - name: "Sreshtho Sen"
+    email: "23051875@kiit.ac.in"
+    
+  # Add more members as needed; solo participants list just one member
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/Tinaprabhat/Candidate_Shortlister"
+# Required. Must be reachable. Private repos OK if you can grant organizer
+# access at Stage 3 (the email to add will be communicated then).
+
+sandbox_link: "docker run -p 8000:8000 abinmukherjee/redrob-sandbox:latest"
+# Required. A working hosted environment where the ranker can be run on a small
+# candidate sample. See Section 10.5 of submission_spec.md for acceptable
+# platforms (HuggingFace Spaces, Streamlit Cloud, Replit, Colab, Docker, Binder).
+
+reproduce_command: "python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv"
+# The single command that produces submission.csv from candidates.jsonl.
+# Should run end-to-end within 5 minutes on CPU with 16GB RAM and no network.
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Lenovo Thinkbook 14s Yoga G2"                    # Or: "AWS EC2 c5.4xlarge", "Local Linux box", etc.
+  cpu_cores: 10                                  # Number of CPU cores used
+  ram_gb: 16                                    # Available RAM in GB
+  python_version: "3.10.0"                      # python --version
+  os: "windows11"                              # Or "Ubuntu 22.04 LTS", etc.
+  uses_gpu_for_inference: false                 # Must be false — see compute constraints
+  has_network_during_ranking: false             # Must be false — no API calls during ranking
+  pre_computation_required: false               # true if you pre-compute embeddings or train models offline
+  pre_computation_time_minutes: 0               # Approximate, if applicable
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+# Transparency only — declared use is NOT penalized. Be honest. Stage 5 interview
+# may verify these declarations against your code; declarations that contradict
+# your code or your interview are flagged.
+ai_tools_used:
+  - "Claude"        # e.g. for architecture discussion, code review
+  - "GitHub Copilot"
+  - "Claude Code"
+  - "Antigravity"
+  - "Codex"
+  - "Google Stitch"  # e.g. for autocomplete
+  # Other options: "ChatGPT", "Cursor", "Gemini", "Codeium", "Other", "None"
+
+ai_usage_summary: |
+  Briefly describe how AI tools were used. Examples:
+  - "Used Claude for architectural discussion. Used Claude Code for autocomplete.
+  -  " No candidate data was fed to any LLM."
+  - "Used Codex and GitHub Copilot to debug Python issues for refactoring."
+  - "Used Antigravity for planning and code review and Google Stitch for designing UI-UX"
+  
+
+# ============================================================================
+# Approach summary (optional but recommended)
+# ============================================================================
+methodology_summary: |
+  ≤200 word summary of your approach. Strongly recommended.
+
+  
+  "RedRob Ranking Cascade:
+  
+   L1a — Fraud/KB Hard Reject
+  - KB verification: fictional companies, paper authorship mismatch → hard reject
+  - Scores verified=1.0, unknown=0.5, fictional=0.0
+  - Returns only `l1_status == 'pass'`
+
+  L1b — Profile Integrity Hard Reject
+  - Hard rejects: `reverse_degree_order`, `duplicate_job_descriptions`, `invalid_degree_field_combination`
+  - Hard rejects: `willing_to_relocate=False`, `open_to_work_flag=False`
+  - Pass → `l1b_penalty=1.0` (by design, not a bug)
+
+  L1c — Explicit Skill Match
+  - Synonym-expanded NLP match across skills + work + profile + projects
+  - `l1c_score = (0.7×req_matched + 0.3×bonus_matched − 0.2×unmatched) / max_positive`, clamped [0,1]
+  - Hard reject: zero explicit-required skill matches
+
+  L1d — Inferred Skill Match (no reject)
+  - Reuses L1c text scan, separates tool vs. non-tool inferred hits
+  - `l1d_score = (inferred_matched − tools) / n_inferred`
+
+  L2 — Table Extract
+  - Builds 31-col `table_row` per candidate: exp, location, salary, skill scores, production/arch/testing KW scores, engagement signals, fabrication_bandwidth, soft-penalty flags
+
+  L3 — Sugeno FIS`
+  - 8 conditions a–h; formula:
+  `l3_score = 0.40g + 0.20b + 0.10c + 0.10f + 0.05a + 0.05d + 0.05e − 0.05h`
+  - No rejections; all candidates scored
+  
+  L4 — Semantic Work Relevance
+  - Local all-MiniLM-L6-v2 (pre-cached, no network) encodes work-text vs JD responsibilities
+  - Donts penalty: linear ramp  of donts-sim distribution
+
+  L4b — Explicit-Req Penalty
+  - Penalizes candidates with <4 `l1c_matched_required` skills
+  "
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true        # I have read submission_spec.md in full
+  code_is_original_work: true       # My code is my team's original work (using AI as a tool is fine)
+  no_collusion: true                # I have not coordinated my submission with other teams
+  honeypot_check_done: true         # OPTIONAL — set true if you explicitly checked for honeypots in your ranking
+  reproduction_tested: true         # I have tested that my reproduce_command runs end-to-end

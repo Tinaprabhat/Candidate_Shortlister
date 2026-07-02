@@ -1527,6 +1527,7 @@ def _l3_process_one(c: dict) -> Optional[float]:
     c["l3_score"]     = round(score, 4)
     c["l3_class"]     = cls
     c["l3_reasoning"] = rsn
+    c["l3_cond_g"]    = round(conds.get("g", 0.0), 4)   # technical-breadth condition; needed by fis.build_final_reasoning after L4
     row.update(
         l7_fis_score    = round(score, 4),
         fuzzy_class     = cls,

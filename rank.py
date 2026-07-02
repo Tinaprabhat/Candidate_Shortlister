@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import List
 
 from pipeline import constants as C
-from pipeline import utils, layers, pruning
+from pipeline import utils, layers, pruning, fis
 from pipeline.tracer import RunTracer
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -95,6 +95,10 @@ def run_late_cascade(
     top100 = candidates[:100]
     logger.info(f"After L4/L4b: {len(candidates)} scored → top {len(top100)} final")
 
+    # Final reasoning sentence needs l4_work_relevance, so it can only be built now
+    for c in top100:
+        c["reasoning"] = fis.build_final_reasoning(c)
+
     return top100
 
 
@@ -110,7 +114,7 @@ def _build_rows(top: List[dict], jd: dict) -> List[dict]:
             "candidate_id": str(c.get("candidate_id", c.get("id", f"UNKNOWN_{rank_pos}"))),
             "rank":         rank_pos,
             "score":        round(score, 6),
-            "reasoning":    c.get("l3_reasoning", ""),
+            "reasoning":    c.get("reasoning", ""),
         })
     return rows
 
@@ -134,7 +138,7 @@ def _write_ranked_json(top: List[dict], rows: List[dict], jd: dict, run_id: str)
             "rank":         row.get("rank"),
             "candidate_id": cid,
             "final_score":  row.get("score"),
-            "reasoning":    c.get("l3_reasoning", ""),
+            "reasoning":    c.get("reasoning", ""),
             "score_breakdown": {
                 "l1c_skill_match":       round(c.get("l1c_score", 0.0), 4),
                 "l1c_matched_explicit":  c.get("l1c_matched_explicit", []),

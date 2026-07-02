@@ -304,3 +304,34 @@ def generate_reasoning(c: dict, jd: dict) -> str:
 
     text = "; ".join(bits)
     return text[0].upper() + text[1:] if text else "Candidate evaluated across all layers."
+
+
+def build_final_reasoning(c: dict) -> str:
+    """
+    Build the judge-facing reasoning sentence for the final CSV/ranked-JSON output.
+
+    Must be called AFTER L4 (needs l4_work_relevance, which L4 computes) and after
+    L3 (needs l3_score / l3_cond_g, which _l3_process_one stores on the candidate).
+    Calling this before L4 has run will silently report work_relevance=0.00.
+    """
+    row = c.get("table_row") or {}
+    title = str(row.get("title") or "").strip() or "candidate"
+    exp = float(row.get("total_exp") or 0.0)
+    l1c_score = float(c.get("l1c_score", 0.0))
+    matched = c.get("l1c_matched_required", [])
+    explicit_proficiency_score = float(row.get("explicit_proficiency_score", 0.0))
+    work_relevance = float(c.get("l4_work_relevance", 0.0))
+    l3_score = float(c.get("l3_score", 0.0))
+    redrob_cumulative = float(row.get("redrob_cumulative", 0.0))
+    tool_list = c.get("l1d_tool_list", [])
+    g = float(c.get("l3_cond_g", 0.0))
+
+    text = (
+        f"{title} with {exp:.0f}y exp having {l1c_score:.2f} explicit skills score "
+        f"with total {len(matched)} explicit skills matched with a cumulative "
+        f"proficiency score of {explicit_proficiency_score:.2f}. Has {work_relevance:.2f} "
+        f"work relevance score and {l3_score:.2f} reasoning layer reasoned with facts of "
+        f"cumulative redrob signals {redrob_cumulative:.2f}, tools count of {len(tool_list)}, "
+        f"and ideal candidate match of {g:.2f}."
+    )
+    return text[0].upper() + text[1:]

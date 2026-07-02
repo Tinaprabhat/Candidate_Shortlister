@@ -144,7 +144,17 @@ bash setup.sh          # decompresses models from models/compressed/
 
 `data/jd.json` was **prepared manually** by reading the job description and hand-authoring the structured JSON. No LLM, API, or automated parser was used at any step of this project — including JD parsing, candidate scoring, and ranking. The file is committed to the repo; nothing needs to be generated on a fresh clone.
 
-### 3. Run the Ranker
+### 3. Add the Candidates File
+
+Place the `candidates.jsonl` file provided for this stage into the `data/` folder:
+
+```
+data/candidates.jsonl
+```
+
+(This file is intentionally not committed to the repo — it's the dataset provided by the hackathon at evaluation time.)
+
+### 4. Run the Ranker
 
 ```bash
 # From a flat JSONL file
@@ -162,7 +172,7 @@ CAND_0042871, 1, 0.987, "Senior AI Engineer with 7 years..."
 ...
 ```
 
-### 4. Start the Dashboard *(optional)*
+### 5. Start the Dashboard *(optional)*
 
 ```bash
 # Terminal 1 — Backend API
@@ -174,7 +184,7 @@ cd frontend && npm install && npm run dev
 
 Open `http://localhost:5173`
 
-### 5. Sandbox Demo (Docker, single container)
+### 6. Sandbox Demo (Docker, single container)
 
 The command center dashboard (frontend + backend) is also packaged as a single public
 Docker image — this is the hackathon's sandbox link, satisfying the "sandbox platform"
@@ -198,7 +208,7 @@ docker build -t redrob-sandbox .
 docker run -p 8000:8000 redrob-sandbox
 ```
 
-### 6. Run Tests
+### 7. Run Tests
 
 ```bash
 python -m pytest tests/ -v

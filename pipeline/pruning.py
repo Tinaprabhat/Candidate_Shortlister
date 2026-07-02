@@ -55,7 +55,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 # Populated by the most recent prune_folders() call.
-# Callers (e.g. test_pruning.py) can read pruning.last_prune_timing after the call.
+# Callers can read pruning.last_prune_timing after the call.
 last_prune_timing: Dict = {}
 
 # ──────────────────────────────────────────────────────────────────────────────

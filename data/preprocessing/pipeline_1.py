@@ -869,7 +869,7 @@ def run():
 
 def run_preprocessing(input_file, dataset_dir) -> "Path":
     """
-    Importable entry point for rank.py and test_pruning.py.
+    Importable entry point for rank.py.
     Clears dataset_dir, runs all 3 passes, builds the Dataset/ tree.
     """
     import shutil

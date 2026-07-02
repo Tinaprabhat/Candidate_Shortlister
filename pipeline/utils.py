@@ -6,8 +6,11 @@ Three models only (all in models/decompressed/ after setup.sh):
   2. ms-marco-MiniLM-L-12-v2/ — FlashRank cross-encoder (ONNX INT8)
   3. fraud_kb/fraud_kb.db    — SQLite fraud knowledge base
 
-FAISS index is built in-memory by L4 each run (no on-disk artifact needed).
-No downloads, no network, no quantization at runtime.
+L4 computes cosine similarity directly via numpy (no FAISS index — the
+"faiss" weight key elsewhere refers to a scoring signal name, not this
+library). No quantization at runtime; the happy path (models already
+decompressed) needs no network, but load_sentence_transformer() falls
+back to a by-name download if the local model directory is missing.
 """
 
 import json
@@ -125,16 +128,21 @@ def load_fraud_kb():
 # JD JSON
 # ──────────────────────────────────────────────────────────────────────────────
 def load_jd_json(path: Path = None) -> dict:
+    """
+    Load jd.json and normalize it via jd_parser.validate_and_fill() — every
+    schema field is guaranteed present (correct type/default), skill lists
+    are deduped, and what_you_will_do is synthesised from candidate_work if
+    the file left it empty. jd.json itself is expected to already exist on
+    disk; this function does not parse or generate it.
+    """
     path = path or C.JD_JSON_PATH
     if not path.exists():
-        raise FileNotFoundError(
-            f"jd.json not found at {path}.\n"
-            f"Run the pre-step first:\n"
-            f"  python -m src.jd_parser --jd ./data/job_description.pdf --out ./data/jd.json"
-        )
+        raise FileNotFoundError(f"jd.json not found at {path}.")
     t = time.perf_counter()
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
+    from . import jd_parser
+    data = jd_parser.validate_and_fill(data)
     logger.info(f"[io] load_jd_json: {path.name} read in {round(time.perf_counter()-t, 3)}s")
     return data
 

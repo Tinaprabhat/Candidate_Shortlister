@@ -2,7 +2,7 @@
 tracer.py — Per-run execution trace written to logs/<run_id>.json.
 
 Usage:
-    from src.tracer import RunTracer
+    from pipeline.tracer import RunTracer
     tracer = RunTracer()
     tracer.set_jd(jd)
     tracer.record_pruning(folder_names, decisions, kept)

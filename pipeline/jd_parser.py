@@ -1,9 +1,11 @@
 """
 jd_parser.py — JD schema constants and validation for RedRob pipeline.
 
-jd.json is pre-existing on disk; rank.py reads it directly.
-This module exposes the schema definition, prompt template, and
-validate_and_fill() so tests and downstream code can reference them.
+jd.json is pre-existing on disk; rank.py reads it via utils.load_jd_json(),
+which calls validate_and_fill() on every load to normalize the JD before it
+reaches the pipeline. This module exposes the schema definition, prompt
+template, and validate_and_fill() so both that live code path and tests can
+reference them.
 """
 
 import logging

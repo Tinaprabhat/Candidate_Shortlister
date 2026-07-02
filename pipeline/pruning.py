@@ -3,9 +3,11 @@ pruning.py — Structured + heuristic folder pruning, then timed thread dispatch
 
 Pruning is applied in five phases (hard → soft):
 
-  Phase 1a — Code/No-code: drop root-level buckets whose code/no-code type
-                           contradicts the JD requirement (e.g. no_code/ when
-                           JD is a software-engineering role).
+  Phase 1a — Code/No-code: drop buckets whose code/no-code type contradicts
+                           the JD requirement (e.g. no_code/ when JD is a
+                           software-engineering role). Scans all path
+                           components, not just the root, so a wrapper
+                           prefix like Dataset/ doesn't hide the token.
   Phase 1b — Inactive    : drop folders whose name identifies them as an
                            inactive/unavailable candidate bucket.
   Phase 1c — Location    : drop folders that are explicitly outside the JD city
@@ -14,12 +16,16 @@ Pruning is applied in five phases (hard → soft):
                            JD minimum (e.g. 0-3/ when JD requires 5+ yrs).
   Phase 1e — Role        : drop folders labelled as a different role family
                            (e.g. other_role when JD is an engineering position).
-  Phase 2  — Token-overlap: score surviving folders against JD title + skills;
-                           all Phase-1 survivors are kept, sorted by relevance.
+  Phase 2  — Token-overlap: score surviving folders against JD title + skills,
+                           sorted by relevance. Zero-overlap folders are then
+                           dropped too, UNLESS that would drop every survivor
+                           (unrecognised JD), in which case all are kept.
 
 Tree layout expected on disk (new structure):
   <code|no_code>/
-    <available|unavailable>/
+    <available|not_available>/    ← merged activity + relocation status;
+                                      "not_available" (not "unavailable") —
+                                      deliberately avoids INACTIVE_FOLDER_NAMES
       <0-3|4-9|10+>/
         <engineering|cloud|devops|…>/
           <role_bucket>.json   ← e.g. swe_.json, ai_engineer.json
@@ -73,6 +79,46 @@ _STATUS_TOKENS: frozenset = frozenset({
     "active", "inactive", "moderate", "open", "closed",
     "available", "unavailable", "eligible",
 })
+
+# Fine-grained engineering role families — see C.ROLE_FAMILY_KEYWORDS /
+# C.ROLE_FAMILY_EXCLUSIONS. "swe_general" is the broad fallback bucket for
+# any JD that matches ENGINEERING_ROLE_KEYWORDS but no specific family.
+_ENGINEERING_FAMILIES: frozenset = frozenset({
+    "ai_ml", "cloud_devops", "qa", "mobile", "java_net", "swe_general",
+})
+
+# Short-form non-engineering domain folder names.
+# These are exact matches against a single normalised path component —
+# handles folders named "HR", "hr_and_people", "Sales", etc. that would
+# not be caught by the longer substring patterns in C.OTHER_ROLE_FOLDER_PATTERNS.
+_NON_ENG_DOMAIN_PARTS: frozenset = frozenset({
+    "hr", "hr and people", "human resources",
+    "sales", "marketing", "finance", "legal",
+    "operations", "admin", "administration",
+    "talent", "recruitment", "accounting", "accounts",
+    "customer support", "customer success", "support",
+    "business", "business development",
+    "product and design", "design",
+    "non tech engineering",
+    "other", "unclassified",
+})
+
+# Floor sets for code/no-code and inactive bucket tokens — always checked
+# regardless of what's configured in constants.py, so a missing/edited
+# constant can never silently disable these checks.
+_NO_CODE_ROOT_FLOOR: frozenset = frozenset({"no_code", "nocode", "no-code"})
+_CODE_ROOT_FLOOR:    frozenset = frozenset({"code"})
+_INACTIVE_FLOOR:     frozenset = frozenset({"unavailable", "inactive", "rejected", "closed"})
+
+
+def _root_token_set(configured: set, floor: frozenset) -> set:
+    """Union configured tokens (raw + space-normalised) with the floor set."""
+    out = set(floor)
+    for t in configured:
+        t = str(t).lower().strip()
+        out.add(t)
+        out.add(t.replace("_", " ").replace("-", " "))
+    return out
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -141,15 +187,30 @@ def _path_parts_normalized(path_str: str) -> List[str]:
 
 
 def _classify_jd_role(jd: dict) -> str:
-    """Return 'engineering' if the JD role belongs to the engineering family, else 'other'."""
+    """
+    Return the JD's role family:
+      'ai_ml' | 'cloud_devops' | 'qa' | 'mobile' | 'java_net' |
+      'swe_general' | 'other'
+
+    Fine-grained families (C.ROLE_FAMILY_KEYWORDS) are checked first, in
+    insertion order. If none match but a broad engineering keyword
+    (C.ENGINEERING_ROLE_KEYWORDS) does, falls back to 'swe_general'.
+    Non-engineering JDs return 'other'.
+    """
     title = jd.get("job_title", "").lower()
     skills = " ".join(
         jd.get("explicit_required", []) + jd.get("inferred_required", [])
     ).lower()
     combined = title + " " + skills
+
+    for family, keywords in C.ROLE_FAMILY_KEYWORDS.items():
+        if any(kw in combined for kw in keywords):
+            return family
+
     for keyword in C.ENGINEERING_ROLE_KEYWORDS:
         if keyword in combined:
-            return "engineering"
+            return "swe_general"
+
     return "other"
 
 
@@ -172,19 +233,34 @@ def _classify_jd_coding(jd: dict) -> str:
             if token in job_type:
                 return "code"
 
-    return "code" if _classify_jd_role(jd) == "engineering" else "no_code"
+    return "code" if _classify_jd_role(jd) in _ENGINEERING_FAMILIES else "no_code"
 
 
 def _is_coding_type_excluded(path_str: str, coding_type: str) -> bool:
     """
-    Return True if the folder's root-level bucket contradicts the JD coding type.
+    Return True if the folder's code/no-code bucket contradicts the JD.
+
+    Scans ALL path components for the first recognised code/no-code token
+    (handles a Dataset/ wrapper prefix without breaking), rather than only
+    checking the root component.
     """
-    parts = _path_parts_normalized(path_str)
-    root = parts[0] if parts else ""
-    if coding_type == "code":
-        return root in C.NO_CODE_FOLDER_ROOTS
-    if coding_type == "no_code":
-        return root in C.CODE_FOLDER_ROOTS
+    raw_parts = [p.strip().lower() for p in path_str.replace("\\", "/").split("/") if p.strip()]
+
+    no_code_tokens = _root_token_set(getattr(C, "NO_CODE_FOLDER_ROOTS", set()), _NO_CODE_ROOT_FLOOR)
+    code_tokens    = _root_token_set(getattr(C, "CODE_FOLDER_ROOTS",    set()), _CODE_ROOT_FLOOR)
+
+    for part in raw_parts:
+        norm       = part.replace("_", " ").replace("-", " ")
+        is_no_code = part in no_code_tokens or norm in no_code_tokens
+        is_code    = part in code_tokens    or norm in code_tokens
+
+        if is_no_code or is_code:
+            if coding_type == "code":
+                return is_no_code
+            if coding_type == "no_code":
+                return is_code
+            return False
+
     return False
 
 
@@ -249,31 +325,56 @@ def _is_experience_excluded(path_str: str, exp_min: int) -> bool:
     return exp_range[1] < exp_min
 
 
-def _is_role_excluded(path_str: str, role_category: str) -> bool:
+def _is_role_excluded(path_str: str, role_family: str) -> bool:
     """
     Return True if this folder explicitly represents a role family that doesn't
     match the JD.
+
+    Two checks:
+      1. Non-engineering domain — drops any folder outside engineering
+         entirely. Checks BOTH short-form exact matches (_NON_ENG_DOMAIN_PARTS,
+         e.g. "hr", "hr and people") AND longer substring patterns
+         (C.OTHER_ROLE_FOLDER_PATTERNS, e.g. "human resources"), so folder
+         names like "HR", "hr_and_people", "Sales" are all caught even
+         when they don't match the longer substring patterns.
+      2. Cross-family exclusion — drops folders belonging to a DIFFERENT
+         engineering sub-family (e.g. java_developer/mobile_developer for
+         an ai_ml JD), via C.ROLE_FAMILY_EXCLUSIONS[role_family].
     """
-    if role_category != "engineering":
+    if role_family not in _ENGINEERING_FAMILIES:
         return False
+
     parts = _path_parts_normalized(path_str)
+
     for part in parts:
+        if part in _NON_ENG_DOMAIN_PARTS:
+            return True
         for pattern in C.OTHER_ROLE_FOLDER_PATTERNS:
             if pattern in part:
                 return True
-        if part == "other":
-            return True
+
+    exclusions = C.ROLE_FAMILY_EXCLUSIONS.get(role_family, frozenset())
+    for part in parts:
+        for pattern in exclusions:
+            if pattern in part:
+                return True
+
     return False
 
 
 def _is_inactive_folder(path_str: str) -> bool:
     """
-    Return True if ANY component of this folder path is a known inactive-bucket
-    name. Uses exact match on each normalised path component.
+    Return True if ANY path component names an inactive/unavailable bucket.
+
+    Checks both raw (underscore) and space-normalised forms against the
+    configured + floor inactive token sets, so a missing/edited constant
+    can never silently disable this check.
     """
-    parts = _path_parts_normalized(path_str)
-    for part in parts:
-        if part in C.INACTIVE_FOLDER_NAMES:
+    raw_parts  = [p.lower().strip() for p in path_str.replace("\\", "/").split("/")]
+    norm_parts = _path_parts_normalized(path_str)
+    inactive_tokens = _root_token_set(getattr(C, "INACTIVE_FOLDER_NAMES", set()), _INACTIVE_FLOOR)
+    for part in raw_parts + norm_parts:
+        if part in inactive_tokens:
             return True
     return False
 
@@ -408,7 +509,7 @@ def prune_folders(
 
         if is_1e:
             n_drop["1e"] += 1
-            reason = f"role mismatch (not {role_category})"
+            reason = f"role mismatch (JD family: {role_category})"
             logger.info(f"  '{name}': hard-DROP [1e] → {reason}")
             decisions[name] = f"DROP:{reason}"
             continue

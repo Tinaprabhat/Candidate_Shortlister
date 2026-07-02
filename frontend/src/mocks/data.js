@@ -171,7 +171,17 @@ export const systemHealth = {
   uptime: '99.982%',
   latency_ms: 42,
   queue_depth: 18,
-  core_efficiency: 98
+  core_efficiency: 98,
+  pipeline_running: false,
+  elapsed_seconds: 46.8,
+  setup_seconds: 11.2,
+  total_input: 6556,
+  shortlist_count: 100,
+  error_count: 0,
+  stage_count: 7,
+  summary:
+    'Last run processed 6,556 candidates across 7 pipeline stages in 46.8s (11.2s of that was model setup). ' +
+    'No errors logged; 100 candidates were shortlisted.'
 }
 
 export const systemEvents = [

@@ -1,48 +1,48 @@
-import FunnelChart from '../components/overview/FunnelChart.jsx'
-import RiskCards from '../components/overview/RiskCards.jsx'
-import ShapeLandingHero from '../components/ui/ShapeLandingHero.jsx'
-import ScrollShowcase from '../components/ui/ScrollShowcase.jsx'
-import { useQueryClient } from '@tanstack/react-query'
+import { Fragment } from 'react'
+import { Download } from 'lucide-react'
+import HorizontalLayerStack from '../components/overview/HorizontalLayerStack.jsx'
 import { useCandidates } from '../hooks/useCandidates.js'
-import { usePipelineFunnel, usePipelineRuns, useStartPipelineRun } from '../hooks/usePipeline.js'
+import { usePipelineRuns } from '../hooks/usePipeline.js'
 import { useSystemHealth } from '../hooks/useSystemHealth.js'
 import { useAppStore } from '../store/useAppStore.js'
 
+const LOGIC_LABELS = { l2: 'Knowledge', l3: 'Reasoning', l4: 'Technical' }
+
 export default function Overview() {
   const setActivePage = useAppStore((state) => state.setActivePage)
-  const queryClient = useQueryClient()
-  const { data: candidates = [] } = useCandidates()
-  const { data: runs = [] } = usePipelineRuns()
+  const { data: candidates = [], isLoading: candidatesLoading } = useCandidates()
+  const { data: runs = [], isLoading: runsLoading } = usePipelineRuns()
   const run = runs[0]
-  const { data: funnel = [] } = usePipelineFunnel(run?.id)
   const { data: health } = useSystemHealth()
-  const startPipeline = useStartPipelineRun()
 
-  async function handleNewPipeline() {
-    try {
-      await startPipeline.mutateAsync()
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['pipeline-runs'] }),
-        queryClient.invalidateQueries({ queryKey: ['pipeline-funnel'] }),
-        queryClient.invalidateQueries({ queryKey: ['candidates'] }),
-        queryClient.invalidateQueries({ queryKey: ['system-health'] }),
-        queryClient.invalidateQueries({ queryKey: ['system-events'] })
-      ])
-      setActivePage('candidates')
-    } catch (err) {
-      console.error('[NewPipeline] launch failed:', err)
-    }
-  }
+  const pipelineRunning = run?.status === 'running'
+  const statsLoading = runsLoading || pipelineRunning
+  const candidatesUnready = candidatesLoading || pipelineRunning
+
+  const topCandidate = candidates[0]
+
+  const performerRows = candidates.slice(0, 5).map((candidate) => ({
+    candidate,
+    id: candidate.id,
+    reasoning: candidate.evidence?.[0] || 'High-confidence heuristic match.'
+  }))
+
+  const total = run?.total_processed || 0
+  const l1Rejects = run?.l1_rejects || 0
+  const survivors = run?.survivors || 0
+  const shortlist = run?.shortlist_count || 0
+  const pct = (value) => (total > 0 ? `${((value / total) * 100).toFixed(1)}%` : '—')
 
   return (
-    <div className="page-stack overview-page">
-      <section className="overview-title-row">
-        <ShapeLandingHero
-          badge="System status: optimal"
-          title1="Systems"
-          title2="Overview"
-          description="Real-time intelligence dashboard monitoring candidate flow, heuristic survival rates, and risk distribution across the active ingestion pipeline."
-        />
+    <div className="page-stack overview-page new-overview-page">
+      <section className="new-overview-title">
+        <div>
+          <h1>Overview</h1>
+          <p>
+            Real-time intelligence dashboard monitoring candidate flow, heuristic survival rates, and risk
+            distribution across the active ingestion pipeline.
+          </p>
+        </div>
         <div className="status-tile">
           <span>System Status: Optimal</span>
           <em>Latency: {health?.latency_ms || 42}ms</em>
@@ -52,83 +52,143 @@ export default function Overview() {
       <section className="kpi-grid reference-kpis">
         <article className="metric-card">
           <p>Total Processed</p>
-          <strong>{run?.total_processed?.toLocaleString() || '12,842'}</strong>
-          <em>+12.4%</em>
+          {statsLoading ? (
+            <span className="loading-pulse" aria-label="Calculating" />
+          ) : (
+            <>
+              <strong>{total.toLocaleString()}</strong>
+              <em>{pct(total)}</em>
+            </>
+          )}
         </article>
         <article className="metric-card danger">
           <p>L1 Rejects</p>
-          <strong>{run?.l1_rejects?.toLocaleString() || '4,109'}</strong>
-          <em>32.0%</em>
+          {statsLoading ? (
+            <span className="loading-pulse" aria-label="Calculating" />
+          ) : (
+            <>
+              <strong>{l1Rejects.toLocaleString()}</strong>
+              <em>{pct(l1Rejects)}</em>
+            </>
+          )}
         </article>
         <article className="metric-card">
           <p>Gate Survivors</p>
-          <strong>{run?.survivors?.toLocaleString() || '8,733'}</strong>
-          <em>68.0%</em>
+          {statsLoading ? (
+            <span className="loading-pulse" aria-label="Calculating" />
+          ) : (
+            <>
+              <strong>{survivors.toLocaleString()}</strong>
+              <em>{pct(survivors)}</em>
+            </>
+          )}
         </article>
         <article className="metric-card highlight">
           <p>Final Shortlist</p>
-          <strong>{run?.shortlist_count?.toLocaleString() || '214'}</strong>
-          <em>1.6% yield</em>
+          {statsLoading ? (
+            <span className="loading-pulse" aria-label="Calculating" />
+          ) : (
+            <>
+              <strong>{shortlist.toLocaleString()}</strong>
+              <em>{pct(shortlist)} yield</em>
+            </>
+          )}
         </article>
       </section>
 
       <div className="overview-grid">
-        <ScrollShowcase eyebrow="Pipeline Motion" title="Sequential Evaluation Layers" compact>
-          <FunnelChart rows={funnel} />
-        </ScrollShowcase>
-
-        <aside className="overview-side-rail">
-          <section className="panel neural-panel">
-            <div className="section-heading">
-              <p>Neural Insights</p>
-              <h2>Live Model Notes</h2>
-            </div>
-            <blockquote>"Significant variance detected in L1 rejection velocity compared to historical mean."</blockquote>
-            <blockquote>"Dynamic evaluation scaling applied to L2 gates based on cohort quality distribution."</blockquote>
-            <blockquote>"Low entropy detected in candidate responses; increasing prompt complexity."</blockquote>
-          </section>
-
-        </aside>
+        <HorizontalLayerStack />
       </div>
 
-      <div className="overview-bottom-grid">
-        <RiskCards health={health} />
-        <section className="panel top-candidates">
-          <div className="section-heading inline">
-            <div>
-              <p>Top 10 Performers Preview</p>
-              <h2>Shortlist Signal</h2>
+      <section className="panel best-candidate-panel">
+        {candidatesUnready || !topCandidate ? (
+          <div className="candidate-feature-loading">
+            <span className="spinner" aria-hidden="true" />
+            <span>Waiting for pipeline results…</span>
+          </div>
+        ) : (
+          <>
+            <div className="candidate-feature">
+              <div className="candidate-portrait">
+                {topCandidate.initials || topCandidate.name?.slice(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <h2>{topCandidate.name}</h2>
+                <p>ID: {topCandidate.id}</p>
+              </div>
             </div>
-            <button className="text-link" type="button" onClick={() => setActivePage('candidates')}>
-              View Full Report
+            <div className="candidate-feature-grid">
+              <div>
+                <p className="micro-label">Core Strengths</p>
+                <div className="domain-chips static">
+                  {(topCandidate.required_skills || []).slice(0, 4).map((skill) => (
+                    <span key={skill}>{skill}</span>
+                  ))}
+                </div>
+                <div className="feature-bars">
+                  {Object.entries(topCandidate.logic_scores || {})
+                    .slice(0, 2)
+                    .map(([layer, value]) => (
+                      <Fragment key={layer}>
+                        <label>
+                          {LOGIC_LABELS[layer] || layer.toUpperCase()} <strong>{value}%</strong>
+                        </label>
+                        <span><i style={{ width: `${value}%` }} /></span>
+                      </Fragment>
+                    ))}
+                </div>
+              </div>
+              <div>
+                <p className="micro-label">Behavioral Signals</p>
+                <p className="candidate-copy">
+                  {topCandidate.evidence?.[0] || 'No behavioral evidence recorded for this candidate yet.'}
+                </p>
+                {topCandidate.evidence?.[1] ? <blockquote>"{topCandidate.evidence[1]}"</blockquote> : null}
+              </div>
+            </div>
+            <button className="ghost-button" type="button" onClick={() => setActivePage('candidates')}>
+              View all shortlisted
             </button>
+          </>
+        )}
+      </section>
+
+      <section className="panel top-candidates reference-performers-panel">
+        <div className="section-heading inline performer-heading">
+          <div>
+            <h2>Top 10 Performers Preview</h2>
+            <p>High-confidence heuristic matches</p>
           </div>
-          <div className="reference-table">
-            <div className="reference-table-head">
-              <span>Candidate ID</span>
-              <span>Score (A)</span>
-              <span>Match %</span>
-              <span>Status</span>
-            </div>
-            {candidates.slice(0, 5).map((candidate) => (
-              <button
-                className="reference-table-row"
-                key={candidate.id}
-                type="button"
-                onClick={() => {
-                  useAppStore.getState().setActiveCandidate(candidate.id)
-                  setActivePage('candidates')
-                }}
-              >
-                <span>#RR-2024-{candidate.rank === '01' ? '901' : candidate.rank === '02' ? '882' : candidate.rank === '03' ? '110' : candidate.rank === '04' ? '541' : '004'}</span>
-                <strong>{(candidate.score / 100 + 0.042).toFixed(3)}</strong>
-                <span>{candidate.match}</span>
-                <em>Shortlisted</em>
-              </button>
-            ))}
+          <button className="ghost-button" type="button" onClick={() => setActivePage('candidates')}>
+            <Download size={15} aria-hidden="true" />
+            Download Top 100 CSV
+          </button>
+        </div>
+        <div className="performer-table">
+          <div className="performer-table-head">
+            <span>Candidate ID</span>
+            <span>Name</span>
+            <span>Score</span>
+            <span>Reasoning</span>
           </div>
-        </section>
-      </div>
+          {performerRows.map(({ candidate, id, reasoning }) => (
+            <button
+              className="performer-table-row"
+              key={candidate.id}
+              type="button"
+              onClick={() => {
+                useAppStore.getState().setActiveCandidate(candidate.id)
+                setActivePage('candidates')
+              }}
+            >
+              <span>{id}</span>
+              <strong>{candidate.name}</strong>
+              <em>{candidate.match}</em>
+              <p>{reasoning}</p>
+            </button>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

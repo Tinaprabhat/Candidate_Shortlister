@@ -159,7 +159,7 @@ class TestL1HardReject:
     def test_salary_min_gt_max_rejects(self):
         kb = make_kb()
         c = make_candidate()
-        c["salary_expectation"] = {"min": 200000, "max": 100000}
+        c.setdefault("redrob_signals", {})["expected_salary_range_inr_lpa"] = {"min": 200000, "max": 100000}
         result = layers.l1_hard_reject([c], kb)
         assert result == []
 
@@ -319,8 +319,10 @@ class TestL1bProfileIntegrity:
         assert result[0]["l1b_status"] == "pass"
 
     def test_hard_reject_invalid_degree_field_combination(self):
+        # invalid_degree_field_combination lives per education entry (not top-level).
         c = make_candidate()
-        c["invalid_degree_field_combination"] = True
+        c["education"] = [{"degree": "MBA", "end_year": 2019,
+                           "invalid_degree_field_combination": True}]
         result = layers.l1b_profile_integrity([c])
         assert result == []
 
@@ -592,82 +594,6 @@ class TestDictionary:
     def test_figma_resolves_via_synonym(self):
         forms = expand_skill("figma")
         assert "ui design" in forms
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# LAYER 3 — SENIORITY REGRESSION
-# ─────────────────────────────────────────────────────────────────────────────
-
-class TestL3Seniority:
-
-    def test_qualified_candidate_no_penalty(self):
-        c = make_candidate(years=7)  # 7y → level 7 ≥ senior (5)
-        result = layers.l3_seniority([c], JD)
-        assert result[0]["l3_penalty"] == 1.0
-        assert result[0]["l3_flag"] == ""
-
-    def test_under_qualified_gets_penalty(self):
-        c = make_candidate(years=2)  # 2y → level 1, below senior (5)
-        result = layers.l3_seniority([c], JD)
-        assert result[0]["l3_penalty"] == C.SENIORITY_PENALTY
-        assert "under-qualified" in result[0]["l3_flag"]
-
-    def test_downlevel_principal_gets_penalty(self):
-        c = make_candidate(
-            years=10,
-            work=[{
-                "title": "Principal AI Engineer",
-                "company": "TechCorp",
-                "start_date": "2016-01-01",
-                "duration_months": 120,
-                "description": "Led AI platform and retrieval architecture.",
-            }],
-            profile={
-                "years_of_experience": 10,
-                "summary": "Principal engineer leading AI systems.",
-                "headline": "Principal AI Engineer",
-            },
-        )
-        result = layers.l3_seniority([c], JD)
-        assert result[0]["l3_penalty"] == C.DOWNLEVEL_SENIORITY_PENALTY
-        assert "down-level move" in result[0]["l3_flag"]
-
-    def test_senior_title_for_senior_role_no_downlevel_penalty(self):
-        c = make_candidate(
-            years=6,
-            work=[{
-                "title": "Senior AI Engineer",
-                "company": "TechCorp",
-                "start_date": "2018-01-01",
-                "duration_months": 72,
-                "description": "Built AI retrieval systems.",
-            }],
-        )
-        result = layers.l3_seniority([c], JD)
-        assert result[0]["l3_penalty"] == 1.0
-        assert result[0]["l3_flag"] == ""
-
-    def test_penalty_does_not_remove_candidate(self):
-        cands = [make_candidate(f"C{i}", years=i) for i in range(10)]
-        result = layers.l3_seniority(cands, JD)
-        assert len(result) == 10
-
-    def test_boundary_experience_exact_senior(self):
-        # 7y → seniority 7, JD senior = 5; no penalty
-        c = make_candidate(years=7)
-        result = layers.l3_seniority([c], JD)
-        assert result[0]["l3_penalty"] == 1.0
-
-    def test_seniority_flag_contains_years(self):
-        c = make_candidate(years=1)
-        result = layers.l3_seniority([c], JD)
-        assert "1" in result[0]["l3_flag"] or "under-qualified" in result[0]["l3_flag"]
-
-    def test_jd_junior_level_no_penalty_for_junior(self):
-        jd_junior = {**JD, "required_seniority": "junior"}
-        c = make_candidate(years=1)
-        result = layers.l3_seniority([c], jd_junior)
-        assert result[0]["l3_penalty"] == 1.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────

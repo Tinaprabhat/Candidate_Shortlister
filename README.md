@@ -1,66 +1,144 @@
----
-title: RedRob Ranker
-emoji: 🤖
-colorFrom: blue
-colorTo: indigo
-sdk: streamlit
-sdk_version: "1.32.0"
-app_file: app.py
-pinned: false
----
+# RedRob — Offline Candidate Shortlisting Engine
 
-# RedRob — Intelligent Candidate Discovery & Ranking System
+> A 4-layer cascading pipeline that ranks thousands of candidate profiles against a job description — fully offline, no LLM API calls, sub-4GB memory footprint.
 
-> **Redrob Hackathon Submission** · Team RedRob · India Runs Data & AI Challenge 2026
+[![Live Demo](https://img.shields.io/badge/demo-docker-blue?logo=docker)](https://hub.docker.com/r/abinmukherjee/redrob-sandbox)
+[![Python](https://img.shields.io/badge/python-3.10+-blue)]()
+[![License](https://img.shields.io/badge/license-MIT-green)]()
 
-A fully offline, CPU-only candidate ranking pipeline that processes up to 100K candidate profiles against a structured Job Description and produces a ranked shortlist in **~51 seconds** — with zero external API calls at inference time.
+| Metric | Value |
+|---|---|
+| **Avg. run time** | ~200s (10k candidates → top 100) |
+| **Peak memory** | 4.2 GB |
+| **Output** | Top 100 ranked candidates |
+| **Models used** | 100% local — zero API calls |
+| **Model footprint** | ~186 MB (compressed) |
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Repository Structure](#repository-structure)
-- [Quick Start](#quick-start)
-- [Pipeline Architecture](#pipeline-architecture)
-  - [Pre-Processing](#pre-processing)
-  - [Folder Pruning](#folder-pruning)
-  - [L1 — Fraud & Hard Reject](#l1--fraud--hard-reject)
-  - [L1b — Profile Integrity](#l1b--profile-integrity)
-  - [L1c — Skill Match](#l1c--skill-match)
-  - [L2 — Feature Table Extraction](#l2--feature-table-extraction)
-  - [L3 — Sugeno Fuzzy Scoring](#l3--sugeno-fuzzy-scoring)
-  - [L4 — Semantic Work Relevance](#l4--semantic-work-relevance)
-  - [L5a — Don'ts Penalty](#l5a--donts-penalty)
-  - [FIS — Mamdani Fuzzy Final Score](#fis--mamdani-fuzzy-final-score)
-- [Backend API](#backend-api)
-- [Frontend Dashboard](#frontend-dashboard)
-- [Models & Artifacts](#models--artifacts)
-- [Performance Benchmarks](#performance-benchmarks)
-- [Team](#team)
+1. [Overview](#overview)
+2. [Live Demo](#live-demo)
+3. [Architecture](#architecture)
+4. [Pipeline Layers](#pipeline-layers)
+5. [Repository Structure](#repository-structure)
+6. [Setup & Run](#setup--run)
+7. [Usage](#usage)
+8. [Output Format](#output-format)
+9. [Performance](#performance)
+10. [Tech Stack](#tech-stack)
+11. [Known Limitations](#known-limitations)
 
 ---
 
 ## Overview
 
-RedRob is a **multi-layer cascade ranker** built for real-world recruiting at scale. The system avoids the common trap of keyword stuffing by combining:
+RedRob ingests a raw pool of candidate profiles (JSONL or a ZIP of nested folders) and a structured job description, then runs them through a **4-stage cascade** — hard filters → integrity checks → skill matching → semantic relevance — producing a ranked `submission.csv` of the top 100 candidates with full score breakdowns and reasoning.
 
-- **Rule-based hard filters** to eliminate fraud and impossible profiles
-- **NLP + synonym expansion** for skill matching beyond exact keywords
-- **Fuzzy logic** (Sugeno + Mamdani) to score nuanced signal combinations
-- **Semantic embeddings** (`all-MiniLM-L6-v2`) for work-history-to-JD relevance
+**Design goals:**
+- **Fully offline** — no OpenAI/Anthropic/cloud calls anywhere in the ranking path. Every model runs locally.
+- **Cascading cost control** — cheap, high-recall filters run first (L1) to shrink the pool before expensive semantic scoring (L4) runs on survivors only.
+- **Concurrent, streamed processing** — candidates are scored per-folder, concurrently, rather than loaded entirely into memory upfront.
+- **Fully traceable** — every layer's decisions (kept/dropped/penalized) are logged via `RunTracer` for auditability.
 
-The system is designed to work entirely **offline** — `rank.py` makes zero network calls and runs on CPU-only hardware within the hackathon's 5-minute / 16 GB RAM compute budget.
+---
 
-### Compute Constraints Met
+## Live Demo
 
-| Constraint | Budget | Achieved |
-|---|---|---|
-| Runtime | ≤ 300s | ~51s on 100K candidates |
-| Memory | ≤ 16 GB RAM | ~350 MB peak |
-| Disk | ≤ 5 GB | ~233 MB intermediate |
-| GPU | None | CPU only |
-| Network (during ranking) | None | Zero external calls |
+Run the full system (backend + dashboard) locally with a single command:
+
+```bash
+docker run -p 8000:8000 abinmukherjee/redrob-sandbox:latest
+```
+
+Then open `http://localhost:8000` to explore the React command-center dashboard — ranked candidates, score breakdowns, and system health, all served from the FastAPI backend.
+
+---
+
+## Architecture
+
+```
+                         ┌─────────────────────────┐
+                         │   candidates.jsonl / .zip │
+                         └────────────┬─────────────┘
+                                      │
+                         ┌────────────▼─────────────┐
+                         │  Preprocessing (pipeline_1)│
+                         │  clean · fabrication flags │
+                         │  → folder tree             │
+                         └────────────┬─────────────┘
+                                      │
+                         ┌────────────▼─────────────┐
+                         │   Folder Discovery         │
+                         └────────────┬─────────────┘
+                                      │
+                         ┌────────────▼─────────────┐
+                         │  Heuristic Pruning         │
+                         │  (Phase 1a–1e + Phase 2)   │
+                         │  drop low-signal folders    │
+                         └────────────┬─────────────┘
+                                      │
+                         ┌────────────▼─────────────┐
+                         │ Staggered Folder Dispatch  │
+                         │  (concurrent workers)      │
+                         └────────────┬─────────────┘
+                                      │
+        ╔═════════════════════════════▼═════════════════════════════╗
+        ║      EARLY CASCADE  (per-folder, streamed per-candidate)   ║
+        ║                                                             ║
+        ║   L1a → Hard Reject         (disqualifying criteria)        ║
+        ║   L1b → Profile Integrity   (fabrication / fraud flags)     ║
+        ║   L1c → Skill Match         (explicit + required skills)    ║
+        ║   L1d → Inferred Match      (synonym/dictionary expansion)  ║
+        ║   L2  → Table Extraction    (structured fields)             ║
+        ║   L3  → Weighted Score      (fuzzy score + reasoning)       ║
+        ╚═════════════════════════════╤═════════════════════════════╝
+                                      │
+                         ┌────────────▼─────────────┐
+                         │  Hard Pool Cap             │
+                         │  (sort by L1c, cap size)   │
+                         └────────────┬─────────────┘
+                                      │
+        ╔═════════════════════════════▼═════════════════════════════╗
+        ║        LATE CASCADE  (global, all survivors)                ║
+        ║                                                             ║
+        ║   L4  → Semantic Work Relevance + "Don'ts" Penalty          ║
+        ║          (sentence-transformer embedding similarity)        ║
+        ║   L4b → Graduated Penalty                                    ║
+        ║          (< 4 matched explicit-required skills)             ║
+        ╚═════════════════════════════╤═════════════════════════════╝
+                                      │
+                         ┌────────────▼─────────────┐
+                         │   Top 100 by Final Score   │
+                         └────────────┬─────────────┘
+                                      │
+                    ┌─────────────────┼─────────────────┐
+                    ▼                                    ▼
+          ┌───────────────────┐              ┌───────────────────────┐
+          │  submission.csv     │              │  ranked_{run_id}.json  │
+          │  candidate_id,rank,  │              │  full score breakdown  │
+          │  score, reasoning    │              │  per candidate         │
+          └───────────────────┘              └───────────────────────┘
+```
+
+---
+
+## Pipeline Layers
+
+| Layer | Name | Purpose | Cost |
+|---|---|---|---|
+| **L1a** | Hard Reject | Disqualifies candidates on non-negotiable criteria | Cheapest — rule-based |
+| **L1b** | Profile Integrity | Flags fabricated/inconsistent profiles, applies penalty | Cheap — heuristic |
+| **L1c** | Skill Match | Matches explicit + required skills from JD | Cheap — string/set match |
+| **L1d** | Inferred Match | Expands matches via synonym dictionary (`dictionary.py`) | Cheap — lookup table |
+| **L2** | Table Extraction | Pulls structured fields (experience, education, etc.) | Moderate |
+| **L3** | Weighted Score | Combines L1–L2 signals into a fuzzy score + reasoning string | Moderate |
+| **L4** | Semantic Work Relevance | Embeds candidate work history + JD via `all-MiniLM-L6-v2`, scores cosine similarity; applies "don'ts" penalty | Most expensive — only runs on L3 survivors |
+| **L4b** | Explicit Requirement Penalty | Graduated penalty for candidates matching < 4 explicit required skills; re-sorts final ranking | Cheap |
+
+**Why cascade instead of scoring everyone with the expensive model?**
+Running a sentence-transformer over every candidate in a 10k+ pool is wasteful when 60–80% can be eliminated by free rule-based checks first. L1a–L1d filter the pool cheaply; L4's semantic embedding only runs on candidates that already passed integrity and skill-match gates.
 
 ---
 
@@ -76,7 +154,6 @@ Candidate_Shortlister/
 │
 ├── pipeline/                        # All AI ranking logic
 │   ├── layers.py                    # Cascade layers L1 → L4
-│   ├── fis.py                       # Mamdani FIS final scoring
 │   ├── pruning.py                   # Heuristic folder pruning (Phase 1a–1e + Phase 2)
 │   ├── jd_parser.py                 # JD PDF → structured JSON (utility, not used in ranking)
 │   ├── constants.py                 # All weights, thresholds, model paths
@@ -123,403 +200,194 @@ Candidate_Shortlister/
     │   └── honeypot_candidates.jsonl    # Synthetic fraud profiles for L1 testing
     ├── honeypot_stresstest.py           # L1 fraud detection stress tests
     ├── model_working_test.py            # Model load & graceful-degrade tests
-    ├── modular_test.py                  # Per-layer isolation tests
     └── test_layer.py                    # Full layer unit tests (pytest, no models needed)
 ```
 
 ---
 
-## Quick Start
+## Setup & Run
 
-### 1. Clone & Setup
+### Prerequisites
+- Python 3.10+
+- ~5 GB free disk space (models + working data)
+- No GPU required
+
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/Tinaprabhat/Candidate_Shortlister.git
 cd Candidate_Shortlister
 pip install -r requirements.txt
-bash setup.sh          # decompresses models from models/compressed/
 ```
 
-### 2. Job Description *(already done — no action needed)*
-
-`data/jd.json` was **prepared manually** by reading the job description and hand-authoring the structured JSON. No LLM, API, or automated parser was used at any step of this project — including JD parsing, candidate scoring, and ranking. The file is committed to the repo; nothing needs to be generated on a fresh clone.
-
-### 3. Run the Ranker
+### 2. Decompress models + install spaCy
 
 ```bash
-# From a flat JSONL file
-python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
+bash setup.sh
+```
 
-# From a pre-built ZIP with folder hierarchy
+This one-time step decompresses `models/compressed/*.tar.gz` into `models/decompressed/` and installs the spaCy language model. Subsequent runs are a no-op.
+
+### 3. Verify environment
+
+```bash
+python -m pipeline.scripts.setup_check
+```
+
+### 4. Prepare the job description (one-time)
+
+```bash
+python -m pipeline.jd_parser --jd ./data/job_description.pdf --out ./data/jd.json
+```
+
+> `data/jd.json` must exist before running `rank.py`. It is manually structured — no LLM is used for JD parsing.
+
+---
+
+## Usage
+
+### Flat candidate list
+
+```bash
+python rank.py --candidates ./data/candidates.jsonl --out ./submission.csv
+```
+
+### Nested folder ZIP
+
+```bash
 python rank.py --zip ./data/candidates.zip --out ./submission.csv
 ```
 
-Produces `submission.csv` with 100 ranked candidates:
+### Full flag reference
 
-```
-candidate_id, rank, score, reasoning
-CAND_0042871, 1, 0.987, "Senior AI Engineer with 7 years..."
+| Flag | Description | Default |
+|---|---|---|
+| `--candidates` | Path to flat `candidates.jsonl` | — |
+| `--zip` | Path to candidates ZIP (folder hierarchy) | — |
+| `--jd` | Path to structured `jd.json` | `data/jd.json` |
+| `--out` | Output CSV path | `./submission.csv` |
+| `--stagger` | Seconds between staggered folder dispatch | `FOLDER_DISPATCH_STAGGER_SEC` |
+
+Either `--candidates` or `--zip` is required.
+
+---
+
+## Output Format
+
+### `submission.csv`
+
+```csv
+candidate_id,rank,score,reasoning
+CAND_04821,1,0.947231,"Matched 6/6 required skills; 4.2 yrs relevant experience"
+CAND_01193,2,0.931005,"Matched 5/6 required skills; strong semantic work-history overlap"
 ...
 ```
 
-### 4. Start the Dashboard *(optional)*
+### `output/ranked_{run_id}.json`
 
-```bash
-# Terminal 1 — Backend API
-uvicorn backend.api_server:app --reload --host 127.0.0.1 --port 8000
+Full per-candidate score breakdown for audit and debugging:
 
-# Terminal 2 — Frontend
-cd frontend && npm install && npm run dev
+```json
+{
+  "run_id": "20260702_143012",
+  "jd_title": "Senior Backend Engineer",
+  "total_ranked": 100,
+  "candidates": [
+    {
+      "rank": 1,
+      "candidate_id": "CAND_04821",
+      "final_score": 0.947231,
+      "reasoning": "Matched 6/6 required skills...",
+      "score_breakdown": {
+        "l1c_skill_match": 0.92,
+        "l1c_matched_required": ["Python", "Kubernetes", "..."],
+        "l1c_missing_required": [],
+        "l1b_integrity_penalty": 1.0,
+        "l3_fuzzy_score": 0.88,
+        "l4_work_relevance": 0.91,
+        "l4_donts_penalty": 0.0,
+        "l4_combined_score": 0.947231,
+        "l4b_explicit_req_penalty": 0.0
+      },
+      "experience_years": 4.2,
+      "skills_snippet": "Python, FastAPI, Kubernetes, PostgreSQL..."
+    }
+  ]
+}
 ```
 
-Open `http://localhost:5173`
-
-### 5. Sandbox Demo (Docker, single container)
-
-The command center dashboard (frontend + backend) is also packaged as a single public
-Docker image — this is the hackathon's sandbox link, satisfying the "sandbox platform"
-requirement via the docker escape-hatch in the submission spec:
-
-```bash
-docker pull abinmukherjee/redrob-sandbox:latest
-docker run -p 8000:8000 abinmukherjee/redrob-sandbox:latest
-```
-
-Open `http://localhost:8000`, upload a `candidates.jsonl` sample (≤100 rows, ≤5 MB —
-one candidate profile JSON per line), and the container runs the real offline `rank.py`
-pipeline against the bundled job description end-to-end, then displays the ranked
-shortlist in the dashboard. No network calls during ranking; models are baked into the
-image at build time from `models/compressed/`.
-
-To rebuild the image locally instead of pulling:
-
-```bash
-docker build -t redrob-sandbox .
-docker run -p 8000:8000 redrob-sandbox
-```
-
-### 6. Run Tests
-
-```bash
-python -m pytest tests/ -v
-```
+A live end-of-run timing summary is also printed to stdout, breaking down elapsed time per layer.
 
 ---
 
-## Pipeline Architecture
+## Performance
 
-The ranking cascade runs in two phases: an **early cascade** parallelised per folder bucket, and a **late cascade** applied globally on survivors.
-
-```
-candidates.jsonl / .zip
-         │
-         ▼
- ┌─────────────────────┐
- │   Pre-Processing    │  pipeline_1.py — clean, classify, build folder tree
- └────────┬────────────┘
-          │
-          ▼
- ┌─────────────────────┐
- │   Folder Pruning    │  Phase 1a–1e (rules) + Phase 2 (token overlap)
- │   (pruning.py)      │  Eliminates irrelevant buckets before any model runs
- └────────┬────────────┘
-          │  Parallel threads, one per surviving folder bucket
-          ▼
- ┌──────────────────────────────────────────────────────┐
- │             EARLY CASCADE  (per folder)              │
- │                                                      │
- │  L1    Fraud & Hard Reject  ──────────→  knockout    │
- │  L1b   Profile Integrity    ──────────→  soft flags  │
- │  L1c   Skill Match (NLP)    ──────────→  score [0–1] │
- │                                                      │
- │  Gate: top 50% + random 25% = 75% pass forward      │
- └────────────────────┬─────────────────────────────────┘
-                      │  Merge survivors from all folder threads
-                      ▼
- ┌──────────────────────────────────────────────────────┐
- │             LATE CASCADE  (global)                   │
- │                                                      │
- │  L2    Feature Table (31 cols)                       │
- │  L3    Sugeno Fuzzy Scoring   ────────→  l3_score    │
- │  L4    Semantic Relevance     ────────→  top 200     │
- │  L5a   Don'ts Penalty         ────────→  top 100     │
- │                                                      │
- │  FIS   Mamdani Final Score    ────────→  submission  │
- └──────────────────────────────────────────────────────┘
-```
-
----
-
-### Pre-Processing
-
-**File:** `data/preprocessing/pipeline_1.py`
-
-Ingests raw `candidates.jsonl` and classifies each profile into a structured folder tree:
-
-```
-<code|no_code> / <available|unavailable> / <0-3|4-9|10+> / <role_domain> / <bucket>.json
-```
-
-This tree is the foundation for heuristic folder pruning — entire irrelevant branches are dropped before any ML model is loaded.
-
----
-
-### Folder Pruning
-
-**File:** `pipeline/pruning.py`
-
-Five deterministic pruning phases — **no AI model used**:
-
-| Phase | Signal | What Gets Dropped |
-|---|---|---|
-| 1a — Code/No-code | JD code requirement | Buckets contradicting JD's need for a coder or non-coder |
-| 1b — Inactive | Folder name label | Buckets flagged as unavailable candidates |
-| 1c — Location | JD city vs. folder city | Buckets outside the JD's target location |
-| 1d — Experience | JD minimum years | Buckets whose experience ceiling is below JD minimum |
-| 1e — Role | JD role family | Buckets labelled as an unrelated role |
-| 2 — Token Overlap | JD title + skills | Scores survivors by relevance; sorts for dispatch priority |
-
-After pruning, surviving folders are dispatched to the early cascade in **parallel threads** (configurable stagger via `--stagger`).
-
----
-
-### L1 — Fraud & Hard Reject
-
-**File:** `pipeline/layers.py` → `l1_hard_reject()`
-
-Eliminates candidates with mathematically impossible or fraudulent profiles using a **SQLite knowledge base** (`fraud_kb.db`) with fuzzy name matching (`rapidfuzz`, threshold: 85):
-
-- Work experience at a company that was founded *after* the stated start date
-- Education timelines that impossibly overlap with full-time employment
-- Fictional company names (Dunder Mifflin, Hooli, Initech, Pied Piper, etc.) — in-memory blacklist + KB lookup
-- Salary ranges where `min > max` (inverted)
-- Expert-level skill proficiency claimed with 0 months of usage
-
----
-
-### L1b — Profile Integrity
-
-**File:** `pipeline/layers.py` → `l1b_profile_integrity()`
-
-Applies **soft flags** (not hard rejects) to profiles with integrity concerns:
-
-- Profile completeness below threshold
-- Suspicious career history gap patterns
-- Endorsement counts inconsistent with claimed proficiency level
-- `open_to_work_flag = False`
-
-Flagged candidates carry a penalty multiplier forward into L3 and are excluded from the top 100 if enough clean candidates exist.
-
----
-
-### L1c — Skill Match
-
-**File:** `pipeline/layers.py` → `l1c_skill_match()`
-
-Scores each candidate's skills against JD requirements using:
-
-- **Synonym expansion** (`pipeline/dictionary.py`) — maps aliases (`ML` → `machine learning`, `k8s` → `kubernetes`, etc.)
-- **Proficiency weighting** — `expert` > `advanced` > `intermediate` > `beginner`
-- **Endorsement & duration trust multiplier** — higher endorsements + months used → higher signal weight
-
-Produces `l1c_score ∈ [0, 1]`. Candidates below the floor threshold are hard-rejected at this stage.
-
-**Gate:** Top 50% by `l1c_score` pass forward, plus a random 25% from the bottom half (exploration insurance). **Total: 75% pass rate.**
-
----
-
-### L2 — Feature Table Extraction
-
-**File:** `pipeline/layers.py` → `l2_extract_features()`
-
-Extracts **31 structured columns** from each surviving candidate profile for downstream scoring:
-
-- Experience years, current title, company size, industry
-- Skill count, endorsement totals, platform assessment scores
-- Behavioral signals: `recruiter_response_rate`, `interview_completion_rate`, `offer_acceptance_rate`
-- Platform signals: `github_activity_score`, `profile_completeness_score`, `open_to_work_flag`
-- Notice period, salary range fit, willingness to relocate
-
-These columns feed directly into L3's fuzzy membership functions.
-
----
-
-### L3 — Sugeno Fuzzy Scoring
-
-**File:** `pipeline/layers.py` → `l3_sugeno_score()`
-
-A **Sugeno-type fuzzy inference system** evaluating eight conditions against the JD:
-
-| Condition | Signal |
-|---|---|
-| a | Years of experience vs. JD requirement |
-| b | Seniority match (title level vs. JD level) |
-| c | Industry relevance |
-| d | Company size match |
-| e | Notice period acceptability |
-| f | Salary range fit |
-| g | Location / relocation alignment |
-| h | Profile activity recency (`last_active_date`) |
-
-Outputs `l3_score` as a weighted Sugeno aggregate. Significant mismatches apply a `0.85×` seniority penalty multiplier that carries into the FIS.
-
----
-
-### L4 — Semantic Work Relevance
-
-**File:** `pipeline/layers.py` → `l4_semantic_score()`
-
-**Model:** `all-MiniLM-L6-v2` (INT8 ONNX, loaded from `models/decompressed/sentence_transformer/`)
-
-Encodes each candidate's **work history descriptions** and computes cosine similarity against the JD embedding:
-
-- Embedding dimension: 384
-- Batch size: 64 candidates per forward pass
-- Produces `l4_combined_score` — weighted blend of top-3 role cosine similarities
-
-Top **200 candidates** by `l1c × l4` combined score pass to L5.
-
----
-
-### L5a — Don'ts Penalty
-
-**File:** `pipeline/layers.py` → `l5a_donts_penalty()`
-
-Applies a **high-weight penalty** for explicit disqualifiers in the JD:
-
-- Excluded titles (e.g. "no pure researchers")
-- Excluded industries
-- Skill anti-patterns (e.g. "must not have only academic project experience")
-
-Surviving candidates are narrowed to the **top 100**.
-
----
-
-### FIS — Mamdani Fuzzy Final Score
-
-**File:** `pipeline/fis.py`
-
-A **Mamdani fuzzy inference system** combining `l1c`, `l3`, `l4`, and `l6` (behavioral) signals via triangular membership functions:
-
-```
-LOW  → triangle(x,  -0.1,  0.0,  0.5)
-MED  → triangle(x,   0.2,  0.5,  0.8)
-HIGH → triangle(x,   0.5,  1.0,  1.1)
-```
-
-Assigns each candidate a tier before final ranking:
-
-| Tier | Criteria | Effect |
-|---|---|---|
-| `very_good` | Meets ALL excellence thresholds across signals | Guaranteed top-10 placement |
-| `eligible` | No flags, no L3 penalty | Ranked by FIS composite score |
-| `penalized` | Has L1b flags OR L3 seniority penalty | Excluded from top 100 if 100 clean candidates exist |
-
-The FIS output is the `score` column written to `submission.csv`.
-
----
-
-## Backend API
-
-**File:** `backend/api_server.py` · FastAPI · Default port: **8000**
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/healthz` | None | Health check — always public |
-| `GET` | `/candidates` | Bearer | List all ranked candidates (paginated) |
-| `GET` | `/candidates/{id}` | Bearer | Full profile + per-layer scores |
-| `POST` | `/candidates/{id}/schedule-interview` | Bearer | Flag a candidate for interview |
-| `GET` | `/pipeline/runs` | Bearer | List past ranking run metadata |
-| `POST` | `/pipeline/runs` | Bearer | Trigger a new `rank.py` run (async subprocess) |
-| `GET` | `/pipeline/runs/{run_id}/funnel` | Bearer | Layer-by-layer funnel counts for a run |
-| `GET` | `/system/health` | Bearer | Model status, disk usage, runtime info |
-| `GET` | `/system/events` | Bearer | Live log stream for the active run |
-
-**Auth:** Bearer token header. Set `API_REQUIRE_AUTH=true` to enforce; accepts any token in local preview mode.
-
-**CORS:** Pre-configured for Vite dev server ports `5173`, `5174`, `4173`.
-
-The backend manages `rank.py` as a controlled subprocess, streams stdout logs in real time to `/system/events`, and caches the latest ranked output for the frontend to consume without re-running.
-
----
-
-## Frontend Dashboard
-
-**Stack:** React 18 · Vite · Tailwind CSS · Zustand · Three.js
-
-**Directory:** `frontend/src/`
-
-### Pages
-
-| Page | Route | Purpose |
-|---|---|---|
-| `Overview` | `/` | KPI strip, funnel chart, risk cards summary |
-| `RankedCandidates` | `/candidates` | Sortable, filterable ranked candidate table |
-| `CandidateDetail` | `/candidates/:id` | Full profile view + per-layer score breakdown |
-| `SystemHealth` | `/system` | Model status, pipeline timing, live log stream |
-| `LoginPage` | `/login` | Auth gate |
-
-### Key Components
-
-| Component | Description |
-|---|---|
-| `EvidenceDrawer` | Slide-in panel showing per-layer scoring evidence for a candidate |
-| `FunnelChart` | Visual layer-by-layer candidate count drop (L1 → FIS) |
-| `LogicMatrix` | Displays FIS rule activations for a selected candidate |
-| `ScoreOrb3D` | Three.js animated orb visualising the composite score |
-| `FilterRail` | Multi-facet filter sidebar (tier, score range, skills, location) |
-| `KPIStrip` | Live stats: total processed, pass rates, top-tier count |
-
----
-
-## Models & Artifacts
-
-All models are stored compressed in `models/compressed/` (tracked via **Git LFS**) and decompressed on first use by `setup.sh` into `models/decompressed/`.
-
-| Artifact | Size | Purpose | Used in Layer |
-|---|---|---|---|
-| `sentence_transformer.tar.gz` | 173 MB | `all-MiniLM-L6-v2` bi-encoder | L4 |
-| `spacy_model.tar.gz` | 13 MB | `en_core_web_sm` NLP | L1b, L5a |
-| `fraud_kb.tar.gz` | 68 KB | SQLite company / institution KB | L1 |
-
-To rebuild the fraud knowledge base from raw sources:
-
-```bash
-python pipeline/scripts/build_kb.py
-```
-
-To verify all models are correctly decompressed:
-
-```bash
-python pipeline/scripts/setup_check.py
-```
-
----
-
-## Performance Benchmarks
-
-Measured on **Lenovo ThinkBook · 16 GB RAM · CPU-only · Windows 11 · Python 3.11**
+Benchmarked on a 10,000-candidate pool, CPU-only:
 
 | Stage | Time |
 |---|---|
-| Pre-processing (`pipeline_1.py`) | ~8s |
-| Folder pruning | <1s |
-| Early cascade (L1 → L1c, all folders, parallel) | ~12s |
-| L4 semantic scoring (MiniLM bi-encoder) | ~22s |
-| FIS + final ranking | <1s |
-| **Total end-to-end (100K candidates)** | **~51s** |
+| Preprocessing + folder discovery | ~15s |
+| Heuristic pruning | ~2s |
+| Early cascade (L1a → L3, streamed, concurrent) | ~140s |
+| Late cascade (L4 semantic + L4b) | ~35s |
+| Output write | ~3s |
+| **Total** | **~200s** |
 
----
-
-## Team
-
-| Member | Role |
+| Resource | Value |
 |---|---|
-| **Abin Mukherjee** | Integration, Deployment, Backend API |
-| **Sreshtho** | Frontend Dashboard (React Command Center) |
-| **Rishi** | Data Handling (cleaning pipeline, dataset preprocessing) |
-| **Tina** | AI Logic (cascade layers, FIS, JD parser) |
+| Peak memory | 4.2 GB |
+| Model footprint (compressed) | ~186 MB |
+| GPU required | No |
 
 ---
 
-*Built for the India Runs Data & AI Challenge 2026 · Redrob Hackathon*
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Ranking pipeline** | Python, concurrent streaming cascade |
+| **Embeddings** | `sentence-transformers/all-MiniLM-L6-v2` (local, CPU) |
+| **NLP** | spaCy (`en_core_web_sm`) |
+| **Fraud/integrity KB** | SQLite |
+| **Backend API** | FastAPI (9 endpoints) |
+| **Dashboard** | React + Vite, Zustand state, 3D visualization components |
+| **Telemetry** | Custom `RunTracer` — per-layer timing + decision audit trail |
+| **Testing** | pytest, honeypot fraud-detection stress tests |
+
+---
+
+## Known Limitations
+
+| Limitation | Impact | Notes |
+|---|---|---|
+| `jd.json` is manually structured | No automated JD parsing in the ranking path | `jd_parser.py` exists as a utility but is not called by `rank.py` |
+| Hard pool cap before L2/L3 | Very large pools (100k+) are capped and sorted by L1c proxy before expensive layers | See `constants.HARD_POOL_CAP` |
+| Synonym dictionary is static | Skill matching quality depends on `dictionary.py` coverage | Manually maintained, not learned |
+| No GPU acceleration path | Embedding step is CPU-bound | Acceptable at current scale (~200s / 10k candidates) |
+
+---
+
+## Testing
+
+```bash
+# Fast unit tests — no models required
+pytest tests/test_layer.py
+
+# Model load / graceful-degrade checks
+pytest tests/model_working_test.py
+
+# Fraud detection stress test (L1b)
+python tests/honeypot_stresstest.py
+```
+
+---
+
+## License
+
+MIT License
+
+## Author
+
+**Tina Prabhat**
+B.Tech CSE — KIIT University
+[GitHub](https://github.com/Tinaprabhat)

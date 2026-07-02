@@ -27,9 +27,7 @@ EMBED_DIM = 384
 # ──────────────────────────────────────────────────────────────────────────────
 # THRESHOLDS
 # ──────────────────────────────────────────────────────────────────────────────
-FOLDER_PRUNE_THRESHOLD = 0.15  # folder token-overlap cutoff
 FOLDER_DISPATCH_STAGGER_SEC = 0   # 0 = all folder threads start simultaneously
-MIN_FOLDERS_KEPT = 1           # never drop everything
 
 HARD_POOL_CAP = 60_000         # hard cap before expensive layers
 
@@ -38,19 +36,8 @@ HARD_POOL_CAP = 60_000         # hard cap before expensive layers
 # multiple candidates are in-flight (at different stages) simultaneously.
 PIPELINE_MAX_WORKERS = 32
 
-# ──────────────────────────────────────────────────────────────────────────────
-# SCORING WEIGHTS (feed into FIS membership; also used for fallback weighted sum)
-# ──────────────────────────────────────────────────────────────────────────────
-WEIGHTS = {
-    "L1C": 0.35,  # explicit skill match score
-    "L4": 0.25,   # semantic work-to-JD relevance
-    "L6": 0.10,   # behavioral
-    # L3 and L1b are penalty multipliers, not weighted scores
-}
-
 # Soft penalty magnitudes
 SENIORITY_PENALTY = 0.85       # multiply score if under-qualified (L3)
-DOWNLEVEL_SENIORITY_PENALTY = 0.85  # multiply score if candidate held a higher title (L3)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # BATCH SIZES
@@ -59,7 +46,6 @@ L1C_MIN_SKILL_MATCH = 0.0    # per-folder gate inside l1c_skill_match (0.0 = off
 L4_BATCH_SIZE = 64
 FLASHRANK_TOP_N = 50           # polish only top 50
 FLASHRANK_FIS_WEIGHT = 0.25    # blend weight: final = W*flashrank + (1-W)*fis  → FIS weight = 0.75
-OUTPUT_TOP_N = 100             # final CSV rows
 
 # ──────────────────────────────────────────────────────────────────────────────
 # L7 TIER THRESHOLDS — "very good" candidate criteria
@@ -100,56 +86,8 @@ FOLDER_ABBREVIATIONS = {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# SKILL ALIASES (L2 text normalization / semantic_neighbors fallback)
-# ──────────────────────────────────────────────────────────────────────────────
-SKILL_ALIASES = {
-    "llm": ["large language models", "large language model"],
-    "ml": ["machine learning"],
-    "nlp": ["natural language processing"],
-    "dl": ["deep learning"],
-    "rag": ["retrieval augmented generation", "retrieval-augmented generation"],
-    "cv": ["computer vision"],
-    "k8s": ["kubernetes"],
-    "js": ["javascript"],
-    "ts": ["typescript"],
-    "pg": ["postgresql", "postgres"],
-}
-
-# ──────────────────────────────────────────────────────────────────────────────
-# SENIORITY LEVELS (L3)
-# ──────────────────────────────────────────────────────────────────────────────
-"""SENIORITY_KEYWORDS = {
-    "intern": 0,
-    "junior": 1,
-    "entry": 1,
-    "associate": 2,
-    "mid": 3,
-    "intermediate": 3,
-    "senior": 5,
-    "lead": 7,
-    "staff": 8,
-    "principal": 9,
-    "director": 10,
-}"""
-
-# ──────────────────────────────────────────────────────────────────────────────
 # STRUCTURED FOLDER PRUNING RULES
 # ──────────────────────────────────────────────────────────────────────────────
-
-# Recognised spellings of Bangalore (JD location field)
-BANGALORE_ALIASES: frozenset = frozenset({
-    "bangalore", "bengaluru", "blr", "bangaluru", "bengalore",
-    "bangalore city", "bangalore urban",
-})
-
-# Folder-path substrings that mean "candidates NOT from the target city".
-# Checked against normalised (lowercase, _ → space) path components.
-INDIA_OUTSIDE_PATTERNS: tuple = (
-    "india outside", "india_outside", "outside india", "outside_india",
-    "rest of india", "rest_of_india", "non bangalore", "non_bangalore",
-    "other cities", "other_cities", "pan india", "pan_india",
-    "other locations", "other_locations",
-)
 
 # Keywords that classify a JD role as "engineering".
 # Matched against the normalised job_title + required skills text.
@@ -204,12 +142,6 @@ NO_CODE_FOLDER_ROOTS: frozenset = frozenset({
 # Normalised root folder names that mean "coding / technical" candidates.
 CODE_FOLDER_ROOTS: frozenset = frozenset({
     "code", "coding", "tech", "technical",
-})
-
-# Folder names that confirm a branch is openly active/eligible.
-# Used for trace logging clarity only.
-ACTIVE_FOLDER_NAMES: frozenset = frozenset({
-    "active", "open", "available", "eligible", "moderate",
 })
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -297,14 +229,3 @@ ROLE_FAMILY_EXCLUSIONS: dict = {
     }),
     "swe_general": frozenset(),   # broad SWE role: accept all engineering sub-families
 }
-
-# Default years-to-level mapping for candidate experience
-def years_to_seniority(years: float) -> int:
-    if years < 1:   return 0
-    if years < 2:   return 1
-    if years < 3:   return 2
-    if years < 5:   return 3
-    if years < 7:   return 5
-    if years < 9:   return 7
-    if years < 11:  return 8
-    return 9

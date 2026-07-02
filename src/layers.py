@@ -30,25 +30,17 @@ from typing import List, Dict, Optional
 
 from . import constants as C
 from . import utils
+from .dictionary import (
+    expand_skill, JD_REQUIREMENTS,
+    FICTIONAL_COMPANIES, _COMPANY_SUFFIXES, _PROFICIENCY_MAP,
+    _PRODUCTION_KW, _ARCHITECTURE_KW, _TESTING_EVAL_KW,
+    _ORCHESTRATION_TOOLS, _TOOLS_WEIGHTED,
+    _IR_DOMAIN_TERMS, _CONSULTING_FIRMS, _CONSULTING_INDUSTRIES,
+    _RESEARCH_KW, _JD_REQ_TITLES, _CV_SPEECH_SKILLS, _CV_SPEECH_TITLE_KW,
+)
 
 logger = logging.getLogger(__name__)
 
-# In-code fictional company blacklist (backup to SQLite KB)
-FICTIONAL_COMPANIES = {
-    "dunder mifflin", "hooli", "acme corp", "acme corporation", "initech",
-    "pied piper", "vehement capital", "globex", "soylent corp", "umbrella corp",
-    "umbrella corporation", "stark industries", "wayne enterprises", "wonka industries",
-    "cyberdyne systems", "weyland-yutani", "tyrell corporation", "oscorp",
-    "massive dynamic", "aperture science", "black mesa", "vault-tec",
-}
-
-# Ordered longest-first so "pvt ltd" is stripped before "ltd"
-_COMPANY_SUFFIXES = (
-    "pvt ltd", "private limited", "pvt. ltd.", "pvt. ltd", "pvt ltd.",
-    "corporation", "incorporated", "limited liability company",
-    "corp.", "corp", "inc.", "inc", "ltd.", "ltd", "llc", "llp",
-    "plc", "gmbh", "s.a.", "s.a", "nv", "bv", "ag", "kg",
-)
 
 def _strip_company_suffix(name: str) -> str:
     """Remove common legal suffixes from a company name (case-insensitive)."""
@@ -511,8 +503,6 @@ def _l1b_process_one(c: dict) -> bool:
 # ──────────────────────────────────────────────────────────────────────────────
 # LAYER 1c — SKILL MATCH (NLP STRING + SYNONYM MATCH)
 # ──────────────────────────────────────────────────────────────────────────────
-from .dictionary import expand_skill, JD_REQUIREMENTS  # noqa: E402 (import after module-level constants)
-
 
 def _candidate_search_text(c: dict) -> str:
     """Build a single normalized text blob from skills, work descriptions, and profile."""
@@ -556,11 +546,6 @@ def _skill_in_text(skill: str, text: str) -> bool:
         if re.search(pattern, text):
             return True
     return False
-
-
-_PROFICIENCY_MAP: Dict[str, float] = {
-    "beginner": 0.1, "intermediate": 0.2, "advanced": 0.3, "expert": 0.4
-}
 
 
 def _proficiency_score_for_skills(
@@ -902,206 +887,10 @@ def _l1d_process_one(c: dict, ctx: dict) -> None:
 # LAYER 2 — TABLE EXTRACT  (29-column row per candidate)
 # ──────────────────────────────────────────────────────────────────────────────
 
-# ── Keyword vocabularies for cols 11–13 ──────────────────────────────────────
-_PRODUCTION_KW: Dict[str, float] = {
-    "deployed": 0.20, "deploy": 0.15, "deployment": 0.15,
-    "shipped": 0.18, "ship": 0.15, "shipping": 0.15,
-    "production": 0.20,
-    "real users": 0.25, "live users": 0.20, "end users": 0.15,
-    "at scale": 0.15, "large scale": 0.15,
-    "a/b test": 0.15, "ab test": 0.15, "ab testing": 0.15,
-    "rollout": 0.12, "launched": 0.15, "launch": 0.12,
-    "serving": 0.12,
-    "qps": 0.20,
-    "p95 latency": 0.22,
-    "p99 latency": 0.22,
-    "ranking pipeline": 0.22,
-    "retrieval system": 0.22,
-    "search at scale": 0.25,
-    "online serving": 0.20,
-}
-
-_ARCHITECTURE_KW: Dict[str, float] = {
-    "designed system": 0.20, "system design": 0.18,
-    "architected": 0.20, "architecture": 0.12,
-    "distributed system": 0.15, "distributed": 0.10,
-    "microservices": 0.12, "microservice": 0.12,
-    "scalable": 0.10, "scalability": 0.10,
-    "high availability": 0.12, "fault tolerant": 0.12,
-    "low latency": 0.10, "throughput": 0.10,
-    "system architecture": 0.18, "pipeline design": 0.12,
-}
-
-_TESTING_EVAL_KW: Dict[str, float] = {
-    "ndcg": 0.25, "mrr": 0.25,
-    "mean average precision": 0.25,
-    "a/b test": 0.20, "ab test": 0.20, "ab testing": 0.20,
-    "recall@k": 0.20, "recall@": 0.18,
-    "benchmark": 0.15,
-    "precision@": 0.15, "precision": 0.12,
-    "evaluation": 0.10, "metrics": 0.10,
-    "beir": 0.20, "trec": 0.20,
-    "offline evaluation": 0.15, "online evaluation": 0.15,
-    "f1 score": 0.12,
-}
-
-# ── Tools vocabulary for col 18 — weighted by stack relevance ────────────────
-# CV-specific tools (opencv, torchvision, detectron2, yolo, albumentations …)
-# are deliberately excluded.  Categories and weights:
-#   Embedding tools          → 1.0–0.90  (highest: core IR capability)
-#   Vector DB / ANN indexes  → 0.85–0.70  (high)
-#   Ranking / reranking      → 0.90–0.80  (high)
-#   NLP & LLM models         → 0.70–0.50  (medium)
-#   Deployment / MLOps       → 0.50–0.40  (medium)
-#   AI orchestration         → 0.30–0.25  (low)
-#   Cloud ML platforms       → 0.20       (lowest)
-
-# Embedding tools — highest weight
-_EMBEDDING_TOOLS: Dict[str, float] = {
-    "sentence-transformers": 1.00,
-    "fastembed":             1.00,
-    "huggingface":           0.90,   # HF Hub / Transformers ecosystem
-    "cohere":                0.90,   # Cohere embed + rerank API
-}
-
-# Vector database / ANN index tools — high weight
-_VECTOR_DB_TOOLS: Dict[str, float] = {
-    "faiss":         0.85,
-    "qdrant":        0.85,
-    "milvus":        0.85,
-    "weaviate":      0.85,
-    "pinecone":      0.85,
-    "chromadb":      0.85,
-    "pgvector":      0.85,
-    "lancedb":       0.85,
-    "vespa":         0.85,
-    "elasticsearch": 0.80,
-    "opensearch":    0.80,
-    "solr":          0.70,
-}
-
-# Ranking / reranking tools — high weight
-_RANKING_TOOLS: Dict[str, float] = {
-    "flashrank":     0.90,
-    "colbert":       0.90,
-    "cross-encoder": 0.85,
-    "bm25":          0.80,
-    "reranker":      0.80,
-}
-
-# NLP and LLM model tools — medium weight
-_NLP_MODEL_TOOLS: Dict[str, float] = {
-    "bert":        0.70,
-    "llama":       0.70,
-    "spacy":       0.65,
-    "mistral":     0.65,
-    "openai":      0.65,   # GPT / embeddings API
-    "gensim":      0.60,
-    "pytorch":     0.60,
-    "anthropic":   0.60,
-    "nltk":        0.55,
-    "tensorflow":  0.55,
-    "keras":       0.50,
-    "onnx":        0.50,
-    "tensorrt":    0.50,
-}
-
-# Deployment / serving / MLOps tools — medium weight
-_DEPLOYMENT_TOOLS: Dict[str, float] = {
-    "docker":     0.50,
-    "kubernetes": 0.50,
-    "triton":     0.50,
-    "bentoml":    0.50,
-    "ray":        0.45,
-    "mlflow":     0.45,
-    "kubeflow":   0.45,
-    "wandb":      0.40,
-    "dvc":        0.40,
-}
-
-# AI orchestration frameworks — low weight
-_ORCHESTRATION_TOOLS: Dict[str, float] = {
-    "langchain":  0.30,
-    "llamaindex": 0.30,
-    "haystack":   0.30,
-    "crewai":     0.25,
-}
-
-# Cloud ML platforms — lowest weight
-_CLOUD_TOOLS: Dict[str, float] = {
-    "sagemaker":  0.20,
-    "bigquery":   0.20,
-    "databricks": 0.20,
-    "snowflake":  0.20,
-    "redshift":   0.20,
-}
-
-# Merged lookup: tool_name → weight  (used for tools_score computation)
-_TOOLS_WEIGHTED: Dict[str, float] = {
-    **_EMBEDDING_TOOLS,
-    **_VECTOR_DB_TOOLS,
-    **_RANKING_TOOLS,
-    **_NLP_MODEL_TOOLS,
-    **_DEPLOYMENT_TOOLS,
-    **_ORCHESTRATION_TOOLS,
-    **_CLOUD_TOOLS,
-}
-
-# IR domain terms for condition d scoring (0/0.5/1.0 based on hit count)
-_IR_DOMAIN_TERMS: frozenset = frozenset({
-    "bm25", "faiss", "rerank", "retrieval", "ranking",
-    "vector search", "embedding",
-})
-
-# ── Consulting firms / industries for col 19 ─────────────────────────────────
-_CONSULTING_FIRMS: frozenset = frozenset({
-    "tcs", "tata consultancy services", "infosys", "wipro", "accenture",
-    "cognizant", "capgemini", "hcl", "hcl technologies", "tech mahindra",
-    "mphasis", "mindtree", "hexaware", "ltimindtree", "lti mindtree",
-    "l&t infotech", "kpmg", "deloitte", "pwc", "ernst & young", "ey",
-    "mckinsey", "boston consulting group", "bcg", "bain",
-    "niit technologies", "zensar", "cyient", "persistent systems",
-})
-
-_CONSULTING_INDUSTRIES: frozenset = frozenset({
-    "it services", "consulting", "professional services", "outsourcing",
-    "it consulting", "management consulting", "technology services",
-    "bpo", "kpo", "ites", "information technology services",
-})
-
-# ── Research publication keywords for col 17 ─────────────────────────────────
-_RESEARCH_KW: frozenset = frozenset({
-    "paper", "published", "arxiv", "proceedings", "neurips", "nips",
-    "icml", "iclr", "cvpr", "acl", "emnlp", "journal", "preprint",
-    "citation", "dissertation", "thesis", "conference paper", "research paper",
-    "peer reviewed", "peer-reviewed",
-})
-
-# ── JD-relevant title keywords (NLP / IR / Applied AI — NOT CV / Speech) ─────
-# Titles matching these indicate the candidate's role is closely aligned with
-# the JD target (Senior AI Engineer, IR/NLP stack).  Used in L3 for +0.02 bonus.
-# CV-specific titles (computer vision, vision scientist, etc.) are intentionally
-# excluded — they signal a different domain.
-_JD_REQ_TITLES: frozenset = frozenset({
-    # Core AI / ML engineering
-    "ai engineer", "senior ai engineer", "staff ai engineer", "principal ai engineer",
-    "ml engineer", "machine learning engineer", "senior ml engineer",
-    "principal ml engineer", "staff ml engineer",
-    # Applied AI / Applied Science
-    "applied scientist", "applied ai engineer", "applied ai",
-    "applied machine learning engineer", "applied research scientist",
-    # NLP / Information Retrieval / Search
-    "nlp engineer", "nlp scientist", "natural language processing engineer",
-    "search engineer", "senior search engineer", "search scientist",
-    "ranking engineer", "relevance engineer", "information retrieval engineer",
-    # Research Engineering (AI/ML-focused, not domain-locked; "ai research engineer"
-    # excluded — too broad, fires on CV/speech candidates)
-    "research engineer", "senior research engineer",
-    "ml research engineer",
-    # AI / ML leadership
-    "ai tech lead", "ml tech lead", "ai lead", "ml lead",
-    "ai architect", "ml architect",
-})
+# Keyword vocabularies for cols 11–13, 17–19 and the L3 title list now live in
+# src/dictionary.py (_PRODUCTION_KW, _ARCHITECTURE_KW, _TESTING_EVAL_KW,
+# _*_TOOLS, _TOOLS_WEIGHTED, _IR_DOMAIN_TERMS, _CONSULTING_FIRMS,
+# _CONSULTING_INDUSTRIES, _RESEARCH_KW, _JD_REQ_TITLES) — imported above.
 
 
 # ── Private helpers ───────────────────────────────────────────────────────────
@@ -1764,21 +1553,11 @@ def run_streaming_cascade(
 # LAYER 4 — SEMANTIC WORK RELEVANCE
 # ══════════════════════════════════════════════════════════════════════════════
 
-# CV / Speech domain skills and title keywords — candidates whose profile is
-# dominated by these are hard-penalized by the donts layer regardless of
-# embedding similarity, which is too noisy at 384-dim to resolve domains.
-_CV_SPEECH_SKILLS: frozenset = frozenset({
-    "asr", "tts", "speech recognition", "automatic speech recognition",
-    "text to speech", "text-to-speech", "computer vision", "opencv",
-    "yolo", "object detection", "image classification", "image segmentation",
-    "detectron", "torchvision", "face recognition", "face detection",
-    "optical character recognition", "ocr",
-})
-_CV_SPEECH_TITLE_KW: frozenset = frozenset({
-    "computer vision", "cv engineer", "vision scientist", "vision engineer",
-    "speech recognition", "asr engineer", "tts engineer", "speech engineer",
-    "image processing", "visual recognition",
-})
+# CV / Speech domain skills and title keywords (_CV_SPEECH_SKILLS,
+# _CV_SPEECH_TITLE_KW — imported from dictionary.py above) — candidates whose
+# profile is dominated by these are hard-penalized by the donts layer
+# regardless of embedding similarity, which is too noisy at 384-dim to
+# resolve domains.
 _CATEGORICAL_DONTS_FLOOR = 0.06  # minimum donts penalty for CV/speech candidates — blended with ramp, not overriding it
 
 

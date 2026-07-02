@@ -207,10 +207,10 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
       19 layer_scores            20 l2_table               21 reasoning
     """
     _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    score_map = {r["Cand_ID"]: r for r in rows}
+    score_map = {r["candidate_id"]: r for r in rows}
 
     # rows is already tie-break sorted; use that order for the JSON too
-    cid_to_rank = {r["Cand_ID"]: r["rank"] for r in rows}
+    cid_to_rank = {r["candidate_id"]: r["rank"] for r in rows}
     ordered_top = sorted(
         top,
         key=lambda c: cid_to_rank.get(
@@ -223,7 +223,7 @@ def _write_ranked_json(top: list, rows: list, jd: dict, run_id: str) -> Path:
         cid    = str(c.get("candidate_id", c.get("id", "")))
         row    = score_map.get(cid, {})
         rank   = row.get("rank")
-        fscore = row.get("final_score")
+        fscore = row.get("score")
 
         profile = c.get("profile") or {}
         signals = c.get("redrob_signals") or {}
@@ -478,17 +478,17 @@ if run_btn:
         score = min(float(c.get("candidate_final_score", 0.0)), prev)
         prev  = score
         rows.append({
-            "Cand_ID":     str(c.get("candidate_id", c.get("id", f"UNKNOWN_{i}"))),
-            "rank":        i,
-            "final_score": round(score, 6),
-            "reasoning":   _build_reasoning(c),
+            "candidate_id": str(c.get("candidate_id", c.get("id", f"UNKNOWN_{i}"))),
+            "rank":         i,
+            "score":        round(score, 6),
+            "reasoning":    _build_reasoning(c),
         })
 
     t_write = time.time()
     json_path = _write_ranked_json(top100, rows, jd, tracer.run_id)
 
     buf = io.StringIO()
-    w   = csv.DictWriter(buf, fieldnames=["Cand_ID", "rank", "final_score", "reasoning"])
+    w   = csv.DictWriter(buf, fieldnames=["candidate_id", "rank", "score", "reasoning"])
     w.writeheader()
     w.writerows(rows)
     csv_bytes = buf.getvalue().encode("utf-8")
@@ -498,7 +498,7 @@ if run_btn:
     trace_path = tracer.finish(
         output_json=json_path,
         rows_written=len(rows),
-        top_scores=[r["final_score"] for r in rows[:10]],
+        top_scores=[r["score"] for r in rows[:10]],
         elapsed=elapsed,
     )
 
@@ -520,13 +520,13 @@ if run_btn:
     st.subheader("Top 100 Ranking")
     display_rows = []
     for r in rows:
-        cid = r["Cand_ID"]
+        cid = r["candidate_id"]
         c   = next((x for x in top100
                     if str(x.get("candidate_id", x.get("id", ""))) == cid), {})
         display_rows.append({
             "Rank":          r["rank"],
             "Candidate ID":  cid,
-            "Final Score":   r["final_score"],
+            "Final Score":   r["score"],
             "L3 Fuzzy":      round(c.get("l3_score", 0.0), 3),
             "L3 Class":      c.get("l3_class", ""),
             "H Penalty":     int(c.get("table_row", {}).get("l3_h_penalty", False)),
